@@ -6,15 +6,513 @@ generator client {
 }
 
 datasource db {
-    provider = "sqlite"
-    url      = env("DATABASE_URL")
+    provider  = "postgresql"
+    url       = env("DATABASE_URL")
+    directUrl = env("DIRECT_URL")
+}
+
+enum ACCESSTYPE {
+    READ
+    WRITE
+}
+
+enum MEMBERROLE {
+    ADMIN
+    EDITOR
+    VIEWER
+}
+
+enum ROLE {
+    OWNER
+    USER
+}
+
+enum Prompt {
+    TEXT
+    IMAGE
+    DOCUMENT
+    UNKNOWN
+    AUDIO
+    URL
+}
+
+enum Role {
+    user
+    ai
+}
+
+enum RecordingType {
+    file
+    youtube
+}
+
+enum MediaType {
+    audio
+    video
+}
+
+enum TranscriptStatus {
+    PENDING
+    COMPLETED
+}
+
+enum FolderType {
+    USER_CREATED
+    AI_GENERATED_IMAGE
+}
+
+enum GenerationType {
+    TEXT_TO_IMAGE
+    REALTIME_IMAGE
+    USER_ADDED // This wont be used
+}
+
+enum promptType {
+    CONTENT_GEN
+    AUDIO_GEN
+    VIDEO_GEN
+}
+
+enum AssetType {
+    IMAGE
+    AUDIO
+    VIDEO
+    DOCUMENT
+    URL
+    AI_GENERATED_IMAGE
+}
+
+model ActiveWorkSpace {
+    id                String    @id @unique @default(cuid())
+    activeWorkSpace   Workspace @relation(fields: [activeWorkSpaceId], references: [id], onDelete: Cascade)
+    activeWorkSpaceId String
+    user              User      @relation(fields: [userId], references: [id])
+    userId            String    @unique
+    organizationId    String
+}
+
+model AudioScript {
+    id       String @id @default(cuid())
+    title    String
+    finalKey String
+    topic    String
+    userId   String
+    User     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    audioModels AudioModel[]
+    createdAt   DateTime     @default(now())
+}
+
+model AudioModel {
+    id        String       @id @default(cuid())
+    audioKey  String
+    text      String
+    persona   String?
+    personaId String?
+    emotion   String?
+    speed     SpeedOptions @default(normal)
+
+    audioScriptId String?
+    AudioScript   AudioScript? @relation(fields: [audioScriptId], references: [id], onDelete: Cascade)
+
+    User   User   @relation(fields: [userId], references: [id])
+    userId String
+
+    workspaceId String?
+
+    createdAt DateTime @default(now())
+}
+
+enum SpeedOptions {
+    slowest
+    slow
+    normal
+    fast
+    fastest
+    double
+}
+
+model Chat {
+    id         String    @id @default(cuid())
+    role       String
+    content    String
+    created    DateTime  @default(now())
+    Document   Document? @relation(fields: [documentId], references: [id])
+    documentId String?
+}
+
+enum RedirectType {
+    General
+    Social
+}
+
+model Document {
+    id                String        @id @default(cuid())
+    title             String
+    role              ROLE          @default(OWNER)
+    access            ACCESSTYPE    @default(WRITE)
+    createdAt         DateTime      @default(now())
+    updatedAt         DateTime      @updatedAt
+    User              User?         @relation(fields: [userId], references: [id])
+    userId            String?
+    Folder            Folder?       @relation(fields: [folderId], references: [id], onDelete: Cascade)
+    folderId          String?
+    workspace         Workspace?    @relation(fields: [spaceId], references: [id], onDelete: Cascade)
+    organizationId    String?
+    spaceId           String?
+    isStarred         Boolean       @default(false)
+    viewCount         Int?          @default(0)
+    redirectId        String?
+    thumbnailImageUrl String?
+    thumbnailImageId  String?
+    content           String?
+    chats             Chat[]
+    variations        String[]
+    previewType       String?
+    docId             String?
+    redirectType      RedirectType?
+    // Indicates if the document has been opened for the first time. used for enabling auto versioning
+    isFirstOpen       Boolean       @default(true)
+    promptId          String?
+    assetFolderId     String?
+    assetFolder       AssetsFolder? @relation(fields: [assetFolderId], references: [id], onDelete: Cascade)
+    createdBy         String
+    images            String[]
+}
+
+model Folder {
+    id         String     @id @default(cuid())
+    folderName String
+    spaceId    String?
+    emojiUrl   String?
+    WorkSpace  Workspace? @relation(fields: [spaceId], references: [id], onDelete: Cascade)
+    User       User?      @relation(fields: [userId], references: [id])
+    userId     String?
+    createdAt  DateTime   @default(now())
+    updatedAt  DateTime   @updatedAt
+    Documents  Document[]
+}
+
+model EditorBrandVoice {
+    id             String   @id @default(cuid())
+    userId         String
+    name           String
+    specialization String
+    audience       String
+    purpose        String
+    tone           String[]
+    emotions       String[]
+    character      String[]
+    genre          String[]
+    languageStyle  String[]
+    brandVoice     String
+    createdAt      DateTime @default(now())
+    updatedAt      DateTime @updatedAt
+    User           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model ImageData {
+    id         String  @id @default(cuid())
+    prompt     String
+    resolution String?
+    imageKey   String
+    imageUrl   String?
+
+    generationType GenerationType
+
+    userId String?
+    User   User?   @relation(fields: [userId], references: [id])
+
+    workspaceId String?
+
+    createdAt DateTime @default(now())
+}
+
+model Member {
+    id          String     @id @default(cuid())
+    user        User       @relation(fields: [userId], references: [id])
+    userId      String
+    email       String //can remove this
+    workspace   Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+    workspaceId String
+    memberRole  MEMBERROLE @default(ADMIN)
+}
+
+model Workspace {
+    id              String            @id @default(cuid())
+    name            String
+    userId          String
+    User            User              @relation(fields: [userId], references: [id])
+    defaultSpace    Boolean           @default(false)
+    createdAt       DateTime          @default(now())
+    updatedAt       DateTime          @updatedAt
+    folders         Folder[]
+    documents       Document[]
+    members         Member[]
+    ActiveWorkSpace ActiveWorkSpace[]
+
+    organizationId String
+    AssetsFolder   AssetsFolder[]
+    VideoModel     VideoModel[]
+    ViralClips     ViralClips[]
+    AudioProject   AudioProject[]
+    TiptapDoc      TiptapDoc[]
+    Post           Post[]
+}
+
+model User {
+    id               String   @id @unique // matches the clerk user id.
+    name             String?
+    email            String?  @unique
+    image            String?
+    createdAt        DateTime @default(now())
+    firstName        String?
+    lastName         String?
+    jobTitle         String?
+    department       String?
+    organizationName String?
+    subdomain        String?
+    industry         String?
+    organizationSize String?
+    isFirstTimeUser  Boolean  @default(true) // for designing onboarding experience
+
+    folders          Folder[]
+    documents        Document[]
+    workspaces       Workspace[]
+    audio            AudioModel[]
+    scripts          AudioScript[]
+    images           ImageData[]
+    memberInSpaces   Member[]
+    ActiveWorkSpace  ActiveWorkSpace?
+    sonicChat        SonicChat[]
+    editorBrandVoice EditorBrandVoice[]
+    UserVoice        UserVoice[]
+
+    // Stripe Details
+    stripeCustomerId       String?   @unique @map(name: "stripe_customer_id")
+    stripeSubscriptionId   String?   @unique @map(name: "stripe_subscription_id")
+    stripePriceId          String?   @map(name: "stripe_price_id")
+    stripeCurrentPeriodEnd DateTime? @map(name: "stripe_current_period_end")
+
+    Assets       Assets[]
+    AssetsFolder AssetsFolder[]
+    AudioProject AudioProject[]
+    VideoModel   VideoModel[]
+    TiptapDoc    TiptapDoc[]
+    Post         Post[]
+}
+
+model UserVoice {
+    id           String   @id @default(uuid())
+    voiceId      String
+    name         String
+    description  String
+    audioFileKey String
+    userId       String
+    user         User     @relation(fields: [userId], references: [id])
+    createdAt    DateTime @default(now())
+}
+
+model SonicMessage {
+    id             String    @id @default(cuid())
+    userId         String
+    sessionId      String
+    avatarId       String
+    brandVoice     Json?
+    lastMessages   String[]
+    mode           String?
+    fileIds        Json[]
+    category       String?
+    publishDate    String?
+    includeDomains String[]
+    Urls           String[]
+    otherFiles     Json?
+    query          String
+    createdAt      DateTime  @default(now())
+    updatedAt      DateTime  @updatedAt
+    chat           SonicChat @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+    role           Role      @default(user)
+    sources        String?
+}
+
+model SonicChat {
+    id                String         @id @default(cuid())
+    createdAt         DateTime       @default(now())
+    updatedAt         DateTime       @updatedAt
+    User              User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId            String
+    title             String
+    messages          SonicMessage[]
+    lastPromptPayload String?
+}
+
+model AudioProjectChat {
+    id             String   @id @default(cuid())
+    role           Role
+    content        String
+    createdAt      DateTime @default(now())
+    audioProjectId String?
+
+    AudioProject AudioProject? @relation(fields: [audioProjectId], references: [id], onDelete: Cascade)
+}
+
+enum AudioProjectType {
+    Upload
+    YouTube
+}
+
+model AudioProject {
+    id               String             @id @default(cuid())
+    title            String
+    transcript       String
+    subtitles        String
+    words            String
+    workspaceId      String
+    workspace        Workspace?         @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+    processStatus    ProcessStatus
+    storageKey       String
+    createdAt        DateTime           @default(now())
+    createdBy        String
+    createdByUser    User?              @relation(fields: [createdBy], references: [id])
+    type             AudioProjectType
+    AudioProjectChat AudioProjectChat[]
+}
+
+model Assets {
+    id             String          @id @default(cuid())
+    assetKey       String          @unique
+    assetName      String?
+    assetUrl       String?
+    assetType      AssetType
+    userId         String
+    User           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+    workspaceId    String
+    createdAt      DateTime        @default(now())
+    assetsFolder   AssetsFolder    @relation(fields: [folderId], references: [id], onDelete: Cascade)
+    folderId       String
+    prompt         String?
+    generationType GenerationType?
+}
+
+model AssetsFolder {
+    id         String     @id @default(cuid())
+    folderName String
+    spaceId    String?
+    emojiUrl   String?
+    WorkSpace  Workspace? @relation(fields: [spaceId], references: [id], onDelete: Cascade)
+    User       User?      @relation(fields: [userId], references: [id])
+    userId     String?
+    createdAt  DateTime   @default(now())
+    updatedAt  DateTime   @updatedAt
+    Assets     Assets[]
+    folderType FolderType @default(USER_CREATED)
+    documents  Document[]
+}
+
+enum ProcessStatus {
+    PROCESSING
+    COMPLETED
+}
+
+enum VideoType {
+    UPLOAD
+    YOUTUBE
+}
+
+//have not added Projects Higher order model.
+model VideoModel {
+    id            String        @id @default(cuid())
+    title         String
+    description   String
+    ytChapters    String
+    transcript    String
+    subtitles     String
+    words         String
+    workspaceId   String
+    videoUrl      String
+    processStatus ProcessStatus
+    workspace     Workspace     @relation(fields: [workspaceId], references: [id])
+    createdAt     DateTime      @default(now())
+    createdBy     String
+    createdByUser User          @relation(fields: [createdBy], references: [id])
+    videoType     VideoType
+    projectState  String?
+    thumbnailUrl  String?
+    path          String?
+    duration      Int
+
+    ViralClips ViralClips[]
+}
+
+model ViralClips {
+    id            String        @id @default(cuid())
+    title         String
+    description   String
+    parentVideoId String
+    workspaceId   String
+    transcript    String
+    subtitles     String
+    words         String?
+    processStatus ProcessStatus
+    videoUrl      String
+    thumbnailUrl  String
+    duration      Int
+
+    workspace  Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+    VideoModel VideoModel @relation(fields: [parentVideoId], references: [id], onDelete: Cascade)
+}
+
+model TiptapDoc {
+    id          String     @id @default(cuid())
+    docId       String
+    title       String
+    userId      String
+    User        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+    workspaceId String
+    workspace   Workspace? @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+    createdAt   DateTime   @default(now())
+    updatedAt   DateTime   @updatedAt
+}
+
+enum SocialMediaPlatform {
+    twitter
+    linkedin
+    instagram
+    youtube
+    facebook
+}
+
+enum PostStatus {
+    draft
+    scheduled
+    posted
+    failed
 }
 
 model Post {
-    id        Int      @id @default(autoincrement())
-    name      String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    id               String              @id @default(cuid())
+    title            String
+    userId           String
+    platform         SocialMediaPlatform
+    postType         String?
+    content          String
+    media            Json
+    scheduledAt      DateTime
+    status           PostStatus
+    platformSpecific Json?
+    createdAt        DateTime            @default(now())
+    updatedAt        DateTime            @updatedAt
+    workspaceId      String?
+    user             User?               @relation(fields: [userId], references: [id])
+    workspace        Workspace?          @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
-    @@index([name])
+    @@index([userId])
+    @@index([platform, status])
+}
+
+model ExportedVideo {
+    id          String @id @default(cuid())
+    title       String
+    videoUrl    String
+    workspaceId String
 }
