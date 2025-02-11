@@ -1,0 +1,1 @@
+export declare const styles = "\n.tiptap-ai-suggestion {\n  cursor: pointer;\n  pointer-events: none;\n}\n\n.tiptap-ai-suggestion::after {\n  color: #6B7280;\n  content: attr(data-suggestion);\n  pointer-events: none;\n}\n\n.tiptap-ai-suggestion br:first-child,\n.tiptap-ai-suggestion br:last-child {\n  content: ' ';\n  display: inline;\n}\n";

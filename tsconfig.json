@@ -29,14 +29,19 @@
       "~/*": ["./src/*"]
     }
   },
+  
   "include": [
-    ".eslintrc.cjs",
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    "**/*.cjs",
-    "**/*.js",
-    ".next/types/**/*.ts"
-  ],
-  "exclude": ["node_modules"]
+		"next-env.d.ts",
+		"**/*.ts",
+		"**/*.tsx",
+		".next/types/**/*.ts",
+		"cypress/support/commands.ts",
+		"cypress/e2e/spec.cy.ts",
+		"src/lib/extensions/LoaderExtension.ts",
+		"src/db/query.js",
+		"trigger.config.ts"
+	],
+	"exclude": [
+		"node_modules"
+	]
 }

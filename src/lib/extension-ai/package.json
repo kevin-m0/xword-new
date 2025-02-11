@@ -1,0 +1,48 @@
+{
+  "private": false,
+  "name": "@tiptap-pro/extension-ai",
+  "description": "AI extension for Tiptap",
+  "version": "2.7.5",
+  "homepage": "https://tiptap.dev/api/extensions/ai",
+  "keywords": [
+    "tiptap",
+    "tiptap extension",
+    "tiptap ai",
+    "ai"
+  ],
+  "license": "SEE LICENSE IN LICENSE.md",
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/ueberdosis"
+  },
+  "main": "dist/tiptap-extension-ai.cjs.js",
+  "umd": "dist/tiptap-extension-ai.umd.js",
+  "module": "dist/tiptap-extension-ai.esm.js",
+  "types": "dist/tiptap-pro/packages/extension-ai/src/index.d.ts",
+  "files": [
+    "dist",
+    "CHANGELOG.md",
+    "LICENSE.md"
+  ],
+  "peerDependencies": {
+    "@tiptap/core": "^2.0.0",
+    "@tiptap/extension-image": "^2.0.0",
+    "@tiptap/pm": "^2.0.0"
+  },
+  "devDependencies": {
+    "@tiptap/core": "^2.0.0",
+    "@tiptap/extension-image": "^2.0.0",
+    "@tiptap/pm": "^2.0.0"
+  },
+  "publishConfig": {
+    "registry": "https://registry.tiptap.dev"
+  },
+  "scripts": {
+    "clean": "rm -rf dist",
+    "build": "npm run clean && rollup -c"
+  },
+  "dependencies": {
+    "memoize-one": "^6.0.0",
+    "tiny-invariant": "^1.3.1"
+  }
+}
