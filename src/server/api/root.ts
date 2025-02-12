@@ -2,6 +2,7 @@ import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
 import { llmRouter } from "./routers/llm/route";
 import { pathfixRouter } from "./routers/pathfix/route";
 import { awsRouter } from "./routers/aws/route";
+import { audioRouter } from "./routers/audio/route";
 
 /**
  * This is the primary router for your server.
@@ -12,6 +13,7 @@ export const appRouter = createTRPCRouter({
   llm: llmRouter,
   pathfix: pathfixRouter,
   aws: awsRouter,
+  audio: audioRouter,
 });
 
 // export type definition of API
