@@ -8,6 +8,9 @@ import { audioProjectsRouter } from "./routers/audio-projects/route";
 import { storyboardRouter } from "./routers/storyboard/route";
 import { videoProjectsRouter } from "./routers/video-projects/route";
 import { writerxRouter } from "./routers/writerx/route";
+import { userRouter } from "./routers/user/route";
+import { documentRouter } from "./routers/document/route";
+import { workspaceRouter } from "./routers/workspace/route";
 
 /**
  * This is the primary router for your server.
@@ -24,6 +27,9 @@ export const appRouter = createTRPCRouter({
   storyboard: storyboardRouter,
   videoProject: videoProjectsRouter,
   writerx: writerxRouter,
+  user: userRouter,
+  document: documentRouter,
+  workspace: workspaceRouter
 });
 
 // export type definition of API

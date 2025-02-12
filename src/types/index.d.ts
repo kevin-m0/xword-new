@@ -137,3 +137,16 @@ export interface StoryboardFrame {
 }
 
 export type Tag = 'html' | 'body' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'div' | 'p' | 'blockquote' | 'article' | 'caption' | 'form' | 'hr' | 'br' | 'address' | 'aside' | 'pre' | 'span' | 'button' | 'label' | 'b' | 'strong' | 'q' | 'i' | 'em' | 'u' | 's' | 'cite' | 'dfn' | 'code' | 'abbr' | 'sup' | 'sub' | 'a' | 'img' | 'ul' | 'ol' | 'li' | 'dd' | 'dl' | 'dt' | 'fieldset' | 'header' | 'footer' | 'section' | 'table' | 'tr' | 'td' | 'th' | 'thead' | 'tbody' | 'svg' | 'line' | 'path' | 'polyline' | 'polygon' | 'path' | 'rect' | 'circle' | 'ellipse' | 'text' | 'tspan' | 'g' | 'stop' | 'defs' | 'clipPath' | 'linearGradient' | 'radialGradient';
+
+export type PromptLibraryProps = {
+  promptId: string;
+  promptTitle: string;
+  promptDescription: string;
+  categoryId: string;
+  categoryName: string;
+  subCategoryName: string;
+  inputdata: string[];
+  inputparams: string[];
+};
+
+export type DocumentSidebarTabs = "search" | "documents";
