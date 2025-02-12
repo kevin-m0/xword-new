@@ -25,7 +25,7 @@ export const appRouter = createTRPCRouter({
   pathfix: pathfixRouter,
   aws: awsRouter,
   audio: audioRouter,
-  chat: chatSonicRouter,
+  chatsonic: chatSonicRouter,
   audioProject: audioProjectsRouter,
   storyboard: storyboardRouter,
   videoProject: videoProjectsRouter,

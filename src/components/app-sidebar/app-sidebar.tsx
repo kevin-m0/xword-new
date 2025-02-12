@@ -14,10 +14,10 @@ import {
   SquareTerminal,
 } from "lucide-react";
 
-import { NavMain } from "~/components/nav-main";
-import { NavProjects } from "~/components/nav-projects";
-import { NavSecondary } from "~/components/nav-secondary";
-import { NavUser } from "~/components/nav-user";
+import { NavMain } from "~/components/app-sidebar/nav-main";
+import { NavProjects } from "~/components/app-sidebar/nav-projects";
+import { NavSecondary } from "~/components/app-sidebar/nav-secondary";
+import { NavUser } from "~/components/app-sidebar/nav-user";
 import {
   Sidebar,
   SidebarContent,
@@ -27,6 +27,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "~/components/ui/sidebar";
+
+import { usePathname } from "next/navigation";
 
 const data = {
   user: {
@@ -173,6 +175,15 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const pathname = usePathname();
+
+  const hiddenSidebarRoutes = ["/chatsonic"];
+
+  const shouldHideSidebar = hiddenSidebarRoutes.includes(pathname);
+  if (!shouldHideSidebar) {
+    return <div className="h-full w-10 bg-white"></div>;
+  }
+
   return (
     <Sidebar variant="inset" {...props}>
       <SidebarHeader>

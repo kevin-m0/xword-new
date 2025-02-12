@@ -12,7 +12,8 @@ import { dark } from "@clerk/themes";
 import { ShortCutProvider } from "~/lib/providers/ShortCutProvider";
 import { KeyBordProvider } from "~/lib/providers/KeyBoardProvider";
 import { Provider } from "jotai";
-import LoadingScreen from "~/components/loading-screen/loading-screen";
+import LoadingScreen from "~/components/loaders/loading-screen";
+import { XWAlertProvider } from "~/components/reusable/xw-alert";
 
 const font1 = Noto_Sans({ subsets: ["latin"], variable: "--font-sans" });
 const font2 = Inter({ subsets: ["latin"], variable: "--font-inter" });
@@ -42,7 +43,9 @@ export default function RootLayout({
               >
                 <Provider>
                   <ShortCutProvider>
-                    <KeyBordProvider>{children}</KeyBordProvider>
+                    <KeyBordProvider>
+                      <XWAlertProvider>{children}</XWAlertProvider>
+                    </KeyBordProvider>
                   </ShortCutProvider>
                 </Provider>
               </ClerkProvider>
