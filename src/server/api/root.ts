@@ -11,6 +11,8 @@ import { writerxRouter } from "./routers/writerx/route";
 import { userRouter } from "./routers/user/route";
 import { documentRouter } from "./routers/document/route";
 import { workspaceRouter } from "./routers/workspace/route";
+import { editorRouter } from "./routers/editor/route";
+import { flowRouter } from "./routers/flow/route";
 
 /**
  * This is the primary router for your server.
@@ -29,7 +31,9 @@ export const appRouter = createTRPCRouter({
   writerx: writerxRouter,
   user: userRouter,
   document: documentRouter,
-  workspace: workspaceRouter
+  workspace: workspaceRouter,
+  editor: editorRouter,
+  flow: flowRouter
 });
 
 // export type definition of API
