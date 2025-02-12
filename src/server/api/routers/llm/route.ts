@@ -1,10 +1,10 @@
 import { db } from "~/server/db";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
-import { createTRPCRouter, publicProcedure } from "../../trpc";
+import { createTRPCRouter, privateProcedure } from "../../trpc";
 
 export const llmRouter = createTRPCRouter({
-  pushChatsToDB: publicProcedure
+  pushChatsToDB: privateProcedure
   .input(
     z.object({
       chat: z.object({
@@ -35,7 +35,7 @@ export const llmRouter = createTRPCRouter({
     }
   }),
 
-  fetchChatsGivenDocId: publicProcedure
+  fetchChatsGivenDocId: privateProcedure
   .input(
     z.object({
       id: z.string(),
@@ -76,7 +76,7 @@ export const llmRouter = createTRPCRouter({
       });
     }
   }),
-  pushTranscribeChatsToDB: publicProcedure
+  pushTranscribeChatsToDB: privateProcedure
   .input(
     z.object({
       chat: z.object({
@@ -106,7 +106,7 @@ export const llmRouter = createTRPCRouter({
       });
     }
   }),
-  fetchChatsGivenRecId: publicProcedure
+  fetchChatsGivenRecId: privateProcedure
   .input(
     z.object({
       id: z.string(),
