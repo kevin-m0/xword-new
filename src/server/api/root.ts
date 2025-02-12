@@ -3,6 +3,8 @@ import { llmRouter } from "./routers/llm/route";
 import { pathfixRouter } from "./routers/pathfix/route";
 import { awsRouter } from "./routers/aws/route";
 import { audioRouter } from "./routers/audio/route";
+import { chatSonicRouter } from "./routers/chatsonic/route";
+import { audioProjectsRouter } from "./routers/audio-projects/route";
 
 /**
  * This is the primary router for your server.
@@ -14,6 +16,8 @@ export const appRouter = createTRPCRouter({
   pathfix: pathfixRouter,
   aws: awsRouter,
   audio: audioRouter,
+  chat: chatSonicRouter,
+  audioProject: audioProjectsRouter,
 });
 
 // export type definition of API
