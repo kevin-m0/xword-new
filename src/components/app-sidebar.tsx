@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import * as React from "react"
+import * as React from "react";
 import {
   BookOpen,
   Bot,
@@ -12,12 +12,12 @@ import {
   Send,
   Settings2,
   SquareTerminal,
-} from "lucide-react"
+} from "lucide-react";
 
-import { NavMain } from "~/components/nav-main"
-import { NavProjects } from "~/components/nav-projects"
-import { NavSecondary } from "~/components/nav-secondary"
-import { NavUser } from "~/components/nav-user"
+import { NavMain } from "~/components/nav-main";
+import { NavProjects } from "~/components/nav-projects";
+import { NavSecondary } from "~/components/nav-secondary";
+import { NavUser } from "~/components/nav-user";
 import {
   Sidebar,
   SidebarContent,
@@ -26,17 +26,17 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "~/components/ui/sidebar"
+} from "~/components/ui/sidebar";
 
 const data = {
   user: {
-    name: "shadcn",
-    email: "m@example.com",
+    name: "kevin",
+    email: "kevin@m0.ventures",
     avatar: "/avatars/shadcn.jpg",
   },
   navMain: [
     {
-      title: "Playground",
+      title: "Home",
       url: "#",
       icon: SquareTerminal,
       isActive: true,
@@ -56,7 +56,7 @@ const data = {
       ],
     },
     {
-      title: "Models",
+      title: "Media Library",
       url: "#",
       icon: Bot,
       items: [
@@ -75,7 +75,7 @@ const data = {
       ],
     },
     {
-      title: "Documentation",
+      title: "Content Calendar",
       url: "#",
       icon: BookOpen,
       items: [
@@ -98,7 +98,7 @@ const data = {
       ],
     },
     {
-      title: "Settings",
+      title: "Social Accounts",
       url: "#",
       icon: Settings2,
       items: [
@@ -135,22 +135,42 @@ const data = {
   ],
   projects: [
     {
-      name: "Design Engineering",
+      name: "ChatSonic",
       url: "#",
       icon: Frame,
     },
     {
-      name: "Sales & Marketing",
+      name: "SoundVerse",
       url: "#",
       icon: PieChart,
     },
     {
-      name: "Travel",
+      name: "PhotoSonic",
+      url: "#",
+      icon: Map,
+    },
+    {
+      name: "WriterX",
+      url: "#",
+      icon: Map,
+    },
+    {
+      name: "ContentVerse",
+      url: "#",
+      icon: Map,
+    },
+    {
+      name: "AudioVerse",
+      url: "#",
+      icon: Map,
+    },
+    {
+      name: "VideoVerse",
       url: "#",
       icon: Map,
     },
   ],
-}
+};
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
@@ -164,8 +184,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   <Command className="size-4" />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">Acme Inc</span>
-                  <span className="truncate text-xs">Enterprise</span>
+                  <span className="truncate font-semibold">
+                    Kevin's Workspace
+                  </span>
+                  <span className="truncate text-xs">Free Tier</span>
                 </div>
               </a>
             </SidebarMenuButton>
@@ -181,5 +203,5 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavUser user={data.user} />
       </SidebarFooter>
     </Sidebar>
-  )
+  );
 }
