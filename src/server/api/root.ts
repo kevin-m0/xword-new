@@ -6,6 +6,7 @@ import { audioRouter } from "./routers/audio/route";
 import { chatSonicRouter } from "./routers/chatsonic/route";
 import { audioProjectsRouter } from "./routers/audio-projects/route";
 import { storyboardRouter } from "./routers/storyboard/route";
+import { videoProjectsRouter } from "./routers/video-projects/route";
 
 /**
  * This is the primary router for your server.
@@ -20,6 +21,7 @@ export const appRouter = createTRPCRouter({
   chat: chatSonicRouter,
   audioProject: audioProjectsRouter,
   storyboard: storyboardRouter,
+  videoProject: videoProjectsRouter,
 });
 
 // export type definition of API
