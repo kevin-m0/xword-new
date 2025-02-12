@@ -2,7 +2,6 @@ import { Toaster } from "sonner";
 import { Suspense } from "react";
 import type { Metadata, Viewport } from "next";
 import { Inter, Noto_Sans } from "next/font/google";
-
 import "~/styles/globals.css";
 import "~/styles/gradient.css";
 import { cn } from "~/utils/utils";
@@ -13,6 +12,7 @@ import { dark } from "@clerk/themes";
 import { ShortCutProvider } from "~/lib/providers/ShortCutProvider";
 import { KeyBordProvider } from "~/lib/providers/KeyBoardProvider";
 import { Provider } from "jotai";
+import LoadingScreen from "~/components/loading-screen/loading-screen";
 
 const font1 = Noto_Sans({ subsets: ["latin"], variable: "--font-sans" });
 const font2 = Inter({ subsets: ["latin"], variable: "--font-inter" });
@@ -30,9 +30,9 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning className="dark">
       <body className={cn(font1.variable, font2.variable)}>
-        <Suspense fallback={<h1>Loading...</h1>}>
+        <Suspense fallback={<LoadingScreen />}>
           <ViewProvider>
             <TRPCReactProvider>
               <ClerkProvider
@@ -54,3 +54,9 @@ export default function RootLayout({
     </html>
   );
 }
+
+// Suspense usage is not correct here. This is a server rendered component.
+// We should use Suspense on the client side.
+// in the previous project iteration, the whole app acted like a client side rendered app
+// because of framer-motion in app/template.tsx
+// is this required? then why are we using next.js?
