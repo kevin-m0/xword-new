@@ -13,6 +13,7 @@ import { documentRouter } from "./routers/document/route";
 import { workspaceRouter } from "./routers/workspace/route";
 import { editorRouter } from "./routers/editor/route";
 import { flowRouter } from "./routers/flow/route";
+import { imageRouter } from "./routers/image/route";
 
 /**
  * This is the primary router for your server.
@@ -33,7 +34,8 @@ export const appRouter = createTRPCRouter({
   document: documentRouter,
   workspace: workspaceRouter,
   editor: editorRouter,
-  flow: flowRouter
+  flow: flowRouter,
+  image: imageRouter
 });
 
 // export type definition of API
