@@ -23,6 +23,7 @@ import { getAwsUrl } from "~/lib/get-aws-url";
 import { useXWAlert } from "~/components/reusable/xw-alert";
 import { flowType } from "~/atoms/flowAtom";
 import { trpc } from "~/trpc/react";
+import { MarkdownParser } from "~/lib/markdown-parser";
 interface DynamicFormProps {
   promptId: string;
   promptTitle: string;
@@ -169,7 +170,7 @@ export const DynamicForm = ({
     if (newOption[field]?.trim()) {
       setCustomOptions((prev) => ({
         ...prev,
-        [field]: [...(prev[field] || []), newOption[field]],
+        [field]: [...(prev[field] || []), newOption[field] as string],
       }));
       setNewOption((prev) => ({ ...prev, [field]: "" }));
       setShowNewOptionInput((prev) => ({ ...prev, [field]: false }));
@@ -179,7 +180,7 @@ export const DynamicForm = ({
   const handleInputDataComplete = () => {
     const allFieldsFilled = inputdata.every((input) => {
       const [type] = input.split(":");
-      return formData[type]?.trim();
+      return formData[type as string]?.trim();
     });
 
     console.log(inputdata);
@@ -242,7 +243,6 @@ export const DynamicForm = ({
   } = trpc.writerx.createSocialDocument.useMutation({
     onSuccess(data) {
       setIsGeneratingAIResponse(false);
-      // localStorage.setItem("AIResponse", aiResponse ?? "");
       utils.writerx.getAllDocs.invalidate();
       showToast({
         title: "Success",
@@ -274,11 +274,13 @@ export const DynamicForm = ({
         // Make sure selectedOptions contains the tones array
         const isValid =
           Array.isArray(selectedOptions[field.label]) &&
-          selectedOptions[field.label]?.length > 0;
+          (selectedOptions?.[field.label]?.length as number) > 0;
+
         console.log(
           `Field "${field.label}" (multiple type) is valid:`,
           isValid,
         );
+
         return isValid;
       }
 
@@ -330,7 +332,7 @@ export const DynamicForm = ({
       userId: user?.id as string,
       promptId: promptId,
       responses: {
-        text: formData[inputdata[0].split(":")[0]] || transcript,
+        text: formData[inputdata[0]?.split(":")[0] as string] || transcript,
         params: params,
       },
     };

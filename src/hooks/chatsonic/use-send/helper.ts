@@ -1,9 +1,6 @@
-import {
-  Message,
-  Modes,
-  Source,
-} from "@/app/(site)/(dashboard)/_types/chatsonic.types";
+
 import { Role } from "@prisma/client";
+import { Message, Modes, Source } from "~/types/chatsonic.types";
 
 export const createResponseTemplate = (chatId: string): Message => {
   return {

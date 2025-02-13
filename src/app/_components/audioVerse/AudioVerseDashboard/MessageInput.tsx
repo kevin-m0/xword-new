@@ -1,18 +1,18 @@
-import React, { KeyboardEvent, useState, useMemo } from "react";
-import { Input } from "@/components/ui/input";
-import { SendMessageIcon } from "@/icons";
+import React, { KeyboardEvent, useState } from "react";
+import { Input } from "~/components/ui/input";
+import { SendMessageIcon } from "~/icons";
 import { Loader } from "lucide-react";
 import { toast } from "sonner";
-import { Messages } from "@/types";
+import { Messages } from "~/types";
 import { useMutation } from "@tanstack/react-query";
-import { useDocumentId } from "@/components/Editor/Sidebar/RightSidebar/AiContainer/ai-chat/useDocumentId";
 import { AudioProjectChat } from "@prisma/client";
-import { useUpdateChat } from "@/components/Editor/Sidebar/RightSidebar/AiContainer/ai-chat/useUpdateChat";
-import { trpc } from "@/app/_trpc/client";
-import { refetchTrigger } from "@/atoms";
+import { refetchTrigger } from "~/atoms";
 import { useAtom } from "jotai";
-import { useGetActiveSpace } from "../../../_hooks/workspace/useGetActiveSpace";
-import { ErrorToast } from "@/components/ui/custom-toast";
+import { trpc } from "~/trpc/react";
+import { useDocumentId } from "~/hooks/editor/useDocumentId";
+import { useGetActiveSpace } from "~/hooks/workspace/useGetActiveSpace";
+import { ErrorToast } from "../../custom-toast";
+import { useUpdateChat } from "./useUpdateChat";
 interface MessageInputProps {
   // scrollIntoView: () => void;
   context: string;
@@ -31,7 +31,7 @@ const MessageInput = ({
   const { data: user } = trpc.user.getCurrentLoggedInUser.useQuery();
   const { data: activeWorkspace, isLoading: isWorkspaceFetching } =
     useGetActiveSpace();
-  const { mutate: handleSend, isLoading } = useMutation({
+  const { mutate: handleSend, isPending } = useMutation({
     mutationFn: async (payload: {
       messages: AudioProjectChat[];
       context: string;
@@ -99,8 +99,8 @@ const MessageInput = ({
         updateChat({
           chat: {
             content: ans,
-            role: "system",
-            docId: documentId,
+            role: "ai",
+            recId: documentId as string,
           },
         });
       }
@@ -121,8 +121,8 @@ const MessageInput = ({
       updateChat({
         chat: {
           content: "Error generating the response",
-          role: "system",
-          docId: documentId,
+          role: "ai",
+          recId: documentId as string,
         },
       });
       return; // Return early since we don't want to scroll the view after an error occurs
@@ -143,13 +143,13 @@ const MessageInput = ({
       content: input,
       createdAt: new Date().toISOString() as any,
       role: "user",
-      audioProjectId: documentId,
+      audioProjectId: documentId as string,
     };
     updateChat({
       chat: {
         content: userQuery.content,
         role: "user",
-        docId: documentId,
+        recId: documentId as string,
       },
     });
     handleSend({ messages: [...messages, userQuery], context });
@@ -165,7 +165,7 @@ const MessageInput = ({
     <div className="relative w-full">
       <Input
         placeholder="Ask me anything about this recording..."
-        className="text-white my-2 bg-xw-background border-gray-500 p-3 px-4 rounded-xl  w-full h-full"
+        className="bg-xw-background my-2 h-full w-full rounded-xl border-gray-500 p-3 px-4 text-white"
         value={input}
         onChange={(e) => setInput(e.target.value)}
         onKeyDown={(e) => handleKeyDown(e)}
@@ -174,7 +174,7 @@ const MessageInput = ({
         disabled={input.length === 0}
         className="absolute right-2 top-1/2 -translate-y-1/2"
       >
-        {isLoading ? (
+        {isPending ? (
           <Loader className="h-3 w-3 animate-spin" />
         ) : (
           <SendMessageIcon onClick={handleMessageSend} />

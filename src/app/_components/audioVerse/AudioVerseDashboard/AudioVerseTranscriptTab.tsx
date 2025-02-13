@@ -1,17 +1,17 @@
 import React from "react";
-import XWSecondaryButton from "../../reusable/XWSecondaryButton";
 import Image from "next/image";
-import { Separator } from "@/components/ui/separator";
+import { Separator } from "~/components/ui/separator";
 import { SubtitleDisplay } from "./SubtitleDisplay";
+import XWSecondaryButton from "~/components/reusable/XWSecondaryButton";
 
 const AudioVerseTranscriptTab = ({ audioProject }: any) => {
   return (
     <div className="flex flex-col gap-10">
       {/* Video Block */}
-      <div className="max-w-2xl w-full">
-        <div className="h-[300px] w-full bg-xw-sidebar rounded-lg"></div>
+      <div className="w-full max-w-2xl">
+        <div className="bg-xw-sidebar h-[300px] w-full rounded-lg"></div>
 
-        <div className="flex items-center gap-2 mt-5">
+        <div className="mt-5 flex items-center gap-2">
           <XWSecondaryButton className2="text-sm xw-premium-div">
             <Image
               src={"/icons/edit-pen.svg"}

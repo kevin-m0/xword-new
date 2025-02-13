@@ -4,21 +4,17 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "~/components/ui/button";
 import { BookOpen, Copy, RefreshCcw, Send, Volume2Icon } from "lucide-react";
 import Image from "next/image";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import XWSecondaryButton from "../../reusable/XWSecondaryButton";
-import useChatExist from "../../../_hooks/chatsonic/useChatExist";
-import { trpc } from "@/app/_trpc/client";
-import { MESSAGES_LIMIT_CHAT } from "@/components/Editor/Sidebar/RightSidebar/AiContainer/ai-chat/constant";
-import { useDocumentId } from "@/components/Editor/Sidebar/RightSidebar/AiContainer/ai-chat/useDocumentId";
-import InfiniteScroll from "react-infinite-scroll-component";
-import SingleMessage from "@/components/Editor/Sidebar/RightSidebar/AiContainer/ai-chat/SingleMessage";
-import NoChatMessage from "@/components/Editor/Sidebar/RightSidebar/AiContainer/ai-chat/NoChatMessage";
-import MessageInput from "@/components/transcribe-audio/MessageInput";
-import useMeasure from "../../../_hooks/others/useMeasure";
-import MessagesLoader from "@/components/Editor/Sidebar/RightSidebar/AiContainer/ai-chat/MessagesLoader";
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
+import { ScrollArea } from "~/components/ui/scroll-area";
 import { useUser } from "@clerk/nextjs";
-import useAudioChatExist from "../../../_hooks/chatsonic/useAudioChatExist";
+import { MESSAGES_LIMIT_CHAT } from "~/lib/constant/constants";
+import { trpc } from "~/trpc/react";
+import { useDocumentId } from "~/hooks/editor/useDocumentId";
+import useAudioChatExist from "~/hooks/chatsonic/useAudioChatExist";
+import useMeasure from "~/hooks/misc/useMeasure";
+import XWSecondaryButton from "~/components/reusable/XWSecondaryButton";
+import MessageInput from "./MessageInput";
+import SingleMessage from "../../writerx/flow/chat-tab/SingleMessage";
 
 interface ChatMessage {
   id: string;
@@ -38,7 +34,7 @@ const AudioVerseMagicChatTab = ({ audioProject }: { audioProject: any }) => {
     trpc.llm.fetchChatsGivenRecId.useInfiniteQuery(
       {
         limit: MESSAGES_LIMIT_CHAT,
-        id: documentId,
+        id: documentId as string,
       },
       {
         getNextPageParam: (lastPage) => lastPage.nextCursor,
@@ -152,7 +148,7 @@ const SuggestedPrompts = () => (
           {prompt}
         </XWSecondaryButton>
       ))}
-      <Button variant="xw_ghost" className="h-9 rounded-full text-sm">
+      <Button variant="ghost" className="h-9 rounded-full text-sm">
         <BookOpen className="mr-2 h-4 w-4" /> See prompt library
       </Button>
     </div>
@@ -179,13 +175,13 @@ const MessageBubble = ({ message }: { message: ChatMessage }) => (
       <p className="text-xw-muted-foreground">{message.text}</p>
       {message.sender === "assistant" && (
         <div className="flex gap-2">
-          <Button size="icon_sm" variant="xw_ghost">
+          <Button size="sm" variant="ghost">
             <Volume2Icon className="h-4 w-4" />
           </Button>
-          <Button size="icon_sm" variant="xw_ghost">
+          <Button size="sm" variant="ghost">
             <RefreshCcw className="h-3 w-3" />
           </Button>
-          <Button size="icon_sm" variant="xw_ghost">
+          <Button size="sm" variant="ghost">
             <Copy className="h-3 w-3" />
           </Button>
         </div>

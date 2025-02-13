@@ -1,18 +1,20 @@
 import { FC } from "react";
 import { useAtom } from "jotai";
+
 import {
-  contentResponseAtom,
+  aiPreview,
+  aiPreviewLoading,
   contentInputAtom,
+  contentResponseAtom,
   promptLoadingAtom,
-} from "@/atoms";
-import TopLoader from "../skeletons/top-loader";
-import { Button } from "../ui/button";
-import { aiPreview, aiPreviewLoading } from "@/atoms";
+} from "~/atoms";
 import { toast } from "sonner";
-import { trpc } from "@/app/_trpc/client";
-import { useGetActiveSpace } from "../../app/(site)/(dashboard)/_hooks/workspace/useGetActiveSpace";
 import { useRouter } from "next/navigation";
-import { SuccessToast } from "../ui/custom-toast";
+import { useGetActiveSpace } from "~/hooks/workspace/useGetActiveSpace";
+import { trpc } from "~/trpc/react";
+import TopLoader from "~/components/loaders/top-loader";
+import { Button } from "~/components/ui/button";
+import { SuccessToast } from "../../custom-toast";
 
 type ResponseComponentProps = {};
 
@@ -47,13 +49,13 @@ const ResponseComponent: FC<ResponseComponentProps> = () => {
     <>
       {promptLoading ? (
         <div className="bg-opacity-0">
-          <div className="flex flex-col items-center justify-center w-full h-64">
+          <div className="flex h-64 w-full flex-col items-center justify-center">
             <TopLoader />
           </div>
         </div>
       ) : (
         contentResponse && (
-          <div className="bg-[#191a1d] px-6 py-4 rounded-xl flex flex-col gap-y-6">
+          <div className="flex flex-col gap-y-6 rounded-xl bg-[#191a1d] px-6 py-4">
             <div className="mt-4 text-2xl">
               <span className="font-bold">Prompt: </span>
               {contentInput || ""}
@@ -69,7 +71,7 @@ const ResponseComponent: FC<ResponseComponentProps> = () => {
                 // });
               }}
               disabled={isLoading}
-              variant={"primary"}
+              variant={"default"}
             >
               Open in WriterX
             </Button>

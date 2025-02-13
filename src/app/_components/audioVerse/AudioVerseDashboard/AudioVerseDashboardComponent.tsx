@@ -1,20 +1,19 @@
 "use client";
 import React from "react";
-import TopbarComponent from "../../topbar/TopbarComponent";
-import XWSecondaryButton from "../../reusable/XWSecondaryButton";
 import { Button } from "~/components/ui/button";
 import { ArrowLeft, Share, Pencil } from "lucide-react";
 import Image from "next/image";
-import XWTabs from "../../reusable/XWTabs";
 import { useState } from "react";
 import AudioVerseTranscriptTab from "./AudioVerseTranscriptTab";
 import AudioVerseMagicChatTab from "./AudioVerseMagicChatTab";
 import AudioVerseAIContentTab from "./AudioVerseAIContentTab";
-import { Separator } from "@/components/ui/separator";
+import { Separator } from "~/components/ui/separator";
 import { useParams, useRouter } from "next/navigation";
-import { trpc } from "@/app/_trpc/client";
 import { useAtom } from "jotai";
-import { contentResponseAtom } from "@/atoms";
+import { contentResponseAtom } from "~/atoms";
+import { trpc } from "~/trpc/react";
+import XWTabs from "~/components/reusable/XWTabs";
+import XWSecondaryButton from "~/components/reusable/XWSecondaryButton";
 
 const AudioVerseDashboardComponent = () => {
   const [activeTab, setActiveTab] = useState("transcript");
@@ -66,8 +65,6 @@ const AudioVerseDashboardComponent = () => {
 
   return (
     <div className="flex min-h-dvh flex-col gap-10">
-      <TopbarComponent />
-
       <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-10 p-5">
         {/* Audioverse Dashboard Header */}
         <div className="flex items-center justify-between gap-5">
@@ -87,15 +84,15 @@ const AudioVerseDashboardComponent = () => {
           </div>
 
           <div className="flex items-center gap-2">
-            <Button variant="xw_ghost" size="icon">
+            <Button variant="ghost" size="icon">
               <Share className="h-4 w-4" />
             </Button>
 
-            <Button variant="xw_ghost" size="icon">
+            <Button variant="ghost" size="icon">
               <Pencil className="h-4 w-4" />
             </Button>
 
-            <Button variant="xw_ghost" size="icon">
+            <Button variant="ghost" size="icon">
               <Image
                 src="/icons/trashbin.svg"
                 alt="Delete"
@@ -113,7 +110,7 @@ const AudioVerseDashboardComponent = () => {
           </div>
 
           <Button
-            variant={"primary"}
+            variant={"default"}
             size={"sm"}
             className="flex items-center gap-2"
           >

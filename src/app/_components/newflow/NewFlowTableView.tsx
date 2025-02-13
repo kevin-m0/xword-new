@@ -6,14 +6,14 @@ import {
   TableRow,
   TableHead,
   TableCell,
-} from "@/components/ui/table";
-import XWCheckbox from "../reusable/xw-checkbox";
+} from "~/components/ui/table";
+import XWCheckbox from "~/components/reusable/xw-checkbox";
 import {
   XWDropdown,
   XWDropdownContent,
   XWDropdownItem,
   XWDropdownTrigger,
-} from "../reusable/xw-dropdown";
+} from "~/components/reusable/xw-dropdown";
 import { Button } from "~/components/ui/button";
 import { FaEllipsis } from "react-icons/fa6";
 
@@ -72,7 +72,7 @@ const NewFlowTableView = () => {
               <TableCell>
                 <XWDropdown>
                   <XWDropdownTrigger asChild>
-                    <Button variant={"xw_ghost"} size={"icon"}>
+                    <Button variant={"ghost"} size={"icon"}>
                       <FaEllipsis className="h-4 w-4" />
                     </Button>
                   </XWDropdownTrigger>

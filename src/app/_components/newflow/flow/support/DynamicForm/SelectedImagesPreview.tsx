@@ -50,7 +50,7 @@ export const SelectedImagesPreview = ({
         )}
 
         {selectedImages && selectedImages.length > 0 && (
-          <Button variant="xw_ghost" onClick={onClearAll}>
+          <Button variant="ghost" onClick={onClearAll}>
             Clear All
           </Button>
         )}

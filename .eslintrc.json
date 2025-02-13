@@ -42,5 +42,5 @@
 // module.exports = config;
 
 {
-  "extends": ["next/core-web-vitals", "prettier"]
+  "extends": ["next/core-web-vitals"]
 }

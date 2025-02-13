@@ -1,4 +1,4 @@
-import { MODEL_TYPE } from "@/atoms";
+import { MODEL_TYPE } from "~atoms";
 import { Document, Folder, Workspace, User } from "@prisma/client";
 
 export type ExtendedFolder = Folder & {

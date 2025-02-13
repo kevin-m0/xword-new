@@ -1,25 +1,24 @@
 "use client";
 
 import React from "react";
-// import useGetSession from "../chat-sonic/hooks/useGetSession";
-import useChatExist from "@/app/(site)/(dashboard)/_hooks/chatsonic/useChatExist";
 import ChatLoading from "../../chatsonic/ChatLoading";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import useMeasure from "../../../_hooks/others/useMeasure";
+import { ScrollArea } from "~/components/ui/scroll-area";
 import { useEffect, useRef } from "react";
-import { cn } from "@/utils/utils";
+import { cn } from "~/utils/utils";
 import MessageInput from "./MessageInput";
-import { recordingAtom } from "@/atoms";
+import { recordingAtom } from "~/atoms";
 import { useAtom } from "jotai";
-import { trpc } from "@/app/_trpc/client";
-import { useDocumentId } from "@/components/Editor/Sidebar/RightSidebar/AiContainer/ai-chat/useDocumentId";
-import { MESSAGES_LIMIT_CHAT } from "@/components/Editor/Sidebar/RightSidebar/AiContainer/ai-chat/constant";
 import { useMemo } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
-import MessagesLoader from "@/components/Editor/Sidebar/RightSidebar/AiContainer/ai-chat/MessagesLoader";
-import NoChatMessage from "@/components/Editor/Sidebar/RightSidebar/AiContainer/ai-chat/NoChatMessage";
-import SingleMessage from "@/components/Editor/Sidebar/RightSidebar/AiContainer/ai-chat/SingleMessage";
 import { HelpCircleIcon } from "lucide-react";
+import { useDocumentId } from "~/hooks/editor/useDocumentId";
+import { trpc } from "~/trpc/react";
+import { MESSAGES_LIMIT_CHAT } from "~/lib/constant/constants";
+import useMeasure from "~/hooks/misc/useMeasure";
+import useChatExist from "~/hooks/chatsonic/useChatExist";
+import MessagesLoader from "~/components/loaders/MessagesLoader";
+import SingleMessage from "../../writerx/flow/chat-tab/SingleMessage";
+import NoChatMessage from "./NoChatMessage";
 
 function ChatBox() {
   const documentId = useDocumentId();
@@ -28,7 +27,7 @@ function ChatBox() {
     trpc.llm.fetchChatsGivenRecId.useInfiniteQuery(
       {
         limit: MESSAGES_LIMIT_CHAT,
-        id: documentId,
+        id: documentId as string,
       },
       {
         getNextPageParam: (lastPage) => lastPage.nextCursor,
@@ -76,7 +75,7 @@ function ChatBox() {
 
   return (
     <div className="">
-      <div className="bg-[#191a1d] text-gray-500 text-lg px-6 py-4 rounded-xl flex flex-col">
+      <div className="flex flex-col rounded-xl bg-[#191a1d] px-6 py-4 text-lg text-gray-500">
         <p className="flex items-center gap-x-2 text-white">
           <HelpCircleIcon />
           Welcome to Chat by xWord.
@@ -88,7 +87,7 @@ function ChatBox() {
           types of content, or as a source for new ideas.
         </p>
       </div>
-      <div className="mb-3 relative flex-1 rounded-xl overflow-hidden h-[60vh] ">
+      <div className="relative mb-3 h-[60vh] flex-1 overflow-hidden rounded-xl">
         <div
           className={cn(
             "absolute inset-0 rounded-xl bg-black",
@@ -98,16 +97,15 @@ function ChatBox() {
         />
 
         {isChatExist ? (
-          <div className="h-full flex flex-col gap-0 relative z-50 bg-purple-500 w-full px-10">
+          <div className="relative z-50 flex h-full w-full flex-col gap-0 bg-purple-500 px-10">
             {/* <MessagesContainer /> */}
             {/* <ChatInput sessionData={sessionData} isChatExist={isChatExist} /> */}
             <>
-              {data?.pages && data.pages[0].chats.length > 0 ? (
+              {data?.pages &&
+              data.pages?.[0] &&
+              data.pages[0].chats.length > 0 ? (
                 <div
-                  className="h-[calc(100%-100px)] flex flex-col gap-3 px-3 
-              [overflow:overlay]
-              scrollbar-thin scrollbar-track-border-primary
-              scrollbar-thumb-primary overflow-x-hidden relative z-10"
+                  className="scrollbar-thin scrollbar-track-border-primary scrollbar-thumb-primary relative z-10 flex h-[calc(100%-100px)] flex-col gap-3 overflow-x-hidden px-3 [overflow:overlay]"
                   id="scrollableDiv"
                   // ref={chatContainerRef}
                   style={{ display: "flex", flexDirection: "column-reverse" }}
@@ -121,7 +119,7 @@ function ChatBox() {
                     style={{ display: "flex", flexDirection: "column-reverse" }}
                     scrollableTarget={"scrollableDiv"}
                     initialScrollY={0}
-                    className="h-[calc(100%-100px)] overflow-x-hidden flex flex-col"
+                    className="flex h-[calc(100%-100px)] flex-col overflow-x-hidden"
                   >
                     <p className="mb-5 text-white">
                       Using the prompt input below, you can ask anything you
@@ -148,12 +146,12 @@ function ChatBox() {
                   </InfiniteScroll>
                 </div>
               ) : isFetching || isFetchingNextPage ? (
-                <div className="text-white z-50">hai</div>
+                <div className="z-50 text-white">hai</div>
               ) : (
                 <NoChatMessage />
               )}
 
-              <div className="absolute left-0 right-0 mx-auto bottom-0 w-[calc(100%-24px)] z-10">
+              <div className="absolute bottom-0 left-0 right-0 z-10 mx-auto w-[calc(100%-24px)]">
                 <MessageInput
                   context={recording?.transcript || ""}
                   messages={messages}
@@ -162,16 +160,13 @@ function ChatBox() {
             </>
           </div>
         ) : (
-          <div className="h-full flex flex-col justify-between relative z-10 w-full px-10">
+          <div className="relative z-10 flex h-full w-full flex-col justify-between px-10">
             <ScrollArea
-              className="z-10 flex flex-col h-full justify-between font-nunitos flex-grow overflow-y-auto relative"
+              className="font-nunitos relative z-10 flex h-full flex-grow flex-col justify-between overflow-y-auto"
               ref={ref}
             >
               <div
-                className="h-[calc(100%-100px)] flex flex-col gap-3 px-3 
-              [overflow:overlay]
-              scrollbar-thin scrollbar-track-border-primary
-              scrollbar-thumb-primary overflow-x-hidden relative z-10"
+                className="scrollbar-thin scrollbar-track-border-primary scrollbar-thumb-primary relative z-10 flex h-[calc(100%-100px)] flex-col gap-3 overflow-x-hidden px-3 [overflow:overlay]"
                 id="scrollableDiv"
                 // ref={chatContainerRef}
                 style={{ display: "flex", flexDirection: "column-reverse" }}
@@ -185,7 +180,7 @@ function ChatBox() {
                   style={{ display: "flex", flexDirection: "column-reverse" }}
                   scrollableTarget={"scrollableDiv"}
                   initialScrollY={0}
-                  className="h-[calc(100%-100px)] overflow-x-hidden flex flex-col"
+                  className="flex h-[calc(100%-100px)] flex-col overflow-x-hidden"
                 >
                   {messages.map((msg) => (
                     <SingleMessage

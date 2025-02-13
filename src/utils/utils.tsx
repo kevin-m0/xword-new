@@ -1,12 +1,7 @@
-import { z } from "zod";
-import { toast } from "sonner";
 import { Editor } from "@tiptap/react";
 import Cookies from "universal-cookie";
 import { twMerge } from "tailwind-merge";
 import { type ClassValue, clsx } from "clsx";
-// import { isClerkAPIResponseError } from "@clerk/nextjs";
-
-// import { ErrorToast } from "@/components/ui/custom-toast";
 import axios from "axios";
 
 export function cn(...inputs: ClassValue[]) {

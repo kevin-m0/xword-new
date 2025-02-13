@@ -3,7 +3,7 @@ import { Button } from "~/components/ui/button";
 import { Upload, Play, Download } from "lucide-react";
 import { BiSitemap } from "react-icons/bi";
 import Image from "next/image";
-import XWSecondaryButton from "../../../../reusable/XWSecondaryButton";
+import XWSecondaryButton from "~/components/reusable/XWSecondaryButton";
 
 interface UploadImageProps {
   onImageUploaded: (imageUrl: string) => void;
@@ -97,7 +97,7 @@ export const UploadImage = ({ onImageUploaded }: UploadImageProps) => {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-semibold">Recently Uploaded Media</h3>
-            <Button variant="xw_link" onClick={() => setRecentImages([])}>
+            <Button variant="link" onClick={() => setRecentImages([])}>
               Clear All
             </Button>
           </div>

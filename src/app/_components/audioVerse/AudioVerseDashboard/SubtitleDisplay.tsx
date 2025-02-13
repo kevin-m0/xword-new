@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Subtitle, parseSRT } from "@/utils/subtitle-parser";
+import { Subtitle, parseSRT } from "~/utils/subtitle-parser";
 
 export function SubtitleDisplay(subs: any) {
   const [subtitles, setSubtitles] = useState<Subtitle[]>([]);
@@ -25,10 +25,10 @@ export function SubtitleDisplay(subs: any) {
       {subtitles.map((subtitle) => (
         <div
           key={subtitle.id}
-          className="flex flex-col gap-2 border-l-2 py-2 px-5 border-l-white"
+          className="flex flex-col gap-2 border-l-2 border-l-white px-5 py-2"
         >
           <div className="flex gap-5">
-            <span className="text-sm text-xw-muted">
+            <span className="text-xw-muted text-sm">
               {subtitle.startTime} - {subtitle.endTime}
             </span>
           </div>

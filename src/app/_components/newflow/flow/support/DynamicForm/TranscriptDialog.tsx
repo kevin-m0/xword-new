@@ -3,7 +3,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from "~/components/ui/dialog";
 import { Button } from "~/components/ui/button";
 import { Check, X } from "lucide-react";
 

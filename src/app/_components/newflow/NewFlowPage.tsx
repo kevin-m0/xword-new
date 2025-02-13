@@ -1,31 +1,24 @@
 "use client";
-import { trpc } from "@/app/_trpc/client";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "~/components/ui/card";
 import { LayoutGrid, List, Loader2, Trash2 } from "lucide-react";
 import moment from "moment";
 import Link from "next/link";
 import React from "react";
-import TopbarComponent from "../../_components/topbar/TopbarComponent";
-import EmptyScreen from "../../_components/empty/EmptyScreen";
 import NewFlowBanner from "./NewFlowBanner";
 import { Button } from "~/components/ui/button";
 import NewFlowTableView from "./NewFlowTableView";
 import Image from "next/image";
-import NewFlowBannerTwo from "./NewFlowBannerTwo";
-import {
-  XWDropdown,
-  XWDropdownContent,
-  XWDropdownItem,
-  XWDropdownTrigger,
-} from "../reusable/xw-dropdown";
-import { FaEllipsis, FaPencil } from "react-icons/fa6";
+
+import { FaPencil } from "react-icons/fa6";
 import { useOrganization } from "@clerk/nextjs";
+import { trpc } from "~/trpc/react";
+import EmptyScreen from "~/components/reusable/EmptyScreen";
 const NewFlowPage = () => {
   const { organization: defaultSpace } = useOrganization();
 
@@ -38,8 +31,6 @@ const NewFlowPage = () => {
 
   return (
     <div className="flex min-h-dvh w-full flex-col gap-5">
-      <TopbarComponent />
-
       <div className="tb:px-10 px-5">
         <NewFlowBanner />
         {/* <NewFlowBannerTwo /> */}
@@ -50,7 +41,7 @@ const NewFlowPage = () => {
             <h1 className="text-3xl font-bold">Recents</h1>
             <div className="flex items-center gap-2">
               <Button
-                variant={tableView ? "xw_ghost" : "primary"}
+                variant={tableView ? "ghost" : "default"}
                 size={"icon"}
                 onClick={() => setTableView(false)}
               >
@@ -58,7 +49,7 @@ const NewFlowPage = () => {
               </Button>
 
               <Button
-                variant={tableView ? "primary" : "xw_ghost"}
+                variant={tableView ? "default" : "ghost"}
                 size={"icon"}
                 onClick={() => setTableView(true)}
               >
@@ -89,10 +80,10 @@ const NewFlowPage = () => {
 
                     <div className="absolute left-0 top-0 h-full w-full bg-black/20 p-2 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
                       <div className="flex items-center justify-end gap-2">
-                        <Button size="icon" variant="xw_secondary">
+                        <Button size="icon" variant="secondary">
                           <FaPencil className="h-4 w-4" />
                         </Button>
-                        <Button size="icon" variant="xw_secondary">
+                        <Button size="icon" variant="secondary">
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>

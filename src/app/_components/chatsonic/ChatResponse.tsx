@@ -1,12 +1,6 @@
-// import useCopyToClipboard from "../../_hooks/chatsonic/useCopyToClipBoard";
 import { toast } from "sonner";
-// import { Message } from "../../_types/chatsonic.types";
-// import { RenderMarkdown } from "@/components/ui/render-markdown/render-markdown";
 import { motion } from "framer-motion";
-// import { ErrorToast, SuccessToast } from "@/components/ui/custom-toast";
 import { useRef } from "react";
-// import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-// import { useUser } from "../../_hooks/others/useUser";
 import { Copy } from "lucide-react";
 import { Card, CardHeader, CardTitle } from "~/components/ui/card";
 import useCopyToClipboard from "~/hooks/chatsonic/useCopyToClipBoard";

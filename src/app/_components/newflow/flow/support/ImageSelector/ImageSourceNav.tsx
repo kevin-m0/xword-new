@@ -1,5 +1,4 @@
 import { Sparkles, Upload, Link, Image, Film } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { Button } from "~/components/ui/button";
 
 interface ImageSourceNavProps {
@@ -27,7 +26,7 @@ export const ImageSourceNav = ({
     <div className="flex flex-row gap-2 p-2">
       {sources.map((source) => (
         <Button
-          variant={activeSource === source.id ? "secondary" : "xw_ghost"}
+          variant={activeSource === source.id ? "secondary" : "ghost"}
           key={source.id}
           size={"sm"}
           onClick={() => onSourceChange(source.id)}

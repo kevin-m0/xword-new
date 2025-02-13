@@ -1,27 +1,26 @@
 import React, { useEffect, useState } from "react";
 import { Button } from "~/components/ui/button";
-import { Card } from "@/components/ui/card";
-import XWBadge from "../../reusable/XWBadge";
-import XWSecondaryButton from "../../reusable/XWSecondaryButton";
+import { Card } from "~/components/ui/card";
 import Image from "next/image";
-import { featuredExamples } from "../../../_lib/audio-exp";
-import { fetchPromptLibraryForTranscription } from "@/services/llm";
-import { PromptLibraryProps } from "@/components/transcribe-audio/ExamplePrompts";
-import { CategoryWithPrompts } from "@/types";
+import { fetchPromptLibraryForTranscription } from "~/services/llm";
+import { CategoryWithPrompts, PromptLibraryProps } from "~/types";
 import { toast } from "sonner";
 import { useMutation } from "@tanstack/react-query";
-import { ErrorToast } from "@/components/ui/custom-toast";
 import { useAtom } from "jotai";
 import {
   contentInputAtom,
   contentResponseAtom,
   promptLoadingAtom,
   refetchTrigger,
-} from "@/atoms";
-import { useGetActiveSpace } from "../../../_hooks/workspace/useGetActiveSpace";
+} from "~/atoms";
+import { useGetActiveSpace } from "~/hooks/workspace/useGetActiveSpace";
 import { useUser } from "@clerk/nextjs";
-import { ContentInput } from "@/components/transcribe-audio/ContentPromptInput";
-import TopLoader from "@/components/skeletons/top-loader";
+import TopLoader from "~/components/loaders/top-loader";
+import { ErrorToast } from "../../custom-toast";
+import XWBadge from "~/components/reusable/XWBadge";
+import XWSecondaryButton from "~/components/reusable/XWSecondaryButton";
+import { ContentInput } from "./ContentPromptInput";
+import { featuredExamples } from "~/lib/audio-exp";
 
 const AudioVerseExampleComponent = ({ audioProject }: any) => {
   const [promptsObject, setPromptsObject] = useState<CategoryWithPrompts[]>([]);
@@ -89,7 +88,7 @@ const AudioVerseExampleComponent = ({ audioProject }: any) => {
     fetchData();
   }, []);
 
-  const { mutate: handleSend, isLoading } = useMutation({
+  const { mutate: handleSend, isPending } = useMutation({
     mutationFn: async (payload: {
       messages: ContentInput[];
       context: string | undefined;
@@ -285,7 +284,7 @@ const AudioVerseExampleComponent = ({ audioProject }: any) => {
             category === "All" ? (
               <Button
                 key={i}
-                variant={"primary"}
+                variant={"default"}
                 size={"sm"}
                 className="h-8 px-3"
               >

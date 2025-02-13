@@ -25,7 +25,7 @@ const XWTabs = ({ tabs, activeTab, onChange, className }: XWTabsProps) => {
           key={tab.id}
           onClick={() => onChange(tab.id)}
           className="gap-2 transition-all duration-100"
-          variant={activeTab === tab.id ? "primary" : "xw_ghost"}
+          variant={activeTab === tab.id ? "default" : "ghost"}
         >
           {tab.icon && (
             <Image src={tab.icon} height={16} width={16} alt={tab.label} />

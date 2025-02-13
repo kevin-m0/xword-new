@@ -4,7 +4,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../../../../reusable/XWSelect";
+} from "~/components/reusable/XWSelect";
 import { Button } from "~/components/ui/button";
 import { ArrowRight, Globe } from "lucide-react";
 
@@ -38,7 +38,7 @@ export const LanguageSelector = ({
           </SelectContent>
         </Select>
       </div>
-      <Button onClick={onGenerate} disabled={disabled} variant={"primary"}>
+      <Button onClick={onGenerate} disabled={disabled} variant={"default"}>
         Select Images
         <ArrowRight className="h-4 w-4" />
       </Button>

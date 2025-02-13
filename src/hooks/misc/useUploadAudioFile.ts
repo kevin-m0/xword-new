@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { uploadFile } from "@/services/aws-file-upload";
+import { uploadFile } from "~/services/aws-file-upload";
 
 export const useUploadAudioFile = () => {
   const [uploading, setUploading] = useState(false);

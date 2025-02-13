@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { PhotoSonicFormSchema } from '../_validations/photosonic';
+import { PhotoSonicFormSchema } from '~/schemas/photosonic';
 
 export type TabType = 'simple' | 'advance';
 

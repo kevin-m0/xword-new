@@ -15,6 +15,7 @@ import { editorRouter } from "./routers/editor/route";
 import { flowRouter } from "./routers/flow/route";
 import { imageRouter } from "./routers/image/route";
 import { assetRouter } from "./routers/assets/route";
+import { audioProjectChatRouter } from "./routers/audioProjectChat/route";
 
 /**
  * This is the primary router for your server.
@@ -38,6 +39,7 @@ export const appRouter = createTRPCRouter({
   editor: editorRouter,
   flow: flowRouter,
   image: imageRouter,
+  audioProjectChat: audioProjectChatRouter,
 });
 
 // export type definition of API

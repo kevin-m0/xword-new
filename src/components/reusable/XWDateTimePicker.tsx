@@ -1,16 +1,16 @@
 "use client";
 
 import * as React from "react";
-import { DateTime } from "luxon";
 import { CalendarIcon } from "lucide-react";
 import { Button } from "~/components/ui/button";
+import { DateTime } from "luxon";
 import {
   Dialog,
   DialogTrigger,
   DialogContent,
   DialogTitle,
 } from "../reusable/xw-dialog";
-import { Calendar } from "@/components/ui/calendar";
+import { Calendar } from "~/components/ui/calendar";
 import {
   Select,
   SelectTrigger,
@@ -98,10 +98,7 @@ export default function XWDateTimePicker({
     <div>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          <Button
-            variant="xw_outline"
-            className="w-full justify-start text-left"
-          >
+          <Button variant="outline" className="w-full justify-start text-left">
             <CalendarIcon className="mr-2 h-4 w-4" />
             {date ? (
               `${date.toFormat("DDD t")} ${ampm}`
@@ -189,7 +186,7 @@ export default function XWDateTimePicker({
           <XWGradSeparator />
           <div className="flex justify-end">
             <Button
-              variant={"primary"}
+              variant={"default"}
               onClick={() => {
                 onChange?.(date?.toJSDate());
                 setOpen(false);

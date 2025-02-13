@@ -1,8 +1,7 @@
-import { useState } from "react";
 import { Button } from "~/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { cn } from "@/lib/utils";
+import { Input } from "~/components/ui/input";
+import { Textarea } from "~/components/ui/textarea";
+import { cn } from "~/lib/utils";
 
 interface TranscriptionFieldProps {
   type: string;
@@ -66,7 +65,9 @@ export const TranscriptionField = ({
                 disabled={isTranscribing}
               />
               <Button
-                onClick={() => onUrlTranscription(type, formData[type])}
+                onClick={() =>
+                  onUrlTranscription(type, formData[type] as string)
+                }
                 disabled={!formData[type] || isTranscribing}
                 className="w-full bg-indigo-600 hover:bg-indigo-700"
               >

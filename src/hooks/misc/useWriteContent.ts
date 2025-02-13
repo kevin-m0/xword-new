@@ -2,10 +2,9 @@ import { toast } from "sonner";
 import { Editor } from "@tiptap/react";
 import { useMutation } from "@tanstack/react-query";
 
-import { ErrorToast } from "@/components/ui/custom-toast";
-import { brandVoiceAtom, MODEL_TYPE } from "@/atoms";
+import { brandVoiceAtom, MODEL_TYPE } from "~/atoms";
 import { useAtom } from "jotai";
-import { useXWAlert } from "@/app/(site)/(dashboard)/_components/reusable/xw-alert";
+import { useXWAlert } from "~/components/reusable/xw-alert";
 
 const useWriteContent = (
   editor: Editor,

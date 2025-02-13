@@ -138,37 +138,37 @@ const data = {
   projects: [
     {
       name: "ChatSonic",
-      url: "#",
+      url: "/chatsonic/aa",
       icon: Frame,
     },
     {
       name: "SoundVerse",
-      url: "#",
+      url: "/soundverse",
       icon: PieChart,
     },
     {
       name: "PhotoSonic",
-      url: "#",
+      url: "photosonic",
       icon: Map,
     },
     {
       name: "WriterX",
-      url: "#",
+      url: "writerx",
       icon: Map,
     },
     {
       name: "ContentVerse",
-      url: "#",
+      url: "contentverse",
       icon: Map,
     },
     {
       name: "AudioVerse",
-      url: "#",
+      url: "audioverse",
       icon: Map,
     },
     {
       name: "VideoVerse",
-      url: "#",
+      url: "videoverse",
       icon: Map,
     },
   ],
@@ -196,7 +196,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-semibold">
-                    Kevin's Workspace
+                    Kevin&apos;s Workspace
                   </span>
                   <span className="truncate text-xs">Free Tier</span>
                 </div>

@@ -3,10 +3,10 @@ import { trpc } from "~/trpc/react";
 import { useAtom, useSetAtom } from "jotai";
 import axios from "axios";
 import { toast } from "sonner";
-import { isGeneratingResponseAtom, brandVoiceAtom } from "@/atoms";
 import useSendMessageDb from "./useSendMessageDb";
 import { useUser } from "../../misc/useUser";
-import { UseSend } from "@/app/(site)/(dashboard)/_types/chatsonic.types";
+import { brandVoiceAtom, isGeneratingResponseAtom } from "~/atoms";
+import { UseSend } from "~/types/chatsonic.types";
 
 export const useSendMessage = ({
   fileIds,
@@ -47,7 +47,7 @@ export const useSendMessage = ({
 
   const {
     mutateAsync: updatedMessageInDb,
-    isLoading: isUpdatingMessageInDb,
+    isPending: isUpdatingMessageInDb,
     isError: isUpdatingMessageInDbError,
   } = useSendMessageDb(isChatExist, false);
 

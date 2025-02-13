@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { workspaceNameSchema } from "../_validations/workspace";
+import { workspaceNameSchema } from "~/schemas/workspace";
 
 export type WorkspaceNameFormData = z.infer<typeof workspaceNameSchema>;
 

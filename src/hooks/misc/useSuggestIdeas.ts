@@ -1,7 +1,7 @@
-import { MODEL_TYPE } from "@/atoms";
-import { suggestIdeas } from "@/services";
-import { getIsSubscribed } from "@/services/stripe";
+import { MODEL_TYPE } from "~/atoms";
+import { suggestIdeas } from "~/services/llm";
 import { useMutation } from "@tanstack/react-query";
+import { getIsSubscribed } from "~/services/stripe";
 
 export const useSuggestIdeas = ({ ...options }) => {
   return useMutation({
