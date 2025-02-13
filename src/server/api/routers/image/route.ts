@@ -3,7 +3,6 @@ import axios from "axios";
 import { GenerationType, ImageData, Prisma } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { db } from "~/server/db";
-// import { TagRoutes } from "@/lib/photosonic";
 import { createImageRecordSchema } from "./schema";
 import { createAssetsSchema, AssetType } from "./schema";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";

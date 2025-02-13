@@ -14,6 +14,7 @@ import { workspaceRouter } from "./routers/workspace/route";
 import { editorRouter } from "./routers/editor/route";
 import { flowRouter } from "./routers/flow/route";
 import { imageRouter } from "./routers/image/route";
+import { assetRouter } from "./routers/assets/route";
 
 /**
  * This is the primary router for your server.
@@ -23,6 +24,7 @@ import { imageRouter } from "./routers/image/route";
 export const appRouter = createTRPCRouter({
   llm: llmRouter,
   pathfix: pathfixRouter,
+  assets: assetRouter,
   aws: awsRouter,
   audio: audioRouter,
   chatsonic: chatSonicRouter,
@@ -35,7 +37,7 @@ export const appRouter = createTRPCRouter({
   workspace: workspaceRouter,
   editor: editorRouter,
   flow: flowRouter,
-  image: imageRouter
+  image: imageRouter,
 });
 
 // export type definition of API
