@@ -175,14 +175,14 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const pathname = usePathname();
+  // const pathname = usePathname();
 
-  const hiddenSidebarRoutes = ["/chatsonic"];
+  // const hiddenSidebarRoutes = ["/dashboard"];
 
-  const shouldHideSidebar = hiddenSidebarRoutes.includes(pathname);
-  if (!shouldHideSidebar) {
-    return <div className="h-full w-10 bg-white"></div>;
-  }
+  // const shouldHideSidebar = hiddenSidebarRoutes.includes(pathname);
+  // if (!shouldHideSidebar) {
+  //   return <div className="h-full w-10 bg-white"></div>;
+  // }
 
   return (
     <Sidebar variant="inset" {...props}>
