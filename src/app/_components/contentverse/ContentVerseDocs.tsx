@@ -1,9 +1,20 @@
 "use client";
 
+import Link from "next/link";
 import React, { useEffect, useState } from "react";
+import { docs } from "~/lib/constant/constants";
+import XWGradDiv from "~/components/reusable/XWGradDiv";
 import { Button } from "~/components/ui/button";
 import { ChevronsUpDown, MoreHorizontal } from "lucide-react";
 import Image from "next/image";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "~/components/reusable/XWSelect";
+import XWCheckbox from "~/components/reusable/xw-checkbox";
 import {
   Table,
   TableBody,
@@ -13,25 +24,12 @@ import {
   TableRow,
 } from "~/components/ui/table";
 import { format } from "date-fns";
+import { Avatar } from "~/components/ui/avatar";
 
 import { cn } from "~/utils/utils";
-import AudioVerseUploadAudio from "./AudioVerseUploadAudio";
-import EditRecordingModel from "./EditRecordingModel";
-import DeleteRecordingModel from "./DeleteRecordingModel";
-import { AudioProject } from "@prisma/client";
 import { useRouter } from "next/navigation";
-import { useAtom } from "jotai";
-import { contentResponseAtom } from "~/atoms";
+import { Document } from "@prisma/client";
 import { trpc } from "~/trpc/react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "~/components/reusable/XWSelect";
-import XWGradDiv from "~/components/reusable/XWGradDiv";
-import XWCheckbox from "~/components/reusable/xw-checkbox";
 import {
   XWDropdown,
   XWDropdownContent,
@@ -42,7 +40,23 @@ import { useGetActiveSpace } from "~/hooks/workspace/useGetActiveSpace";
 
 type ViewMode = "grid" | "table";
 
-const AudioVerseDocs = () => {
+const ContentVerseDocs = () => {
+  const [documents, setDocuments] = useState<Document[]>([]);
+
+  const { data: defaultSpace, isLoading: isWorkspaceFetching } =
+    useGetActiveSpace();
+
+  const { data: getDocuments, isLoading: isLoadingDocuments } =
+    trpc.document.getAllDocuments.useQuery();
+
+  const { mutateAsync: deleteDoc } = trpc.document.deleteDoc.useMutation();
+
+  const router = useRouter();
+
+  useEffect(() => {
+    setDocuments(getDocuments || []);
+  }, [getDocuments]);
+
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [selectedDocs, setSelectedDocs] = useState<string[]>([]);
   const [dateFilter, setDateFilter] = useState("newest");
@@ -53,45 +67,15 @@ const AudioVerseDocs = () => {
     key: "",
     direction: null,
   });
-  const [, setContentResponse] = useAtom(contentResponseAtom);
-
-  const [recordings, setRecordings] = useState<AudioProject[]>([]);
-
-  const { data: defaultSpace, isLoading: isWorkspaceFetching } =
-    useGetActiveSpace();
-
-  console.log(defaultSpace?.id, "the default space id");
-
-  const { data: getRecordings } =
-    trpc.audioProject.getAllAudioProjects.useQuery(
-      {
-        id: defaultSpace?.id as string,
-      },
-      {
-        enabled: !!defaultSpace?.id,
-      },
-    );
-
-  const router = useRouter();
-
-  useEffect(() => {
-    setContentResponse("");
-    if (getRecordings !== undefined) {
-      // Check for undefined
-      setRecordings(getRecordings || []); // Default to empty array if getRecordings is undefined
-    }
-  }, [getRecordings, setContentResponse]);
-
-  const [playingAudio, setPlayingAudio] = useState<string | null>(null);
 
   const isAllSelected =
-    recordings.length > 0 && selectedDocs.length === recordings.length;
+    documents.length > 0 && selectedDocs.length === docs.length;
 
   const toggleSelectAll = () => {
     if (isAllSelected) {
       setSelectedDocs([]);
     } else {
-      setSelectedDocs(recordings.map((doc) => doc.id));
+      setSelectedDocs(documents.map((doc) => doc.id));
     }
   };
 
@@ -116,24 +100,32 @@ const AudioVerseDocs = () => {
   };
 
   const filterAndSortDocs = () => {
-    let filtered = [...recordings];
+    let filtered = [...documents];
 
     // Apply date filter
     filtered = filtered.sort((a, b) => {
       const dateA = new Date(a.createdAt);
       const dateB = new Date(b.createdAt);
 
+      // Ensure valid date comparison
+      if (isNaN(dateA.getTime()) || isNaN(dateB.getTime())) {
+        return 0;
+      }
+
       switch (dateFilter) {
         case "newest":
           return dateB.getTime() - dateA.getTime();
         case "oldest":
           return dateA.getTime() - dateB.getTime();
+        case "modified":
+          // For now using created date as modified date
+          return dateB.getTime() - dateA.getTime();
         default:
           return 0;
       }
     });
 
-    // Apply column sorting
+    // Then apply column sorting if active
     if (sortConfig.key && sortConfig.direction) {
       filtered = filtered.sort((a, b) => {
         const direction = sortConfig.direction === "asc" ? 1 : -1;
@@ -141,14 +133,12 @@ const AudioVerseDocs = () => {
         switch (sortConfig.key) {
           case "name":
             return direction * a.title.localeCompare(b.title);
-          case "type":
-            return direction * a.type.localeCompare(b.type);
           case "created":
-            return (
-              direction *
-              (new Date(a.createdAt).getTime() -
-                new Date(b.createdAt).getTime())
-            );
+            const dateA = new Date(a.createdAt).getTime();
+            const dateB = new Date(b.createdAt).getTime();
+            return direction * (dateA - dateB);
+          case "creator":
+            return direction * a.createdBy.localeCompare(b.createdBy);
           default:
             return 0;
         }
@@ -174,13 +164,17 @@ const AudioVerseDocs = () => {
   return (
     <div>
       <div className="mb-10 flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Audio Library</h1>
+        <h1 className="text-2xl font-bold">Recent Documents</h1>
 
         <div className="flex items-center gap-2">
           <Select
             defaultValue="newest"
             value={dateFilter}
-            onValueChange={setDateFilter}
+            onValueChange={(value) => {
+              setDateFilter(value);
+              // Reset column sorting when changing date filter
+              setSortConfig({ key: "", direction: null });
+            }}
           >
             <SelectTrigger className="w-[180px]">
               <SelectValue>
@@ -194,6 +188,7 @@ const AudioVerseDocs = () => {
             <SelectContent>
               <SelectItem value="newest">Newest first</SelectItem>
               <SelectItem value="oldest">Oldest first</SelectItem>
+              <SelectItem value="modified">Last modified</SelectItem>
             </SelectContent>
           </Select>
 
@@ -237,54 +232,35 @@ const AudioVerseDocs = () => {
               alt="list"
             />
           </Button>
-          <AudioVerseUploadAudio />
         </div>
       </div>
 
       {viewMode === "grid" ? (
         <div className="tb:grid-cols-3 tb:gap-10 grid grid-cols-1 gap-5">
-          {filteredAndSortedDocs.map((doc) => (
-            <XWGradDiv
-              key={doc.id}
-              className="flex cursor-pointer gap-4 p-4"
-              onClick={() => {
-                router.push(`/audioverse/${doc.id}`);
-              }}
-            >
-              <div className="relative h-16 w-16 overflow-hidden rounded-lg">
-                <Image
-                  src={"/images/audio-file.svg"}
-                  alt="Audio file"
-                  height={40}
-                  width={40}
-                  className="object-cover"
-                />
-              </div>
-
-              <div className="flex flex-1 flex-col">
-                <h3 className="text-2xl font-semibold">{doc.title}</h3>
-                <div className="text-xw-muted text-sm">
-                  Updated {format(new Date(doc.createdAt), "MMM dd, yyyy")}
+          {filteredAndSortedDocs.map((doc, index) => (
+            <Link key={index} href={`/writerx/${doc.id}`}>
+              <XWGradDiv className="flex flex-col items-center gap-5 overflow-hidden">
+                <div className="flex w-full items-center justify-between gap-2 p-5">
+                  <div className="flex-1">
+                    <h1>{doc.title}</h1>
+                    <p className="text-xw-muted text-sm">{doc.createdBy}</p>
+                  </div>
                 </div>
-              </div>
 
-              <XWDropdown>
-                <XWDropdownTrigger asChild>
-                  <Button variant="ghost" size="icon">
-                    <MoreHorizontal className="h-4 w-4" />
-                  </Button>
-                </XWDropdownTrigger>
-                <XWDropdownContent>
-                  <XWDropdownItem
-                    onClick={() => router.push(`/transcribe-audio/${doc.id}`)}
-                  >
-                    Open in Dashboard
-                  </XWDropdownItem>
-                  <EditRecordingModel />
-                  <DeleteRecordingModel />
-                </XWDropdownContent>
-              </XWDropdown>
-            </XWGradDiv>
+                <div className="border-xw-secondary tb:px-14 flex w-full items-center justify-center border-t px-10">
+                  <div className="h-[200px] w-[200px] flex-1">
+                    <Image
+                      src={(doc.thumbnailImageUrl as string) || ""}
+                      alt={doc.title}
+                      sizes="100vh"
+                      height={100}
+                      width={100}
+                      className="h-full w-full object-cover object-left-top"
+                    />
+                  </div>
+                </div>
+              </XWGradDiv>
+            </Link>
           ))}
         </div>
       ) : (
@@ -310,7 +286,16 @@ const AudioVerseDocs = () => {
                 </TableHead>
                 <TableHead>Type</TableHead>
                 <TableHead>Media</TableHead>
-                <TableHead>Creator</TableHead>
+                <TableHead>
+                  <Button
+                    variant="ghost"
+                    onClick={() => handleSort("creator")}
+                    className="flex w-full items-center justify-between hover:bg-transparent"
+                  >
+                    Creator
+                    {getSortIcon("creator")}
+                  </Button>
+                </TableHead>
                 <TableHead>
                   <Button
                     variant="ghost"
@@ -343,7 +328,7 @@ const AudioVerseDocs = () => {
                   <TableCell className="font-medium">
                     <div className="flex items-center gap-2">
                       <Image
-                        src="/images/audio-file.svg"
+                        src="/images/image-file.svg"
                         alt="file"
                         width={16}
                         height={16}
@@ -354,23 +339,15 @@ const AudioVerseDocs = () => {
                   <TableCell>
                     <div className="w-fit rounded-md bg-gradient-to-r from-white/10 via-white/30 to-white/40 p-[0.5px]">
                       <div className="bg-xw-sidebar rounded-md px-2 py-1 text-xs">
-                        {doc.type}
+                        Upload
                       </div>
                     </div>
                   </TableCell>
                   <TableCell className="text-muted-foreground">
-                    {/* {doc.media} */}
-                    Audio
+                    {doc.isStarred ? "Starred" : "Unstarred"}
                   </TableCell>
                   <TableCell>
-                    {doc.createdBy}
-                    {/* <Avatar className="h-8 w-8">
-                      <AvatarImage
-                        src={doc.creator.image}
-                        alt={doc.creator.name}
-                      />
-                      <AvatarFallback>{doc.creator.name[0]}</AvatarFallback>
-                    </Avatar> */}
+                    <Avatar className="h-8 w-8">{doc.createdBy}</Avatar>
                   </TableCell>
                   <TableCell className="text-muted-foreground">
                     {format(new Date(doc.createdAt), "MMM dd, yyyy")}
@@ -383,15 +360,28 @@ const AudioVerseDocs = () => {
                         </Button>
                       </XWDropdownTrigger>
                       <XWDropdownContent align="end">
-                        <XWDropdownItem>Open in Dashboard</XWDropdownItem>
-                        <EditRecordingModel />
-                        <DeleteRecordingModel />
+                        <XWDropdownItem
+                          onClick={() => {
+                            router.push("/contentverse/" + doc.id);
+                          }}
+                        >
+                          Open in WriterX
+                        </XWDropdownItem>
+                        <XWDropdownItem>Download</XWDropdownItem>
+                        <XWDropdownItem
+                          className="text-red-500"
+                          onClick={() => {
+                            deleteDoc({ docId: doc.id });
+                          }}
+                        >
+                          Delete
+                        </XWDropdownItem>
                       </XWDropdownContent>
                     </XWDropdown>
                   </TableCell>
                 </TableRow>
               ))}
-              <TableRow className="h-10"></TableRow>
+              <TableRow className="h-10" />
             </TableBody>
           </Table>
         </div>
@@ -400,4 +390,4 @@ const AudioVerseDocs = () => {
   );
 };
 
-export default AudioVerseDocs;
+export default ContentVerseDocs;

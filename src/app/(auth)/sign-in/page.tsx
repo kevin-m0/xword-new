@@ -9,7 +9,9 @@ export default function LoginPage() {
         <Image
           src="/images/flow.jpeg"
           alt="Image"
-          className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
+          width={1920}
+          height={1080}
+          className="absolute inset-0 h-full w-full object-cover"
         />
       </div>
       <div className="flex flex-col gap-4 p-6 md:p-10">
@@ -18,7 +20,7 @@ export default function LoginPage() {
             <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
               <GalleryVerticalEnd className="size-4" />
             </div>
-            Acme Inc.
+            xWord
           </a>
         </div>
         <div className="flex flex-1 items-center justify-center">

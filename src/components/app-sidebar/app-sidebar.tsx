@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import dynamic from "next/dynamic";
 import {
   BookOpen,
   Bot,
@@ -17,7 +18,9 @@ import {
 import { NavMain } from "~/components/app-sidebar/nav-main";
 import { NavProjects } from "~/components/app-sidebar/nav-projects";
 import { NavSecondary } from "~/components/app-sidebar/nav-secondary";
-import { NavUser } from "~/components/app-sidebar/nav-user";
+
+const NavUser = dynamic(() => import("~/components/app-sidebar/nav-user"));
+
 import {
   Sidebar,
   SidebarContent,
@@ -34,7 +37,7 @@ const data = {
   user: {
     name: "kevin",
     email: "kevin@m0.ventures",
-    avatar: "/avatars/shadcn.jpg",
+    avatar: "",
   },
   navMain: [
     {
@@ -42,20 +45,6 @@ const data = {
       url: "#",
       icon: SquareTerminal,
       isActive: true,
-      items: [
-        {
-          title: "History",
-          url: "#",
-        },
-        {
-          title: "Starred",
-          url: "#",
-        },
-        {
-          title: "Settings",
-          url: "#",
-        },
-      ],
     },
     {
       title: "Media Library",
@@ -80,47 +69,11 @@ const data = {
       title: "Content Calendar",
       url: "#",
       icon: BookOpen,
-      items: [
-        {
-          title: "Introduction",
-          url: "#",
-        },
-        {
-          title: "Get Started",
-          url: "#",
-        },
-        {
-          title: "Tutorials",
-          url: "#",
-        },
-        {
-          title: "Changelog",
-          url: "#",
-        },
-      ],
     },
     {
       title: "Social Accounts",
       url: "#",
       icon: Settings2,
-      items: [
-        {
-          title: "General",
-          url: "#",
-        },
-        {
-          title: "Team",
-          url: "#",
-        },
-        {
-          title: "Billing",
-          url: "#",
-        },
-        {
-          title: "Limits",
-          url: "#",
-        },
-      ],
     },
   ],
   navSecondary: [
@@ -174,7 +127,9 @@ const data = {
   ],
 };
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export default function AppSidebar({
+  ...props
+}: React.ComponentProps<typeof Sidebar>) {
   // const pathname = usePathname();
 
   // const hiddenSidebarRoutes = ["/dashboard"];
@@ -211,7 +166,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <React.Suspense fallback={<div>Loading...</div>}>
+          <NavUser user={data.user} />
+        </React.Suspense>
       </SidebarFooter>
     </Sidebar>
   );
