@@ -30,10 +30,6 @@ export const switchToDefaultSpace = async (
     },
   });
 
-  console.log("default", defaultSpace);
-  console.log("user", userId);
-  console.log("org", organizationId);
-
   // If the user does not have a default space, create one for him. This happens when the user is invited to join a new organization by someone else.
   if (!defaultSpace && userId.length > 0 && organizationId.length > 0) {
 

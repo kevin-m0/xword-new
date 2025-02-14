@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
-import { docs } from "~/lib/constant/chatsonic.constants";
+import { videoDocs as docs } from "~/lib/constant/videoverse.constants";
 import XWGradDiv from "~/components/reusable/XWGradDiv";
 import { Button } from "~/components/ui/button";
 import { ChevronsUpDown, MoreHorizontal } from "lucide-react";
@@ -24,38 +24,45 @@ import {
   TableRow,
 } from "~/components/ui/table";
 import { format } from "date-fns";
-import { Avatar } from "~/components/ui/avatar";
-
-import { cn } from "~/utils/utils";
-import { useRouter } from "next/navigation";
-import { Document } from "@prisma/client";
-import { trpc } from "~/trpc/react";
 import {
   XWDropdown,
   XWDropdownContent,
   XWDropdownItem,
   XWDropdownTrigger,
 } from "~/components/reusable/xw-dropdown";
+import { cn } from "~/utils/utils";
 import { useGetActiveSpace } from "~/hooks/workspace/useGetActiveSpace";
+import { useRouter } from "next/navigation";
+import { VideoModel } from "@prisma/client";
+import { VideoVerseUploadModal } from "./VideoVerseUploadModal";
+import { trpc } from "~/trpc/react";
 
 type ViewMode = "grid" | "table";
 
-const ContentVerseDocs = () => {
-  const [documents, setDocuments] = useState<Document[]>([]);
+const VideoVerseDocs = () => {
+  const [recordings, setRecordings] = useState<VideoModel[]>([]);
 
   const { data: defaultSpace, isLoading: isWorkspaceFetching } =
     useGetActiveSpace();
 
-  const { data: getDocuments, isLoading: isLoadingDocuments } =
-    trpc.document.getAllDocuments.useQuery();
+  const { data: getRecordings, isLoading: isLoadingRecordings } =
+    trpc.videoProject.getAllVideoProjects.useQuery(
+      {
+        id: defaultSpace?.id as string,
+      },
+      {
+        enabled: !!defaultSpace?.id,
+      },
+    );
 
-  const { mutateAsync: deleteDoc } = trpc.document.deleteDoc.useMutation();
-
-  const router = useRouter();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
-    setDocuments(getDocuments || []);
-  }, [getDocuments]);
+    if (getRecordings !== undefined) {
+      // Check for undefined
+      setRecordings(getRecordings || []);
+    }
+  }, [getRecordings]);
 
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [selectedDocs, setSelectedDocs] = useState<string[]>([]);
@@ -68,14 +75,15 @@ const ContentVerseDocs = () => {
     direction: null,
   });
 
-  const isAllSelected =
-    documents.length > 0 && selectedDocs.length === docs.length;
+  console.log(defaultSpace?.id, "active workspace");
+
+  const isAllSelected = docs.length > 0 && selectedDocs.length === docs.length;
 
   const toggleSelectAll = () => {
     if (isAllSelected) {
       setSelectedDocs([]);
     } else {
-      setSelectedDocs(documents.map((doc) => doc.id));
+      setSelectedDocs(docs.map((doc) => doc.id));
     }
   };
 
@@ -100,14 +108,12 @@ const ContentVerseDocs = () => {
   };
 
   const filterAndSortDocs = () => {
-    let filtered = [...documents];
+    let filtered = [...recordings];
 
-    // Apply date filter
     filtered = filtered.sort((a, b) => {
       const dateA = new Date(a.createdAt);
       const dateB = new Date(b.createdAt);
 
-      // Ensure valid date comparison
       if (isNaN(dateA.getTime()) || isNaN(dateB.getTime())) {
         return 0;
       }
@@ -118,14 +124,12 @@ const ContentVerseDocs = () => {
         case "oldest":
           return dateA.getTime() - dateB.getTime();
         case "modified":
-          // For now using created date as modified date
           return dateB.getTime() - dateA.getTime();
         default:
           return 0;
       }
     });
 
-    // Then apply column sorting if active
     if (sortConfig.key && sortConfig.direction) {
       filtered = filtered.sort((a, b) => {
         const direction = sortConfig.direction === "asc" ? 1 : -1;
@@ -164,7 +168,7 @@ const ContentVerseDocs = () => {
   return (
     <div>
       <div className="mb-10 flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Recent Documents</h1>
+        <h1 className="text-2xl font-bold">Recent Videos</h1>
 
         <div className="flex items-center gap-2">
           <Select
@@ -172,7 +176,6 @@ const ContentVerseDocs = () => {
             value={dateFilter}
             onValueChange={(value) => {
               setDateFilter(value);
-              // Reset column sorting when changing date filter
               setSortConfig({ key: "", direction: null });
             }}
           >
@@ -232,31 +235,48 @@ const ContentVerseDocs = () => {
               alt="list"
             />
           </Button>
+
+          {/* <CloudinaryUpload /> */}
+
+          <Button onClick={() => setIsModalOpen(true)} variant="default">
+            New Video Project
+          </Button>
+          <VideoVerseUploadModal
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+          />
         </div>
       </div>
 
       {viewMode === "grid" ? (
         <div className="tb:grid-cols-3 tb:gap-10 grid grid-cols-1 gap-5">
           {filteredAndSortedDocs.map((doc, index) => (
-            <Link key={index} href={`/writerx/${doc.id}`}>
-              <XWGradDiv className="flex flex-col items-center gap-5 overflow-hidden">
+            <Link key={index} href={`/videoverse/${doc.id}`}>
+              <XWGradDiv className="flex flex-col items-center overflow-hidden">
                 <div className="flex w-full items-center justify-between gap-2 p-5">
                   <div className="flex-1">
                     <h1>{doc.title}</h1>
-                    <p className="text-xw-muted text-sm">{doc.createdBy}</p>
+                    <p className="text-xw-muted text-sm">
+                      {format(new Date(doc.createdAt), "MMM dd, yyyy")}
+                    </p>
                   </div>
                 </div>
 
-                <div className="border-xw-secondary tb:px-14 flex w-full items-center justify-center border-t px-10">
-                  <div className="h-[200px] w-[200px] flex-1">
+                <div className="border-xw-secondary w-full border-t">
+                  <div className="relative h-[200px] w-full">
                     <Image
-                      src={(doc.thumbnailImageUrl as string) || ""}
+                      src={`${doc.thumbnailUrl}`}
                       alt={doc.title}
-                      sizes="100vh"
-                      height={100}
-                      width={100}
-                      className="h-full w-full object-cover object-left-top"
+                      width={20}
+                      height={20}
+                      className="h-full w-full object-cover"
                     />
+
+                    <div className="absolute left-1 top-1">
+                      <span className="bg-xw-sidebar rounded-sm px-2 py-1 text-xs text-white">
+                        {`${doc.duration} mins`}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </XWGradDiv>
@@ -285,7 +305,7 @@ const ContentVerseDocs = () => {
                   </Button>
                 </TableHead>
                 <TableHead>Type</TableHead>
-                <TableHead>Media</TableHead>
+                <TableHead>Format</TableHead>
                 <TableHead>
                   <Button
                     variant="ghost"
@@ -328,7 +348,7 @@ const ContentVerseDocs = () => {
                   <TableCell className="font-medium">
                     <div className="flex items-center gap-2">
                       <Image
-                        src="/images/image-file.svg"
+                        src="/images/video-file.svg"
                         alt="file"
                         width={16}
                         height={16}
@@ -339,16 +359,14 @@ const ContentVerseDocs = () => {
                   <TableCell>
                     <div className="w-fit rounded-md bg-gradient-to-r from-white/10 via-white/30 to-white/40 p-[0.5px]">
                       <div className="bg-xw-sidebar rounded-md px-2 py-1 text-xs">
-                        Upload
+                        Video
                       </div>
                     </div>
                   </TableCell>
                   <TableCell className="text-muted-foreground">
-                    {doc.isStarred ? "Starred" : "Unstarred"}
+                    {doc.videoType}
                   </TableCell>
-                  <TableCell>
-                    <Avatar className="h-8 w-8">{doc.createdBy}</Avatar>
-                  </TableCell>
+                  <TableCell>{doc.createdBy}</TableCell>
                   <TableCell className="text-muted-foreground">
                     {format(new Date(doc.createdAt), "MMM dd, yyyy")}
                   </TableCell>
@@ -360,20 +378,11 @@ const ContentVerseDocs = () => {
                         </Button>
                       </XWDropdownTrigger>
                       <XWDropdownContent align="end">
-                        <XWDropdownItem
-                          onClick={() => {
-                            router.push("/contentverse/" + doc.id);
-                          }}
-                        >
-                          Open in WriterX
-                        </XWDropdownItem>
+                        <XWDropdownItem>Rename</XWDropdownItem>
                         <XWDropdownItem>Download</XWDropdownItem>
-                        <XWDropdownItem
-                          className="text-red-500"
-                          onClick={() => {
-                            deleteDoc({ docId: doc.id });
-                          }}
-                        >
+                        <XWDropdownItem>Share</XWDropdownItem>
+                        <XWDropdownItem>Move</XWDropdownItem>
+                        <XWDropdownItem className="text-red-500">
                           Delete
                         </XWDropdownItem>
                       </XWDropdownContent>
@@ -386,8 +395,11 @@ const ContentVerseDocs = () => {
           </Table>
         </div>
       )}
+      {filteredAndSortedDocs.length === 0 && (
+        <>no videos. upload one and then come back.</>
+      )}
     </div>
   );
 };
 
-export default ContentVerseDocs;
+export default VideoVerseDocs;

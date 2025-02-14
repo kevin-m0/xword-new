@@ -13,7 +13,7 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import { HelpCircleIcon } from "lucide-react";
 import { useDocumentId } from "~/hooks/editor/useDocumentId";
 import { trpc } from "~/trpc/react";
-import { MESSAGES_LIMIT_CHAT } from "~/lib/constant/constants";
+import { MESSAGES_LIMIT_CHAT } from "~/lib/constant/chatsonic.constants";
 import useMeasure from "~/hooks/misc/useMeasure";
 import useChatExist from "~/hooks/chatsonic/useChatExist";
 import MessagesLoader from "~/components/loaders/MessagesLoader";

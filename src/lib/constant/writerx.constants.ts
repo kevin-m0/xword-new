@@ -1,5 +1,3 @@
-export const MESSAGES_LIMIT_CHAT = 5;
-
 export const docs = [
     {
         id: '1',
