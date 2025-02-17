@@ -14,6 +14,11 @@ export function absoluteUrl(path: string) {
   return `http://localhost:${process.env.PORT ?? 3000}${path}`;
 }
 
+export function extractScriptContent(xmlString: string): string {
+  const scriptMatch = xmlString.match(/<script>([\s\S]*?)<\/script>/);
+  return scriptMatch ? (scriptMatch[1]?.trim() as string) : "";
+}
+
 // export function catchClerkError(err: unknown) {
 //   const unknownError = "Something went wrong, please try again later.";
 

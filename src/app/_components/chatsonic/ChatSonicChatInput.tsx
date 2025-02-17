@@ -17,7 +17,7 @@ import { useSessionId } from "~/hooks/chatsonic/useSessionId";
 import useChatExist from "~/hooks/chatsonic/useChatExist";
 import AddDoc from "~/icons/AddDoc";
 import { OpenSections, UploadedFile } from "~/types/chatsonic.types";
-import { useUser } from "~/hooks/misc/useUser";
+import { useUser } from "@clerk/nextjs";
 import { useXWAlert } from "~/components/reusable/xw-alert";
 
 function updateTextAreaSize(textArea?: HTMLTextAreaElement) {
@@ -75,7 +75,7 @@ const ChatSonicChatInput = ({
   const textAreaRef = useRef<HTMLTextAreaElement>();
   const hasTriedCreatingChat = useRef(false);
   const utils = trpc.useUtils();
-  const { data: user } = useUser();
+  const { user } = useUser();
 
   const { mutate: updateLastPromptMutation } =
     trpc.chatsonic.updateLastPrompt.useMutation();
@@ -165,7 +165,7 @@ const ChatSonicChatInput = ({
             await createChatMutation.mutateAsync({
               id: newSessionId,
               title: "New Chat",
-              userId: user?.id ?? "",
+              userId: user?.id as string,
               lastPromptPayload: JSON.stringify({ mode: "Normal" }),
             });
           }

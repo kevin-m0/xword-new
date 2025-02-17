@@ -3,7 +3,6 @@
 import { ScrollArea, ScrollBar } from "~/components/ui/scroll-area";
 import ChatSonicSidebar from "./ChatSonicSidebar";
 import ChatSonicChatbox from "./ChatSonicChatbox";
-import ChatSonicTopbar from "./ChatSonicTopbar";
 import { useCallback, useState } from "react";
 import ChatSonicChatInput from "./ChatSonicChatInput";
 import { useSend } from "~/hooks/chatsonic/use-send";

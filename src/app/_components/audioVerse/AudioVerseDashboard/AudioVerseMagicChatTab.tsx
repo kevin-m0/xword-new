@@ -7,7 +7,7 @@ import Image from "next/image";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import { useUser } from "@clerk/nextjs";
-import { MESSAGES_LIMIT_CHAT } from "~/lib/constant/constants";
+import { MESSAGES_LIMIT_CHAT } from "~/lib/constant/chatsonic.constants";
 import { trpc } from "~/trpc/react";
 import { useDocumentId } from "~/hooks/editor/useDocumentId";
 import useAudioChatExist from "~/hooks/chatsonic/useAudioChatExist";

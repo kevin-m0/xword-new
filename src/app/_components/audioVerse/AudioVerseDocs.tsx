@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { Button } from "~/components/ui/button";
-import { ChevronsUpDown, MoreHorizontal } from "lucide-react";
+import { ChevronsUpDown, LoaderCircle, MoreHorizontal } from "lucide-react";
 import Image from "next/image";
 import {
   Table,
@@ -60,10 +60,16 @@ const AudioVerseDocs = () => {
   const { data: defaultSpace, isLoading: isWorkspaceFetching } =
     useGetActiveSpace();
 
-  const { data: getRecordings } =
-    trpc.audioProject.getAllAudioProjects.useQuery({
-      id: defaultSpace?.id as string,
-    });
+  const { data: getRecordings, isLoading: isLoadingProjects } =
+    trpc.audioProject.getAllAudioProjects.useQuery(
+      {
+        id: defaultSpace?.id as string,
+      },
+      {
+        enabled: !!defaultSpace?.id,
+      },
+    );
+
   const router = useRouter();
 
   useEffect(() => {
@@ -73,8 +79,6 @@ const AudioVerseDocs = () => {
       setRecordings(getRecordings || []); // Default to empty array if getRecordings is undefined
     }
   }, [getRecordings, setContentResponse]);
-
-  const [playingAudio, setPlayingAudio] = useState<string | null>(null);
 
   const isAllSelected =
     recordings.length > 0 && selectedDocs.length === recordings.length;
@@ -162,6 +166,10 @@ const AudioVerseDocs = () => {
   };
 
   const filteredAndSortedDocs = filterAndSortDocs();
+
+  if (isLoadingProjects) {
+    return <LoaderCircle className="animate-spin" />;
+  }
 
   return (
     <div>
@@ -387,6 +395,9 @@ const AudioVerseDocs = () => {
             </TableBody>
           </Table>
         </div>
+      )}
+      {filteredAndSortedDocs.length === 0 && (
+        <>no audios. upload one and then come back.</>
       )}
     </div>
   );

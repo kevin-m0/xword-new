@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import dynamic from "next/dynamic";
 import {
   BookOpen,
   Bot,
@@ -17,7 +18,9 @@ import {
 import { NavMain } from "~/components/app-sidebar/nav-main";
 import { NavProjects } from "~/components/app-sidebar/nav-projects";
 import { NavSecondary } from "~/components/app-sidebar/nav-secondary";
-import { NavUser } from "~/components/app-sidebar/nav-user";
+
+const NavUser = dynamic(() => import("~/components/app-sidebar/nav-user"));
+
 import {
   Sidebar,
   SidebarContent,
@@ -26,114 +29,60 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMenuSkeleton,
 } from "~/components/ui/sidebar";
 
-import { usePathname } from "next/navigation";
+import { useUser } from "@clerk/nextjs";
 
 const data = {
-  user: {
-    name: "kevin",
-    email: "kevin@m0.ventures",
-    avatar: "/avatars/shadcn.jpg",
-  },
   navMain: [
     {
       title: "Home",
-      url: "#",
+      url: "/dashboard",
       icon: SquareTerminal,
       isActive: true,
-      items: [
-        {
-          title: "History",
-          url: "#",
-        },
-        {
-          title: "Starred",
-          url: "#",
-        },
-        {
-          title: "Settings",
-          url: "#",
-        },
-      ],
     },
     {
       title: "Media Library",
-      url: "#",
+      url: "/media-library",
       icon: Bot,
-      items: [
-        {
-          title: "Genesis",
-          url: "#",
-        },
-        {
-          title: "Explorer",
-          url: "#",
-        },
-        {
-          title: "Quantum",
-          url: "#",
-        },
-      ],
+      // items: [
+      //   {
+      //     title: "Genesis",
+      //     url: "#",
+      //   },
+      //   {
+      //     title: "Explorer",
+      //     url: "#",
+      //   },
+      //   {
+      //     title: "Quantum",
+      //     url: "#",
+      //   },
+      // ],
     },
     {
       title: "Content Calendar",
-      url: "#",
+      url: "/content-calendar",
       icon: BookOpen,
-      items: [
-        {
-          title: "Introduction",
-          url: "#",
-        },
-        {
-          title: "Get Started",
-          url: "#",
-        },
-        {
-          title: "Tutorials",
-          url: "#",
-        },
-        {
-          title: "Changelog",
-          url: "#",
-        },
-      ],
     },
     {
       title: "Social Accounts",
-      url: "#",
+      url: "/social-accounts",
       icon: Settings2,
-      items: [
-        {
-          title: "General",
-          url: "#",
-        },
-        {
-          title: "Team",
-          url: "#",
-        },
-        {
-          title: "Billing",
-          url: "#",
-        },
-        {
-          title: "Limits",
-          url: "#",
-        },
-      ],
     },
   ],
   navSecondary: [
-    {
-      title: "Support",
-      url: "#",
-      icon: LifeBuoy,
-    },
-    {
-      title: "Feedback",
-      url: "#",
-      icon: Send,
-    },
+    // {
+    //   title: "Support",
+    //   url: "#",
+    //   icon: LifeBuoy,
+    // },
+    // {
+    //   title: "Feedback",
+    //   url: "#",
+    //   icon: Send,
+    // },
   ],
   projects: [
     {
@@ -174,15 +123,10 @@ const data = {
   ],
 };
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  // const pathname = usePathname();
-
-  // const hiddenSidebarRoutes = ["/dashboard"];
-
-  // const shouldHideSidebar = hiddenSidebarRoutes.includes(pathname);
-  // if (!shouldHideSidebar) {
-  //   return <div className="h-full w-10 bg-white"></div>;
-  // }
+export default function AppSidebar({
+  ...props
+}: React.ComponentProps<typeof Sidebar>) {
+  const { user } = useUser();
 
   return (
     <Sidebar variant="inset" {...props}>
@@ -211,7 +155,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <React.Suspense fallback={<SidebarMenuSkeleton />}>
+          {user && <NavUser user={user} />}
+        </React.Suspense>
       </SidebarFooter>
     </Sidebar>
   );

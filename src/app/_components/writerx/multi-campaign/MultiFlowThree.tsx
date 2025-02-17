@@ -2,9 +2,9 @@
 
 import React, { useState } from "react";
 import { useAtom } from "jotai";
-import { useUser } from "~/hooks/misc/useUser";
+// import { useUser } from "~/hooks/misc/useUser";
 import { trpc } from "~/trpc/react";
-import { useOrganization } from "@clerk/nextjs";
+import { useOrganization, useUser } from "@clerk/nextjs";
 import { marked } from "marked";
 import { ArrowLeft, Loader2, Plus, X } from "lucide-react";
 import { MarkdownParser } from "~/lib/markdown-parser";
@@ -58,7 +58,7 @@ const MultiFlowThree = ({ closeDialog }: { closeDialog: () => void }) => {
   const [currentGenerating, setCurrentGenerating] = useState(0);
   const [isGenerating, setIsGenerating] = useState(false);
   const { organization: activeWorkspace } = useOrganization();
-  const { data: user } = useUser();
+  const { user } = useUser();
   const [isCampaignGenerated, setIsCampaignGenerated] = useState(false);
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
   const [isImageSelectorOpen, setIsImageSelectorOpen] = useState(false);

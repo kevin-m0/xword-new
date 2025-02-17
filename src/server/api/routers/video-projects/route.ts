@@ -170,6 +170,8 @@ export const videoProjectsRouter = createTRPCRouter({
         },
       });
 
+      console.log(res, 'video projects')
+
       return res;
     } catch (error) {
       throw new TRPCError({

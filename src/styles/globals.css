@@ -3,6 +3,27 @@
 @tailwind utilities;
 @layer base {
   :root {
+    --xw-primary: rgba(0, 111, 232, 1);
+    --xw-primary-hover: rgba(0, 87, 181, 1);
+    --xw-primary-disabled: rgba(2, 31, 63, 1);
+    --xw-primary-foreground: rgba(2, 31, 63, 1);
+    --xw-secondary: rgba(38,40,48, 1);
+    --xw-secondary-hover: rgba(46,48,59, 1);
+    --xw-card: rgba(22, 24, 34, 1);
+    --xw-card-hover: rgba(20, 20, 29, 1);
+    --xw-input: rgba(25, 8, 40, 1);
+    --xw-border: rgba(110, 94, 132, 0.35);
+    --xw-background: rgb(0, 0, 0);
+    --xw-text: rgba(225, 225, 225);
+    --xw-danger: rgba(232, 54, 44, 1);
+    --xw-danger-hover: rgba(232, 54, 44, 0.6);
+    --xw-disabled: rgba(2, 31, 63, 1);
+    --xw-sidebar: rgba(15, 15, 24, 1);
+    --xw-sidebar-two: rgba(18,19,25, 1);
+    --xw-muted: rgba(168, 175, 186, 1);
+    --xw-menu-hover: rgba(40, 43, 47, 1); 
+    --xw-muted-foreground: rgba(168, 175, 186, 1);
+    --xw-input: rgba(29,30,35, 1);
     --background: 0 0% 100%;
     --foreground: 240 10% 3.9%;
     --card: 0 0% 100%;
@@ -80,4 +101,23 @@
     @apply bg-background text-foreground;
     font-family: var(--font-inter), sans-serif;
   }
+}
+
+
+/* Customizing the scrollbar */
+::-webkit-scrollbar {
+  width: 5px; /* Width of the scrollbar */
+}
+
+::-webkit-scrollbar-track {
+  background: transparent; /* Background color of the track */
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888; /* Thumb color */
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555; /* Thumb color when hovered */
 }

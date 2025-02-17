@@ -3,7 +3,6 @@ import { useAtom } from "jotai";
 import { refetchTrigger } from "~/atoms";
 import { GenerateAudioPayload } from "~/types/soundverse.types";
 
-
 export const useGenerationHelpers = () => {
   const [_, setRefetchTokenUsage] = useAtom(refetchTrigger);
   const generateVoice = async (payload: GenerateAudioPayload) => {

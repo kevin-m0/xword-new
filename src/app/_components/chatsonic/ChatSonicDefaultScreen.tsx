@@ -3,7 +3,7 @@
 import React from "react";
 import { WEB_DEFAULT_PROMPTS, NORMAL_DEFAULT_PROMPTS } from "./constants";
 import Image from "next/image";
-import { useUser } from "~/hooks/misc/useUser";
+import { useUser } from "@clerk/nextjs";
 import XWSecondaryButton from "~/components/reusable/XWSecondaryButton";
 
 const ChatSonicDefaultScreen = ({
@@ -13,8 +13,8 @@ const ChatSonicDefaultScreen = ({
   mode: string;
   setChatInput: (props: string) => void;
 }) => {
-  const { data: user } = useUser();
-  const name = user?.name
+  const { user } = useUser();
+  const name = user?.firstName
     ?.split(" ")
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");

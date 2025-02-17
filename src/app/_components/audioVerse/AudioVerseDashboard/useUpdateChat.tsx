@@ -3,7 +3,7 @@ import { AudioProjectChat } from "@prisma/client";
 import { trpc } from "~/trpc/react";
 import { ErrorToast } from "../../custom-toast";
 import { useDocumentId } from "~/hooks/editor/useDocumentId";
-import { MESSAGES_LIMIT_CHAT } from "~/lib/constant/constants";
+import { MESSAGES_LIMIT_CHAT } from "~/lib/constant/chatsonic.constants";
 
 export const useUpdateChat = () => {
   const utils = trpc.useUtils();

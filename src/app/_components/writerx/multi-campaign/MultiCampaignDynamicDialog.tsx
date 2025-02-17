@@ -13,6 +13,7 @@ import {
 import {
   Dialog,
   DialogContent,
+  DialogTitle,
   DialogTrigger,
 } from "~/components/reusable/xw-dialog";
 import XWBadge from "~/components/reusable/XWBadge";
@@ -59,10 +60,11 @@ const MultiCampaignDynamicDialog = ({
         {children}
       </DialogTrigger>
 
-      <DialogContent className="bg-xw-sidebar flex h-[700px] w-full max-w-6xl flex-col overflow-hidden rounded-2xl p-0">
+      <DialogContent className="flex h-[700px] w-full max-w-6xl flex-col overflow-hidden rounded-2xl bg-xw-sidebar p-0">
+        <DialogTitle></DialogTitle>
         <div className="flex items-center gap-2 p-5">
           <div
-            className="hover:bg-xw-secondary flex cursor-pointer items-center gap-4 rounded-lg p-2"
+            className="flex cursor-pointer items-center gap-4 rounded-lg p-2 hover:bg-xw-secondary"
             onClick={() => setStep(0)}
           >
             <XWBadge
@@ -80,7 +82,7 @@ const MultiCampaignDynamicDialog = ({
           </div>
 
           <div
-            className="hover:bg-xw-secondary flex cursor-pointer items-center gap-2 rounded-lg p-2"
+            className="flex cursor-pointer items-center gap-2 rounded-lg p-2 hover:bg-xw-secondary"
             onClick={handleBack}
           >
             <XWBadge

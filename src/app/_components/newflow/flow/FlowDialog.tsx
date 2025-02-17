@@ -9,6 +9,7 @@ import {
 import NewFlowManagerComponent from "./NewFlowManagerComponent";
 import { useAtom } from "jotai";
 import { flowSteps } from "~/atoms/flowAtom";
+import { DialogTitle } from "@radix-ui/react-dialog";
 
 const FlowDialog = ({ children }: { children: React.ReactNode }) => {
   const [step, setStep] = useAtom(flowSteps);
@@ -17,7 +18,8 @@ const FlowDialog = ({ children }: { children: React.ReactNode }) => {
       <DialogTrigger onClick={() => setStep(0)} asChild>
         {children}
       </DialogTrigger>
-      <DialogContent className="xw-scrollbar bg-xw-sidebar h-[700px] w-full max-w-6xl overflow-y-auto rounded-xl p-0">
+      <DialogContent className="xw-scrollbar h-[700px] w-full max-w-6xl overflow-y-scroll rounded-xl bg-xw-sidebar p-0">
+        <DialogTitle></DialogTitle>
         <NewFlowManagerComponent />
       </DialogContent>
     </Dialog>

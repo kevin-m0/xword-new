@@ -17,7 +17,7 @@ import { v4 as uuid } from "uuid";
 import { handleFileTrasncription } from "../../handler/transcription/transcription";
 import { mapImageParser } from "../../handler/parser/mapImageParser";
 import { useOrganization } from "@clerk/nextjs";
-import { useUser } from "~/hooks/misc/useUser";
+import { useUser } from "@clerk/nextjs";
 import { uploadFile } from "~/services/aws-file-upload";
 import { getAwsUrl } from "~/lib/get-aws-url";
 import { useXWAlert } from "~/components/reusable/xw-alert";
@@ -77,7 +77,7 @@ export const DynamicForm = ({
   const { showToast } = useXWAlert();
   const router = useRouter();
   const { organization: activeWorkspace } = useOrganization();
-  const { data: user } = useUser();
+  const { user } = useUser();
   const [isGeneratingAIResponse, setIsGeneratingAIResponse] = useState(false);
 
   const [checkFlowType, setType] = useAtom(flowType);
