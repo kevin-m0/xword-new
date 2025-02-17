@@ -14,7 +14,7 @@ import useAudioChatExist from "~/hooks/chatsonic/useAudioChatExist";
 import useMeasure from "~/hooks/misc/useMeasure";
 import XWSecondaryButton from "~/components/reusable/XWSecondaryButton";
 import MessageInput from "./MessageInput";
-import SingleMessage from "../../writerx/flow/chat-tab/SingleMessage";
+// import SingleMessage from "../../writerx/flow/chat-tab/SingleMessage";
 
 interface ChatMessage {
   id: string;
@@ -87,7 +87,7 @@ const AudioVerseMagicChatTab = ({ audioProject }: { audioProject: any }) => {
       ) : (
         <div className="relative z-10 flex h-[500px] w-full flex-col justify-between px-10">
           <ScrollArea className="flex-1 flex-col overflow-y-auto">
-            {messages
+            {/* {messages
               .slice()
               .reverse()
               .map((msg) => (
@@ -102,7 +102,7 @@ const AudioVerseMagicChatTab = ({ audioProject }: { audioProject: any }) => {
                     userId: user?.id as string,
                   }}
                 />
-              ))}
+              ))} */}
             <div ref={bottomRef}></div>
           </ScrollArea>
           <div className="mt-4 flex-none">

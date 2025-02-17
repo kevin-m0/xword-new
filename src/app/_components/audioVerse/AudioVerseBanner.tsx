@@ -1,7 +1,8 @@
 import React from "react";
 import { Button } from "~/components/ui/button";
 import NewAudioFlow from "../audioflow/NewAudioFlow";
-import MultiCampaignDynamicDialog from "../newflow/multi-campaign/MultiCampaignDynamicDialog";
+import MultiCampaignDynamicDialog from "../writerx/multi-campaign/MultiCampaignDynamicDialog";
+// import MultiCampaignDynamicDialog from "../newflow/multi-campaign/MultiCampaignDynamicDialog";
 
 const AudioVerseBanner = () => {
   return (

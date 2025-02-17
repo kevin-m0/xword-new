@@ -6,7 +6,7 @@ import Image from "next/image";
 import { cn } from "~/utils/utils";
 import { trpc } from "~/trpc/react";
 import { CustomTooltip } from "~/components/reusable/custom-tooltip";
-import AudioBox from "../soundverse/AudioBox";
+import AudioBox from "../soundVerse/AudioBox";
 
 function handleFilePreview(fileUrl: string, fileName: string) {
   const link = document.createElement("a");
