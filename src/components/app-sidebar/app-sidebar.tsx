@@ -38,37 +38,37 @@ const data = {
   navMain: [
     {
       title: "Home",
-      url: "#",
+      url: "/dashboard",
       icon: SquareTerminal,
       isActive: true,
     },
     {
       title: "Media Library",
-      url: "#",
+      url: "/media-library",
       icon: Bot,
-      items: [
-        {
-          title: "Genesis",
-          url: "#",
-        },
-        {
-          title: "Explorer",
-          url: "#",
-        },
-        {
-          title: "Quantum",
-          url: "#",
-        },
-      ],
+      // items: [
+      //   {
+      //     title: "Genesis",
+      //     url: "#",
+      //   },
+      //   {
+      //     title: "Explorer",
+      //     url: "#",
+      //   },
+      //   {
+      //     title: "Quantum",
+      //     url: "#",
+      //   },
+      // ],
     },
     {
       title: "Content Calendar",
-      url: "#",
+      url: "/content-calendar",
       icon: BookOpen,
     },
     {
       title: "Social Accounts",
-      url: "#",
+      url: "/social-accounts",
       icon: Settings2,
     },
   ],

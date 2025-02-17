@@ -5,7 +5,7 @@ import VideoVerseDocs from "./VideoVerseDocs";
 const VideoVerseComponent = () => {
   return (
     <div>
-      <div className="flex flex-col gap-8 p-5 px-10">
+      <div className="flex h-full flex-col gap-8 p-5 px-10">
         <VideoVerseBanner />
         <VideoVerseDocs />
       </div>

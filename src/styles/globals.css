@@ -102,3 +102,22 @@
     font-family: var(--font-inter), sans-serif;
   }
 }
+
+
+/* Customizing the scrollbar */
+::-webkit-scrollbar {
+  width: 5px; /* Width of the scrollbar */
+}
+
+::-webkit-scrollbar-track {
+  background: transparent; /* Background color of the track */
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888; /* Thumb color */
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555; /* Thumb color when hovered */
+}

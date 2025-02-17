@@ -224,12 +224,12 @@ export default function MediaAssetsAudioTable() {
 
       {isLoading && <TableLoader />}
 
-      {filteredAssets && !isLoading && filteredAssets.length === 0 && (
+      {/* {filteredAssets && !isLoading && filteredAssets.length === 0 && (
         <EmptyScreen
           title="No Audio Found"
           description="No audio found. Please upload audio to view."
         />
-      )}
+      )} */}
 
       <OnTableSelectActions
         selectedCount={selectedRowIds.length}

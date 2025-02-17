@@ -1,6 +1,6 @@
 "use client";
 
-import { useUser } from "@clerk/nextjs";
+import { useClerk, useUser } from "@clerk/nextjs";
 import { UserResource } from "@clerk/types";
 import {
   BadgeCheck,
@@ -30,6 +30,7 @@ import {
 
 export default function NavUser({ user }: { user: UserResource }) {
   const { isMobile } = useSidebar();
+  const { signOut } = useClerk();
 
   return (
     <SidebarMenu>
@@ -108,7 +109,7 @@ export default function NavUser({ user }: { user: UserResource }) {
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={() => signOut()}>
               <LogOut />
               Log out
             </DropdownMenuItem>

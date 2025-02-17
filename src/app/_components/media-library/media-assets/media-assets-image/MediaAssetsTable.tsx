@@ -224,13 +224,13 @@ export default function MediaAssetsTable() {
       )}
 
       {isLoading && <TableLoader />}
-
+      {/* 
       {filteredAssets && !isLoading && filteredAssets.length === 0 && (
         <EmptyScreen
           title="No Images Found"
           description="No images found. Please generate or upload images to view."
         />
-      )}
+      )} */}
 
       <OnTableSelectActions
         selectedCount={selectedRowIds.length}

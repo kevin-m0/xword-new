@@ -137,6 +137,8 @@ export default function MediaProjectDocsTable() {
     }
   };
 
+  if (isLoading) return <TableLoader />;
+
   return (
     <div className="w-full">
       {!isLoading && !isError && (assets?.length as number) > 0 && (
@@ -228,14 +230,12 @@ export default function MediaProjectDocsTable() {
         />
       )}
 
-      {isLoading && <TableLoader />}
-
-      {filteredAssets && !isLoading && filteredAssets.length === 0 && (
+      {/* {filteredAssets && !isLoading && filteredAssets.length === 0 && (
         <EmptyScreen
           title="No Docs Found"
           description="No docs found. Please create docs to view."
         />
-      )}
+      )} */}
 
       <OnTableSelectActions
         selectedCount={selectedRowIds.length}

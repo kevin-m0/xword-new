@@ -229,12 +229,12 @@ export default function MediaProjectDocsTable() {
       )}
 
       {isLoading && <TableLoader />}
-      {filteredAssets && !isLoading && filteredAssets.length === 0 && (
+      {/* {filteredAssets && !isLoading && filteredAssets.length === 0 && (
         <EmptyScreen
           title="No Videos Found"
           description="No videos found. Upload videos to view"
         />
-      )}
+      )} */}
 
       <OnTableSelectActions
         selectedCount={selectedRowIds.length}
