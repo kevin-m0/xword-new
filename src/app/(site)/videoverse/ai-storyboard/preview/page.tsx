@@ -1,5 +1,5 @@
-import { StoryboardFramePreview } from "@/app/(site)/(dashboard)/_components/Storyboard/StoryboardFramePreview";
 import { FC } from "react";
+import { StoryboardFramePreview } from "~/app/_components/storyboard/StoryboardFramePreview";
 
 interface pageProps {}
 

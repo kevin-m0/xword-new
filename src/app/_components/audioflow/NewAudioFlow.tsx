@@ -6,6 +6,7 @@ import NewAudioFlowManager from "./NewAudioFlowManager";
 import { useAtom } from "jotai";
 import { flowSteps } from "~/atoms/flowAtom";
 import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog";
+import { DialogTitle } from "@radix-ui/react-dialog";
 
 const NewAudioFlow = () => {
   const [step, setStep] = useAtom(flowSteps);
@@ -20,7 +21,8 @@ const NewAudioFlow = () => {
           Create Content
         </Button>
       </DialogTrigger>
-      <DialogContent className="xw-scrollbar bg-xw-sidebar max-h-[700px] w-full max-w-6xl overflow-y-auto rounded-2xl">
+      <DialogContent className="max-h-[700px] w-full max-w-6xl overflow-y-auto overflow-x-hidden rounded-2xl bg-black">
+        <DialogTitle></DialogTitle>
         <NewAudioFlowManager />
       </DialogContent>
     </Dialog>

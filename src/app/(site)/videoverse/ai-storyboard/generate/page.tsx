@@ -1,5 +1,5 @@
-import StoryboardGeneratorDialog from "@/app/(site)/(dashboard)/_components/Storyboard/StoryboardGeneratorDialog";
 import { FC } from "react";
+import StoryboardGeneratorDialog from "~/app/_components/storyboard/StoryboardGeneratorDialog";
 
 interface generateStoryboardPageProps {}
 

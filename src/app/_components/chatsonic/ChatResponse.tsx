@@ -4,7 +4,7 @@ import { useRef } from "react";
 import { Copy } from "lucide-react";
 import { Card, CardHeader, CardTitle } from "~/components/ui/card";
 import useCopyToClipboard from "~/hooks/chatsonic/useCopyToClipBoard";
-import { useUser } from "~/hooks/misc/useUser";
+import { useUser } from "@clerk/nextjs";
 import { ErrorToast, SuccessToast } from "../custom-toast";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
@@ -82,7 +82,7 @@ function ChatResponse({
 }: ChatResponseProp) {
   const imageRef = useRef<HTMLImageElement>(null);
   const [_, copy] = useCopyToClipboard();
-  const { data: user } = useUser();
+  const { user } = useUser();
 
   const handleCopyToClipBoard = async () => {
     // if (message.fileIds.some((id) => id.startsWith("image_"))) {
@@ -123,7 +123,7 @@ function ChatResponse({
             <AvatarImage
               src={
                 message.role === "user"
-                  ? (user?.image ?? "")
+                  ? (user?.imageUrl ?? "")
                   : "images/ai-avatar.png"
               }
             />

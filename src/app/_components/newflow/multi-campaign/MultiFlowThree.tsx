@@ -20,7 +20,7 @@ import { SelectValue } from "~/components/ui/select";
 import { useOrganization } from "@clerk/nextjs";
 import { marked } from "marked";
 import { useXWAlert } from "~/components/reusable/xw-alert";
-import { useUser } from "~/hooks/misc/useUser";
+import { useUser } from "@clerk/nextjs";
 import { trpc } from "~/trpc/react";
 import { MarkdownParser } from "~/lib/markdown-parser";
 import {
@@ -56,7 +56,7 @@ const MultiFlowThree = ({ closeDialog }: { closeDialog: () => void }) => {
   const [currentGenerating, setCurrentGenerating] = useState(0);
   const [isGenerating, setIsGenerating] = useState(false);
   const { organization: activeWorkspace } = useOrganization();
-  const { data: user } = useUser();
+  const { user } = useUser();
   const [isCampaignGenerated, setIsCampaignGenerated] = useState(false);
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
   const [isImageSelectorOpen, setIsImageSelectorOpen] = useState(false);

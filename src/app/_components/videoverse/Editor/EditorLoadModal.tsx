@@ -1,5 +1,5 @@
 import { Loader2 } from "lucide-react";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent } from "~/components/ui/dialog";
 
 interface LoadingModalProps {
   isOpen: boolean;
@@ -12,7 +12,7 @@ export function EditorLoadModal({
 }: LoadingModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={() => {}}>
-      <DialogContent className="sm:max-w-[425px] bg-black">
+      <DialogContent className="bg-black sm:max-w-[425px]">
         <div className="flex flex-col items-center justify-center space-y-4 py-6">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
           <p className="text-center text-sm font-medium text-muted-foreground">

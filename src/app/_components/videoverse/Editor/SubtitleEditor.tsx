@@ -1,19 +1,17 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "~/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Slider } from "@/components/ui/slider";
-import { cn } from "@/lib/utils";
+} from "~/components/ui/select";
 import { HexColorPicker } from "react-colorful";
-import { fontFamilyOptions } from "@/utils/loadRendleyFonts";
+import { fontFamilyOptions } from "~/utils/loadRendleyFonts";
 
 interface SubtitleEditorProps {
   rendley: any;
@@ -109,7 +107,7 @@ export default function SubtitleEditor({ rendley }: SubtitleEditorProps) {
     }
   };
   return (
-    <Card className="w-full max-w-md mt-4 border-none">
+    <Card className="mt-4 w-full max-w-md border-none">
       <CardHeader>
         <CardTitle>Subtitles</CardTitle>
       </CardHeader>
@@ -181,12 +179,12 @@ export default function SubtitleEditor({ rendley }: SubtitleEditorProps) {
               <Button
                 variant="outline"
                 size="icon"
-                className="w-8 h-8 rounded-full"
+                className="h-8 w-8 rounded-full"
                 style={{ backgroundColor: color }}
                 onClick={() => setColorPickerOpen(!colorPickerOpen)}
               ></Button>
               {colorPickerOpen && (
-                <div className="absolute z-50 mt-2 bg-white p-2 shadow-lg rounded-lg">
+                <div className="absolute z-50 mt-2 rounded-lg bg-white p-2 shadow-lg">
                   <HexColorPicker
                     color={color}
                     onChange={(newColor) => {
@@ -200,7 +198,7 @@ export default function SubtitleEditor({ rendley }: SubtitleEditorProps) {
           </div>
         </div>
 
-        <div className="space-y-2 z-0">
+        <div className="z-0 space-y-2">
           <label className="text-sm text-muted-foreground">Font Size</label>
           <div className="space-y-2">
             <div className="flex gap-2">

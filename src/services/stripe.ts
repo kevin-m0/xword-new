@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "~/server/db";
-import { PLANS } from "~/lib/constants";
+import { PLANS } from "~/lib/constant/constants";
 import { stripe } from "~/utils/stripe";
 import { getUser } from "~/utils/clerk-utility";
 

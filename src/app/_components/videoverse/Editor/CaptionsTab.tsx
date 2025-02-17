@@ -1,7 +1,7 @@
-import { loadFonts } from "@/utils/loadRendleyFonts";
+import { loadFonts } from "~/utils/loadRendleyFonts";
 import { SubtitlesClip } from "@rendley/sdk";
 import { FC, useState } from "react";
-import XWButton from "../../reusable/XWButton";
+import XWButton from "~/components/reusable/XWButton";
 import { toast } from "sonner";
 
 import { ClipStyle } from "@rendley/sdk";

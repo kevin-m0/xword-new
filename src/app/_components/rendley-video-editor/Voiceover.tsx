@@ -7,7 +7,7 @@ import {
 } from "~/components/ui/select";
 import { trpc } from "~/trpc/react";
 import { SpeedOptions } from "@prisma/client";
-import { useUser } from "~/hooks/misc/useUser";
+import { useUser } from "@clerk/nextjs";
 import { useGenerationHelpers } from "~/hooks/soundverse/useGenerationHelpers";
 import TopLoader from "~/components/loaders/top-loader";
 import { XWTextarea } from "~/components/reusable/XWTextarea";
@@ -27,7 +27,7 @@ const Voiceover: FC<VoiceoverProps> = ({ recording, rendley }: any) => {
   const [loadingVoiceover, setLoadingVoiceover] = useState(false);
 
   const { generateVoice } = useGenerationHelpers();
-  const { data: user } = useUser();
+  const { user } = useUser();
 
   const { data, isLoading, isError } = trpc.aws.getObjectURL.useQuery(
     {

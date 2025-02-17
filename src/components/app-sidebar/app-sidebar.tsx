@@ -29,16 +29,12 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMenuSkeleton,
 } from "~/components/ui/sidebar";
 
-import { usePathname } from "next/navigation";
+import { useUser } from "@clerk/nextjs";
 
 const data = {
-  user: {
-    name: "kevin",
-    email: "kevin@m0.ventures",
-    avatar: "",
-  },
   navMain: [
     {
       title: "Home",
@@ -77,16 +73,16 @@ const data = {
     },
   ],
   navSecondary: [
-    {
-      title: "Support",
-      url: "#",
-      icon: LifeBuoy,
-    },
-    {
-      title: "Feedback",
-      url: "#",
-      icon: Send,
-    },
+    // {
+    //   title: "Support",
+    //   url: "#",
+    //   icon: LifeBuoy,
+    // },
+    // {
+    //   title: "Feedback",
+    //   url: "#",
+    //   icon: Send,
+    // },
   ],
   projects: [
     {
@@ -130,14 +126,7 @@ const data = {
 export default function AppSidebar({
   ...props
 }: React.ComponentProps<typeof Sidebar>) {
-  // const pathname = usePathname();
-
-  // const hiddenSidebarRoutes = ["/dashboard"];
-
-  // const shouldHideSidebar = hiddenSidebarRoutes.includes(pathname);
-  // if (!shouldHideSidebar) {
-  //   return <div className="h-full w-10 bg-white"></div>;
-  // }
+  const { user } = useUser();
 
   return (
     <Sidebar variant="inset" {...props}>
@@ -166,8 +155,8 @@ export default function AppSidebar({
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        <React.Suspense fallback={<div>Loading...</div>}>
-          <NavUser user={data.user} />
+        <React.Suspense fallback={<SidebarMenuSkeleton />}>
+          {user && <NavUser user={user} />}
         </React.Suspense>
       </SidebarFooter>
     </Sidebar>

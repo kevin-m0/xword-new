@@ -9,7 +9,7 @@ import ChatResponse from "./ChatResponse";
 import { useAtomValue } from "jotai";
 import useMeasure from "~/hooks/misc/useMeasure";
 import { useSessionId } from "~/hooks/chatsonic/useSessionId";
-import { useUser } from "~/hooks/misc/useUser";
+import { useUser } from "@clerk/nextjs";
 import { isGeneratingResponseAtom } from "~/atoms";
 import { trpc } from "~/trpc/react";
 import useChatExist from "~/hooks/chatsonic/useChatExist";
@@ -29,7 +29,7 @@ const ChatSonicChatbox: React.FC<ChatSonicChatboxProps> = ({
   const [ref, { height }] = useMeasure();
   const bottomRef = useRef<HTMLDivElement | null>(null);
   const sessionId = useSessionId();
-  const { data: user } = useUser();
+  const { user } = useUser();
   const isGeneratingResponse = useAtomValue(isGeneratingResponseAtom);
   const utils = trpc.useUtils();
 
@@ -133,8 +133,8 @@ const ChatSonicChatbox: React.FC<ChatSonicChatboxProps> = ({
                 <ChatPrompt
                   key={key}
                   prompt={message}
-                  nameInitial={user?.name?.[0] ?? "U"}
-                  userImageSrc={user?.image || ""}
+                  nameInitial={user?.firstName?.[0] ?? "U"}
+                  userImageSrc={user?.imageUrl || ""}
                 />
               );
             } else if (message.role === Roles.AI) {

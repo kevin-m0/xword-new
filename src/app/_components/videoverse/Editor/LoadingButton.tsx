@@ -2,7 +2,7 @@
 
 import LoadingModal from "./LoadingModal";
 import { useState } from "react";
-import XWButton from "../../reusable/XWButton";
+import XWButton from "~/components/reusable/XWButton";
 
 export default function LoadingButton() {
   const [open, setOpen] = useState(false);

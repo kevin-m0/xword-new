@@ -52,7 +52,7 @@ const CaptionCanvas: FC<CaptionCanvasProps> = ({ onClick }) => {
 
         // Draw the caption
         ctx.fillText(
-          captions[captionIndex],
+          captions[captionIndex] as string,
           canvas.width / 2,
           canvas.height / 2,
         );

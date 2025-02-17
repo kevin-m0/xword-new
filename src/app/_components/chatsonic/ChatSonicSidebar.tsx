@@ -14,6 +14,7 @@ import {
   MessageSquare,
   Network,
   Search,
+  PanelLeft,
 } from "lucide-react";
 import { useState } from "react";
 import { Input } from "~/components/ui/input";
@@ -101,7 +102,7 @@ const ChatSonicSidebar = ({
   };
 
   return (
-    <div className="flex h-full w-full flex-col gap-5 p-5">
+    <div className="flex h-full w-full flex-col gap-5 rounded-br-lg rounded-tr-lg p-5">
       <Button variant="default" onClick={handleNewChat}>
         New Chat
       </Button>

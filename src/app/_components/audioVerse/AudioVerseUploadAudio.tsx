@@ -12,7 +12,7 @@ import { CgSpinner } from "react-icons/cg";
 import { useXWAlert } from "~/components/reusable/xw-alert";
 import { trpc } from "~/trpc/react";
 import { useGetActiveSpace } from "~/hooks/workspace/useGetActiveSpace";
-import { useUser } from "~/hooks/misc/useUser";
+import { useUser } from "@clerk/nextjs";
 import { uploadFile } from "~/services/aws-file-upload";
 import { Dialog } from "@radix-ui/react-dialog";
 import { DialogHeader } from "~/components/reusable/xw-dialog";
@@ -27,7 +27,7 @@ const AudioVerseUploadAudio = () => {
   const utils = trpc.useUtils();
   const { data: defaultSpace } = useGetActiveSpace();
 
-  const { data: user } = useUser();
+  const { user } = useUser();
 
   const { mutateAsync: getAudioMetadata, isPending: fetchingMetadata } =
     trpc.audioProject.getAudioProjectMetadata.useMutation();

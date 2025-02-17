@@ -1,16 +1,15 @@
 "use client";
 
-import { LoadingSpinner } from "@/components/skeletons/LoadingSpinner";
-import { TextInput } from "@/app/(site)/(dashboard)/_components/Storyboard/TextInput";
-import { StoryboardFrame, StoryboardStyle } from "@/types";
+import { StoryboardFrame, StoryboardStyle } from "~/types";
 import { PenTool } from "lucide-react";
 import { FC, useState } from "react";
-import TopbarComponent from "../../_components/topbar/TopbarComponent";
 import { toast } from "sonner";
-import { extractScriptContent } from "@/utils/storyboard";
+import { extractScriptContent } from "~/utils/storyboard";
 import { useRouter } from "next/navigation";
 import { useAtom } from "jotai";
-import { storyBoardScriptAtom } from "@/atoms";
+import { storyBoardScriptAtom } from "~/atoms";
+import { LoadingSpinner } from "~/components/loaders/LoadingSpinner";
+import { TextInput } from "~/app/_components/storyboard/TextInput";
 
 interface StoryboardProps {}
 
@@ -84,28 +83,27 @@ const Storyboard: FC<StoryboardProps> = ({}) => {
 
   return (
     <div>
-      <TopbarComponent />
-      <div className="flex items-center min-w-6xl min-h-[90vh]">
-        <div className="mx-auto w-[50vw] p-8 space-y-10">
-          <header className="text-center space-y-4 animate-fade-in">
-            <h1 className="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-indigo-600">
+      <div className="min-w-6xl flex min-h-[90vh] items-center">
+        <div className="mx-auto w-[50vw] space-y-10 p-8">
+          <header className="animate-fade-in space-y-4 text-center">
+            <h1 className="bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-5xl font-extrabold text-transparent">
               Storyboard Generator
             </h1>
-            <p className="text-lg text-gray-600 font-medium">
+            <p className="text-lg font-medium text-gray-600">
               Transform your story concepts into visual narratives
             </p>
           </header>
 
           <main className="space-y-10">
             {error && (
-              <div className="bg-red-50 border-l-4 border-red-500 text-red-700 px-6 py-4 rounded-lg shadow-md animate-shake">
+              <div className="animate-shake rounded-lg border-l-4 border-red-500 bg-red-50 px-6 py-4 text-red-700 shadow-md">
                 {error}
               </div>
             )}
 
-            <section className="space-y-6 bg-black p-8 rounded-2xl shadow-lg transition-all duration-300 hover:shadow-xl">
-              <h2 className="text-3xl font-bold flex items-center gap-3 text-indigo-700">
-                <PenTool className="w-8 h-8" />
+            <section className="space-y-6 rounded-2xl bg-black p-8 shadow-lg transition-all duration-300 hover:shadow-xl">
+              <h2 className="flex items-center gap-3 text-3xl font-bold text-indigo-700">
+                <PenTool className="h-8 w-8" />
                 Story Concept
               </h2>
               <TextInput
@@ -117,9 +115,7 @@ const Storyboard: FC<StoryboardProps> = ({}) => {
               <button
                 onClick={handleGenerateScript}
                 disabled={isGeneratingScript || concept.length < 50}
-                className="w-full md:w-auto px-8 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg font-semibold 
-                hover:from-indigo-700 hover:to-purple-700 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed 
-                transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-md"
+                className="w-full transform rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 px-8 py-3 font-semibold text-white shadow-md transition-all duration-300 hover:scale-105 hover:from-indigo-700 hover:to-purple-700 active:scale-95 disabled:cursor-not-allowed disabled:from-gray-400 disabled:to-gray-500 md:w-auto"
               >
                 {isGeneratingScript ? (
                   <LoadingSpinner text="Generating script..." />

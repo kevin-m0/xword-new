@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
-import { docs } from "~/lib/constant/chatsonic.constants";
 import XWGradDiv from "~/components/reusable/XWGradDiv";
 import { Button } from "~/components/ui/button";
 import { ChevronsUpDown, MoreHorizontal } from "lucide-react";
@@ -37,6 +36,7 @@ import {
   XWDropdownTrigger,
 } from "~/components/reusable/xw-dropdown";
 import { useGetActiveSpace } from "~/hooks/workspace/useGetActiveSpace";
+import { docs } from "~/lib/constant/writerx.constants";
 
 type ViewMode = "grid" | "table";
 

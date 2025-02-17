@@ -1,6 +1,8 @@
+import { SignedIn, SignedOut, SignIn, SignOutButton } from "@clerk/nextjs";
 import { GalleryVerticalEnd } from "lucide-react";
 import Image from "next/image";
-import { LoginForm } from "~/components/login-form/login-form";
+import Link from "next/link";
+import { Button } from "~/components/ui/button";
 
 export default function LoginPage() {
   return (
@@ -25,7 +27,14 @@ export default function LoginPage() {
         </div>
         <div className="flex flex-1 items-center justify-center">
           <div className="w-full max-w-xs">
-            <LoginForm />
+            {/* <LoginForm /> */}
+            <SignedIn>
+              <div className="flex flex-col gap-4 items-center justify-center">
+              <Link href={"/dashboard"}><Button>Go to Dashboard</Button></Link><SignOutButton />
+              </div>
+            </SignedIn>
+            <SignedOut><SignIn /></SignedOut>
+            
           </div>
         </div>
       </div>

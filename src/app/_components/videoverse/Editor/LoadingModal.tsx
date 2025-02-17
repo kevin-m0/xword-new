@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Dialog, DialogContent, DialogOverlay } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogOverlay } from "~/components/ui/dialog";
 
 interface LoadingModalProps {
   isOpen: boolean;
@@ -48,18 +48,18 @@ export default function LoadingModal({ isOpen }: LoadingModalProps) {
     <Dialog open={isOpen} onOpenChange={() => {}}>
       <DialogOverlay className="bg-black/50" />
       <DialogContent
-        className="sm:max-w-md bg-[#1a1a1a] border-none"
+        className="border-none bg-[#1a1a1a] sm:max-w-md"
         onPointerDownOutside={(e) => e.preventDefault()}
         onEscapeKeyDown={(e) => e.preventDefault()}
       >
         <div className="flex flex-col items-center space-y-6 py-8">
           {/* Logo */}
-          <div className="w-12 h-12">
+          <div className="h-12 w-12">
             <svg
               viewBox="0 0 24 24"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
-              className="w-full h-full text-white"
+              className="h-full w-full text-white"
             >
               <path
                 d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2Z"
@@ -86,15 +86,15 @@ export default function LoadingModal({ isOpen }: LoadingModalProps) {
           </div>
 
           {/* Progress Bar */}
-          <div className="w-full bg-gray-700 rounded-full h-2.5">
+          <div className="h-2.5 w-full rounded-full bg-gray-700">
             <div
-              className="bg-white h-2.5 rounded-full transition-all duration-300"
+              className="h-2.5 rounded-full bg-white transition-all duration-300"
               style={{ width: `${progress}%` }}
             />
           </div>
 
           {/* Loading Text */}
-          <div className="flex justify-between w-full text-sm text-gray-400">
+          <div className="flex w-full justify-between text-sm text-gray-400">
             <span>{messages[messageIndex]}</span>
             <span>{progress}%</span>
           </div>
