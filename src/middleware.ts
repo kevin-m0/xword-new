@@ -5,19 +5,27 @@ const isPublicRoute = createRouteMatcher(['/sign-in(.*)', '/sign-up(.*)'])
 
 const isHomePage = createRouteMatcher(['/'])
 
+const isOnboardingPage = createRouteMatcher(['/getting-started(.*)'])
+
 
 export default clerkMiddleware(async (auth, req) => {
   const { userId } = await auth()
 
-  const pathname = req.nextUrl.pathname;
-
   const hostname = req.headers.get("host")!;
 
-  const subdomain = hostname.split(".")[0]; 
+  const subdomain = hostname.split(".")[0];
+
+  // find a logic for this. if the user is not a first time user, redirect to dashboard
+  // else the user has not completed the onboarding process, redirect to onboarding page
+  const isFirstTimeUser = false
 
 
   if (!userId && !isPublicRoute(req) && !isHomePage(req)) {
     return NextResponse.redirect(new URL("/sign-in", req.url));
+  }
+
+  if (userId && isOnboardingPage(req) && !isFirstTimeUser) {
+    return NextResponse.redirect(new URL("/dashboard", req.url))
   }
 
   if (userId && isPublicRoute(req)) {

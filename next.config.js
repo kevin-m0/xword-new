@@ -6,17 +6,17 @@ import "./src/env.js";
 
 /** @type {import("next").NextConfig} */
 const config = {
-    images:{
-        remotePatterns: [
-            {
-              protocol: 'https',
-              hostname: 'images.unsplash.com',
-              port: '',
-              pathname: '/',
-              search: '',
-            },
-          ],
-    }
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'img.clerk.com',
+        port: '',
+        pathname: '/**',  // Allows any path under img.clerk.com
+        search: '',
+      },
+    ],
+  },
 };
 
 export default config;
