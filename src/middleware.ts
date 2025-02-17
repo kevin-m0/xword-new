@@ -20,11 +20,10 @@ export default clerkMiddleware(async (auth, req) => {
     return NextResponse.redirect(new URL("/sign-in", req.url));
   }
 
-  if (userId && isPublicRoute(req) && isHomePage(req)) {
+  if (userId && isPublicRoute(req)) {
     NextResponse.rewrite(new URL(`/${subdomain}`, req.url));
     return NextResponse.redirect(new URL(`/dashboard`, req.url));
   }
-
 })
 
 export const config = {

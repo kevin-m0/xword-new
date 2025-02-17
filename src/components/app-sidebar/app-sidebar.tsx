@@ -5,8 +5,12 @@ import dynamic from "next/dynamic";
 import {
   BookOpen,
   Bot,
+  Cable,
+  Calendar,
   Command,
   Frame,
+  Home,
+  Library,
   LifeBuoy,
   Map,
   PieChart,
@@ -39,13 +43,13 @@ const data = {
     {
       title: "Home",
       url: "/dashboard",
-      icon: SquareTerminal,
+      icon: Home,
       isActive: true,
     },
     {
       title: "Media Library",
       url: "/media-library",
-      icon: Bot,
+      icon: Library,
       // items: [
       //   {
       //     title: "Genesis",
@@ -64,12 +68,12 @@ const data = {
     {
       title: "Content Calendar",
       url: "/content-calendar",
-      icon: BookOpen,
+      icon: Calendar,
     },
     {
       title: "Social Accounts",
       url: "/social-accounts",
-      icon: Settings2,
+      icon: Cable,
     },
   ],
   navSecondary: [
@@ -97,27 +101,27 @@ const data = {
     },
     {
       name: "PhotoSonic",
-      url: "photosonic",
+      url: "/photosonic",
       icon: Map,
     },
     {
       name: "WriterX",
-      url: "writerx",
+      url: "/writerx",
       icon: Map,
     },
     {
       name: "ContentVerse",
-      url: "contentverse",
+      url: "/contentverse",
       icon: Map,
     },
     {
       name: "AudioVerse",
-      url: "audioverse",
+      url: "/audioverse",
       icon: Map,
     },
     {
       name: "VideoVerse",
-      url: "videoverse",
+      url: "/videoverse",
       icon: Map,
     },
   ],
@@ -129,7 +133,7 @@ export default function AppSidebar({
   const { user } = useUser();
 
   return (
-    <Sidebar variant="inset" {...props}>
+    <Sidebar collapsible="icon" variant="inset" {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
