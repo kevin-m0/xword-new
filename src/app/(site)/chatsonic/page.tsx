@@ -13,7 +13,7 @@ import ChatSonicMobileSidebar from "~/app/_components/chatsonic/ChatSonicMobileS
 import ChatSonicChatbox from "~/app/_components/chatsonic/ChatSonicChatbox";
 import ChatSonicChatInput from "~/app/_components/chatsonic/ChatSonicChatInput";
 
-const page = () => {
+const Page = () => {
   const [mode, setMode] = useState<"Normal" | "Docs" | "Web">("Normal");
   const [selectedCharacter, setSelectedCharacter] = useState<string>("wizard");
   const [selectedCategory, setSelectedCategory] = useState<string>("None");
@@ -67,7 +67,7 @@ const page = () => {
   });
   return (
     <div className="flex h-dvh w-full overflow-hidden">
-      <div className="bg-xw-sidebar hidden w-full max-w-xs md:flex">
+      <div className="hidden w-full max-w-xs bg-xw-sidebar md:flex">
         <ScrollArea className="w-full">
           <ChatSonicSidebar
             openSections={openSections}
@@ -115,4 +115,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

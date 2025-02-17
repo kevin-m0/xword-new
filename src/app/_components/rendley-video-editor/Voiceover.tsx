@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import {
   Select,
   SelectContent,
@@ -29,28 +29,42 @@ const Voiceover: FC<VoiceoverProps> = ({ recording, rendley }: any) => {
   const { generateVoice } = useGenerationHelpers();
   const { user } = useUser();
 
-  const { data, isLoading, isError } = trpc.aws.getObjectURL.useQuery(
+  const {
+    data: fileUrl,
+    isLoading,
+    isError,
+    isSuccess: fetchingFileUrlSuccess,
+  } = trpc.aws.getObjectURL.useQuery(
     {
       key: fileKey as string,
     },
     {
       enabled: ready,
-      onSuccess: async (data) => {
-        setLoadingVoiceover(true);
-        const rendleyVideoEditor = rendley.current;
-        const engineInstance = await rendleyVideoEditor.getEngine();
-        const engine = engineInstance.getInstance();
-        const mediaId = await engine.getLibrary().addMedia(data);
-        const time = await engine.getTimeline().currentTime;
-        const videoLayer = engine.getTimeline().createLayer();
-        const videoClip = await videoLayer.addClip({
-          mediaDataId: mediaId,
-          startTime: time,
-        });
-        setLoadingVoiceover(false);
-      },
     },
   );
+
+  useEffect(() => {
+    if (fetchingFileUrlSuccess) {
+      const addMediaToEditor = async () => {
+        try {
+          const rendleyVideoEditor = rendley.current;
+          const engineInstance = await rendleyVideoEditor.getEngine();
+          const engine = engineInstance.getInstance();
+          const mediaId = await engine.getLibrary().addMedia(fileUrl);
+          const time = await engine.getTimeline().currentTime;
+          const videoLayer = engine.getTimeline().createLayer();
+          await videoLayer.addClip({
+            mediaDataId: mediaId,
+            startTime: time,
+          });
+        } catch (err) {
+          console.error("Error adding media to editor:", err);
+        }
+      };
+
+      addMediaToEditor();
+    }
+  }, [fetchingFileUrlSuccess, fileUrl]);
 
   const generateVoiceover = async (userText: string, voiceId: string) => {
     const payload = {

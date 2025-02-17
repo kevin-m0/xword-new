@@ -22,22 +22,22 @@ const StoryboardStyleSelector: FC<StoryboardStyleSelectorProps> = ({
 
   const slides = [
     {
-      url: "https://images.unsplash.com/photo-1469474968028-56623f02e42e",
+      url: "/images/flow.jpeg",
       alt: "Scenic mountain landscape",
       title: "Realistic",
     },
     {
-      url: "https://images.unsplash.com/photo-1426604966848-d7adac402bff",
+      url: "/images/flow.jpeg",
       alt: "Serene lake view",
       title: "Cartoon",
     },
     {
-      url: "https://images.unsplash.com/photo-1472214103451-9374bd1c798e",
+      url: "/images/flow.jpeg",
       alt: "Forest pathway",
       title: "Anime",
     },
     {
-      url: "https://images.unsplash.com/photo-1472214103451-9374bd1c798e",
+      url: "/images/flow.jpeg",
       alt: "Forest pathway",
       title: "Watercolor",
     },

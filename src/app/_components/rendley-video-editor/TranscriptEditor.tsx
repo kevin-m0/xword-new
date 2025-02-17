@@ -46,6 +46,8 @@ export default function TranscriptEditor({
   const [selectedText, setSelectedText] = useState<string>("");
   const [generatingBroll, setGeneratingBroll] = useState<boolean>(false);
   const [fileKey, setFileKey] = useState("");
+  const rendleyRef = useRef(null);
+  const [isEditorReady, setIsEditorReady] = useState(false);
 
   const { mutateAsync: stockVideoBroll } =
     trpc.videoProject.brollsCreation.useMutation();
@@ -341,26 +343,36 @@ export default function TranscriptEditor({
     // await clip.offload();
   };
 
-  const { data: fileUrl } = trpc.aws.getObjectURL.useQuery(
-    {
-      key: fileKey,
-    },
-    {
-      enabled: !!fileKey,
-      onSuccess: async (data) => {
-        const rendleyVideoEditor = rendley.current;
-        const engineInstance = await rendleyVideoEditor.getEngine();
-        const engine = engineInstance.getInstance();
-        const mediaId = await engine.getLibrary().addMedia(data);
-        const time = await engine.getTimeline().currentTime;
-        const videoLayer = engine.getTimeline().createLayer();
-        const videoClip = await videoLayer.addClip({
-          mediaDataId: mediaId,
-          startTime: time,
-        });
-      },
-    },
-  );
+  const {
+    data: fileUrl,
+    isLoading: fetchingFileUrl,
+    error,
+    isSuccess: fetchingFileUrlSuccess,
+  } = trpc.aws.getObjectURL.useQuery({ key: fileKey }, { enabled: !!fileKey });
+
+  useEffect(() => {
+    if (fetchingFileUrlSuccess) {
+      const addMediaToEditor = async () => {
+        try {
+          const rendleyVideoEditor = rendleyRef.current;
+          //@ts-ignore
+          const engineInstance = await rendleyVideoEditor.getEngine();
+          const engine = engineInstance.getInstance();
+          const mediaId = await engine.getLibrary().addMedia(fileUrl);
+          const time = await engine.getTimeline().currentTime;
+          const videoLayer = engine.getTimeline().createLayer();
+          await videoLayer.addClip({
+            mediaDataId: mediaId,
+            startTime: time,
+          });
+        } catch (err) {
+          console.error("Error adding media to editor:", err);
+        }
+      };
+
+      addMediaToEditor();
+    }
+  }, [fetchingFileUrlSuccess, fileUrl, isEditorReady]);
 
   const createBrolls = async (
     startTime: number,
@@ -420,17 +432,6 @@ export default function TranscriptEditor({
         engine.getDisplay().getHeight(),
       );
       videoClip.style.setScale(scale[0], scale[1]);
-
-      // let clip1MediaData = engine.getLibrary().getMediaById(mediaId);
-      // let scale1 = stretchSize(
-      //   videoClip.style.getRawWidth(),
-      //   videoClip.style.getRawHeight(),
-      //   engine.getDisplay().getWidth(),
-      //   engine.getDisplay().getHeight(),
-      // );
-      // if (type === "video") {
-      //   videoClip.style.setScale(scale1[0], scale1[1]);
-      // }
     } else {
       console.log("no video provided from pexel");
     }

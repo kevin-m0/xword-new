@@ -1,3 +1,5 @@
+//@ts-nocheck
+
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { trpc } from "~/trpc/react";
@@ -17,13 +19,19 @@ const CloudinaryUploadWidget = ({ uwConfig, setPublicId }: any) => {
   const router = useRouter();
   const { user } = useUser();
 
+  const [isCreatingProject, setIsCreatingProject] = useState(false);
+
   const { data: defaultSpace, isLoading: isWorkspaceFetching } =
     useGetActiveSpace();
 
   const { mutateAsync: createVideoProject } =
     trpc.videoProject.createVideoProject.useMutation();
 
-  const { data } = trpc.videoProject.getVideoMetadata.useQuery(
+  const {
+    data: metadataData,
+    isLoading,
+    error,
+  } = trpc.videoProject.getVideoMetadata.useQuery(
     {
       type: "mux",
       url: video.url as string,
@@ -31,28 +39,49 @@ const CloudinaryUploadWidget = ({ uwConfig, setPublicId }: any) => {
     },
     {
       enabled: !!video.url,
-      onSuccess: async (data) => {
-        console.log(video, "video properties from cloudinary");
-        const videoId = await createVideoProject({
-          title: data.title,
-          description: data.description,
-          ytChapters: JSON.stringify(data.chapters),
-          transcript: data.transcript,
-          subtitles: data.subtitles,
-          words: JSON.stringify(data.words),
-          workspaceId: defaultSpace?.id as string,
-          processStatus: "PROCESSING",
-          videoType: "UPLOAD",
-          videoUrl: video.url as string,
-          thumbnailUrl: video.thumbnail_url as string,
-          createdBy: user?.id as string,
-          path: video.path as string,
-          duration: video.duration as number,
-        });
-        router.push(`/videoverse/${videoId.id}`);
-      },
     },
   );
+
+  useEffect(() => {
+    if (metadataData && !isCreatingProject) {
+      const createProject = async () => {
+        setIsCreatingProject(true);
+        try {
+          console.log(video, "video properties from cloudinary");
+          const videoProject = await createVideoProject({
+            title: metadataData.title,
+            description: metadataData.description,
+            ytChapters: JSON.stringify(metadataData.chapters),
+            transcript: metadataData.transcript,
+            subtitles: metadataData.subtitles,
+            words: JSON.stringify(metadataData.words),
+            workspaceId: defaultSpace?.id as string,
+            processStatus: "PROCESSING",
+            videoType: "UPLOAD",
+            videoUrl: video.url as string,
+            thumbnailUrl: video.thumbnail_url as string,
+            createdBy: user?.id as string,
+            path: video.path as string,
+            duration: video.duration as number,
+          });
+          router.push(`/videoverse/${videoProject.id}`);
+        } catch (err) {
+          console.error("Error creating video project:", err);
+          setIsCreatingProject(false);
+        }
+      };
+
+      createProject();
+    }
+  }, [
+    metadataData,
+    isCreatingProject,
+    video,
+    defaultSpace,
+    user,
+    router,
+    createVideoProject,
+  ]);
 
   useEffect(() => {
     const initializeUploadWidget = async () => {

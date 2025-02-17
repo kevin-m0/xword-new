@@ -1,8 +1,8 @@
 import React from "react";
 import MediaComponent from "~/app/_components/media-library/MediaComponent";
 
-const page = () => {
+const Page = () => {
   return <MediaComponent />;
 };
 
-export default page;
+export default Page;

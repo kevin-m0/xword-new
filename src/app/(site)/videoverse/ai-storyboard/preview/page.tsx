@@ -3,7 +3,7 @@ import { StoryboardFramePreview } from "~/app/_components/storyboard/StoryboardF
 
 interface pageProps {}
 
-const page: FC<pageProps> = ({}) => {
+const Page: FC<pageProps> = ({}) => {
   return (
     <div>
       <StoryboardFramePreview
@@ -15,4 +15,4 @@ const page: FC<pageProps> = ({}) => {
   );
 };
 
-export default page;
+export default Page;

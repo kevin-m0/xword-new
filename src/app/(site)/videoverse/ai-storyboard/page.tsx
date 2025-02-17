@@ -4,12 +4,12 @@ import { StoryboardFrame, StoryboardStyle } from "~/types";
 import { PenTool } from "lucide-react";
 import { FC, useState } from "react";
 import { toast } from "sonner";
-import { extractScriptContent } from "~/utils/storyboard";
 import { useRouter } from "next/navigation";
 import { useAtom } from "jotai";
 import { storyBoardScriptAtom } from "~/atoms";
 import { LoadingSpinner } from "~/components/loaders/LoadingSpinner";
 import { TextInput } from "~/app/_components/storyboard/TextInput";
+import { extractScriptContent } from "~/utils/utils";
 
 interface StoryboardProps {}
 
@@ -124,49 +124,6 @@ const Storyboard: FC<StoryboardProps> = ({}) => {
                 )}
               </button>
             </section>
-
-            {/* {script && (
-              <section className="space-y-6 bg-white p-8 rounded-2xl shadow-lg transition-all duration-300 hover:shadow-xl animate-slide-up">
-                <h2 className="text-3xl font-bold text-indigo-700">
-                  Generated Script
-                </h2>
-                <ScriptEditor
-                  value={script}
-                  onChange={setScript}
-                  disabled={isGeneratingStoryboard}
-                />
-                <div className="flex flex-col md:flex-row gap-4">
-                  <StyleSelector value={style} onChange={setStyle} />
-                  <button
-                    onClick={handleCreateStoryboard}
-                    disabled={isGeneratingStoryboard || !script}
-                    className="px-8 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-lg font-semibold
-                    hover:from-emerald-700 hover:to-teal-700 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed
-                    transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-md"
-                  >
-                    {isGeneratingStoryboard ? (
-                      <LoadingSpinner text="Creating storyboard..." />
-                    ) : (
-                      "Create Storyboard"
-                    )}
-                  </button>
-                </div>
-              </section>
-            )} */}
-
-            {/* {frames.length > 0 && (
-            <section className="space-y-6 bg-white p-8 rounded-2xl shadow-lg transition-all duration-300 hover:shadow-xl animate-slide-up">
-              <h2 className="text-3xl font-bold flex items-center gap-3 text-indigo-700">
-                <Film className="w-8 h-8" />
-                Storyboard Preview
-              </h2>
-              <StoryboardPreview
-                frames={frames}
-                isGenerating={isGeneratingStoryboard}
-                totalFrames={10}
-              />
-            </section>
-          )} */}
           </main>
         </div>
       </div>

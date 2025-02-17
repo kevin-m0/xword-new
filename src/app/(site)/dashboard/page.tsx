@@ -4,7 +4,7 @@ import React from "react";
 
 import { useUser } from "@clerk/nextjs";
 
-const page = () => {
+const Page = () => {
   const { isLoaded, user } = useUser();
 
   if (isLoaded) {
@@ -20,4 +20,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

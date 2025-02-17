@@ -1,8 +1,8 @@
 import React from "react";
 import AudioVerseComponent from "~/app/_components/audioVerse/AudioVerseComponent";
 
-const page = () => {
+const Page = () => {
   return <AudioVerseComponent />;
 };
 
-export default page;
+export default Page;

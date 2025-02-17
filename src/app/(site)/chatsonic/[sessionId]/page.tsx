@@ -2,8 +2,8 @@
 import React from "react";
 import ChatSonicComponent from "~/app/_components/chatsonic/ChatSonicComponent";
 
-const page = () => {
+const Page = () => {
   return <ChatSonicComponent />;
 };
 
-export default page;
+export default Page;

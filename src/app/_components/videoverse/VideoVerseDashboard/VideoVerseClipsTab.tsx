@@ -1,12 +1,14 @@
-import React, { useState, useEffect, useRef } from "react";
+"use client";
+
+import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { useParams } from "next/navigation";
 import { Separator } from "~/components/ui/separator";
 import { Copy, Loader2 } from "lucide-react";
 import XWSecondaryButton from "~/components/reusable/XWSecondaryButton";
-import { type ViralClips } from "@prisma/client";
-import { trim } from "@cloudinary/url-gen/actions/videoEdit";
+import type { ViralClips } from "@prisma/client";
 import { Cloudinary } from "@cloudinary/url-gen";
+import { trim } from "@cloudinary/url-gen/actions/videoEdit";
 import { fill } from "@cloudinary/url-gen/actions/resize";
 import { autoGravity } from "@cloudinary/url-gen/qualifiers/gravity";
 import { pollRequest } from "~/utils/utils";
@@ -21,21 +23,9 @@ interface Timestamp {
 
 interface VideoMetadata {
   title: string;
-  transcript?: string;
-  subtitles?: string;
-  words?: string;
-}
-
-interface ClipData {
-  title: string;
-  description: string;
-  parentVideoId: string;
-  workspaceId: string;
-  videoUrl: string;
-  processStatus: string;
-  thumbnailUrl: string;
-  transcript?: string;
-  subtitles?: string;
+  transcript: string;
+  subtitles: string;
+  words: any[];
 }
 
 const CLOUDINARY_CLOUD_NAME = "dngbwns3v";
@@ -43,14 +33,11 @@ const MIN_VIDEO_DURATION = 60; // seconds
 const CLOUDINARY_UPLOAD_URL =
   "https://api.cloudinary.com/v1_1/dngbwns3v/upload";
 
-const VideoVerseClipsTab = () => {
+const VideoVerseClipsTabRefactored = () => {
   const params = useParams();
-  const [parentId, setParentId] = useState<string>("");
   const [creatingClips, setCreatingClips] = useState(false);
   const videoId = params["video-id"] as string;
   const { data: activeWorkspace } = useGetActiveSpace();
-  const [childrenClips, setChildrenClips] = useState<"yes" | "no" | null>(null);
-  const childrenClipRef = useRef("");
   const [clipsGenerated, setClipsGenerated] = useState(false);
   const stopRef = useRef(false);
 
@@ -58,33 +45,18 @@ const VideoVerseClipsTab = () => {
     cloud: { cloudName: CLOUDINARY_CLOUD_NAME },
   });
 
-  const { mutateAsync: saveClipToDB } =
+  const createVideoProjectMutation =
     trpc.videoProject.createViralClip.useMutation();
 
-  // Query for viral clips
   const {
     data: viralClips,
     isLoading: isLoadingClipsFromDB,
     error: clipsError,
   } = trpc.videoProject.getViralClips.useQuery<ViralClips[]>(
     { id: videoId },
-    {
-      enabled: Boolean(videoId),
-      refetchOnWindowFocus: false,
-      onSuccess: (data) => {
-        console.log(data, "clips from db");
-        if (data.length > 0) {
-          childrenClipRef.current = "yes";
-          console.log("clips found");
-        } else {
-          childrenClipRef.current = "no";
-          stopRef.current = false;
-        }
-      },
-    },
+    { enabled: Boolean(videoId), refetchOnWindowFocus: false },
   );
 
-  // Query for parent video data
   const {
     data: video,
     isLoading: videoLoading,
@@ -92,54 +64,36 @@ const VideoVerseClipsTab = () => {
   } = trpc.videoProject.getVideoProjectById.useQuery(
     { id: videoId },
     {
-      enabled: childrenClipRef.current === "no" && viralClips?.length === 0,
+      enabled: Boolean(videoId) && !viralClips?.length,
       refetchOnWindowFocus: false,
     },
   );
 
-  // Generate viral clip timestamps
   const {
-    data: viralClipTimestamps = [],
+    data: viralClipTimestamps,
     isLoading: loadingViralClipTimestamps,
     error: viralClipError,
   } = trpc.videoProject.generateViralClipTimestamps.useQuery(
-    {
-      url: video?.videoUrl as string,
-      type: "mux",
-    },
-    {
-      enabled:
-        !!video?.videoUrl &&
-        !childrenClipRef.current &&
-        viralClips?.length === 0,
-      onSuccess: (data) => {
-        console.log(data, "timestamps");
-        const video2 = {
-          videoUrl: video?.videoUrl as string, // Replace with actual video URL
-          thumbnailUrl: video?.thumbnailUrl as string,
-        };
-        if (stopRef.current) return;
-        createClips(data, video2, videoId, {
-          setCreatingClips,
-          setClipsGenerated,
-        });
-      },
-    },
+    { url: video?.videoUrl as string, type: "mux" },
+    { enabled: !!video?.videoUrl && !viralClips?.length },
   );
+
+  useEffect(() => {
+    if (
+      viralClipTimestamps &&
+      video &&
+      !viralClips?.length &&
+      !stopRef.current
+    ) {
+      createClips(viralClipTimestamps, video, videoId);
+    }
+  }, [viralClipTimestamps, video, videoId, viralClips]);
 
   const createClips = async (
     timestamps: Timestamp[],
-    video: { videoUrl: string; thumbnailUrl: string },
+    video: { videoUrl: string; thumbnailUrl: string | null },
     videoId: string,
-    {
-      setCreatingClips,
-      setClipsGenerated,
-    }: {
-      setCreatingClips: (value: boolean) => void;
-      setClipsGenerated: (value: boolean) => void;
-    },
   ) => {
-    console.log("inside create clips");
     if (!timestamps.length || !video?.videoUrl) {
       console.log("No timestamps generated");
       return;
@@ -152,13 +106,20 @@ const VideoVerseClipsTab = () => {
       if (!publicId) throw new Error("Invalid video URL");
 
       for (const clip of timestamps) {
-        await processClip(clip, publicId, video, videoId);
+        await processClip(
+          clip,
+          publicId,
+          {
+            videoUrl: video.videoUrl,
+            thumbnailUrl: video.thumbnailUrl as string,
+          },
+          videoId,
+        );
       }
 
       setClipsGenerated(true);
     } catch (error) {
       console.error("Error creating clips:", error);
-      throw error; // Re-throw to handle in the component
     } finally {
       setCreatingClips(false);
     }
@@ -170,28 +131,22 @@ const VideoVerseClipsTab = () => {
     video: { videoUrl: string; thumbnailUrl: string },
     videoId: string,
   ) => {
-    // 1. Create and transform the clip
     const createdClip = createCloudinaryTransformation(clip, publicId);
     const videoUrl = createdClip.toURL();
 
-    // 2. Wait for transformation completion
     const isTransformationComplete = await pollRequest(videoUrl);
     if (!isTransformationComplete) {
       throw new Error("Video transformation failed");
     }
 
-    // 3. Upload to Cloudinary
     const uploadData = await uploadToCloudinary(videoUrl);
-
-    // 4. Generate metadata using LLM
     const metadata = await generateMetadata(videoUrl);
 
-    // 5. Save to database
-    await saveClipToDB({
+    await createVideoProjectMutation.mutateAsync({
       title: metadata.title,
       description: "Generated clip",
       parentVideoId: videoId,
-      workspaceId: "cm5ocl74q000t9kd83u7sibxj",
+      workspaceId: activeWorkspace?.id as string,
       videoUrl: uploadData.secure_url,
       processStatus: "COMPLETED",
       thumbnailUrl: video.thumbnailUrl,
@@ -206,17 +161,14 @@ const VideoVerseClipsTab = () => {
     clip: Timestamp,
     publicId: string,
   ) => {
-    return (
-      cld
-        .video(publicId)
-        .videoEdit(
-          trim()
-            .startOffset(clip.start_time / 1000)
-            .endOffset(clip.end_time / 1000),
-        )
-        // .resize(fill().width(1080).height(1920).gravity(compass("center")));
-        .resize(fill().width(1080).height(1920).gravity(autoGravity()))
-    );
+    return cld
+      .video(publicId)
+      .videoEdit(
+        trim()
+          .startOffset(clip.start_time / 1000)
+          .endOffset(clip.end_time / 1000),
+      )
+      .resize(fill().width(1080).height(1920).gravity(autoGravity()));
   };
 
   const uploadToCloudinary = async (videoUrl: string) => {
@@ -271,11 +223,11 @@ const VideoVerseClipsTab = () => {
     }
   };
 
-  // Show loading state for any loading operation
   if (
     isLoadingClipsFromDB ||
-    (childrenClips === "no" &&
-      (videoLoading || loadingViralClipTimestamps || creatingClips))
+    videoLoading ||
+    loadingViralClipTimestamps ||
+    creatingClips
   ) {
     return (
       <div className="flex h-64 items-center justify-center">
@@ -293,7 +245,6 @@ const VideoVerseClipsTab = () => {
     );
   }
 
-  // Show error state if any operation fails
   if (clipsError || videoError || viralClipError) {
     return (
       <div className="p-4 text-red-500">
@@ -302,7 +253,6 @@ const VideoVerseClipsTab = () => {
     );
   }
 
-  // Show message if video is too short
   if (video?.duration && video.duration < MIN_VIDEO_DURATION) {
     return (
       <div className="p-8 text-center">
@@ -347,7 +297,7 @@ const VideoVerseClipsTab = () => {
                 }}
               >
                 <Image
-                  src={action.icon}
+                  src={action.icon || "/placeholder.svg"}
                   alt={action.name}
                   width={16}
                   height={16}
@@ -357,7 +307,7 @@ const VideoVerseClipsTab = () => {
             ))}
           </div>
 
-          <div className="border-xw-secondary flex gap-6 rounded-lg border p-2">
+          <div className="flex gap-6 rounded-lg border border-xw-secondary p-2">
             <div className="relative aspect-video w-1/2">
               <video
                 src={clip.videoUrl}
@@ -395,15 +345,15 @@ const VideoVerseClipsTab = () => {
 
               {clip.transcript ? (
                 <>
-                  <span className="text-xw-muted mb-2 text-xs">
+                  <span className="mb-2 text-xs text-xw-muted">
                     {clip.duration} secs
                   </span>
-                  <p className="text-xw-muted-foreground text-sm">
+                  <p className="text-sm text-xw-muted-foreground">
                     {clip.transcript}
                   </p>
                 </>
               ) : (
-                <p className="text-xw-muted text-sm">
+                <p className="text-sm text-xw-muted">
                   No transcript available for this clip.
                 </p>
               )}
@@ -415,4 +365,4 @@ const VideoVerseClipsTab = () => {
   );
 };
 
-export default VideoVerseClipsTab;
+export default VideoVerseClipsTabRefactored;
