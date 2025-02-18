@@ -150,3 +150,17 @@ export type PromptLibraryProps = {
 };
 
 export type DocumentSidebarTabs = "search" | "documents";
+
+export type ProjectDoc = {
+  id: string;
+  title: string;
+  type: 'video' | 'document';
+  created: string;
+  lastEdited: string;
+  image: string;
+  link: string;
+  creator: {
+      name: string;
+      image: string;
+  };
+};

@@ -216,7 +216,6 @@ export const DynamicForm = ({
   const { mutate: createDocument, isPending: isCreatingDocument } =
     trpc.writerx.newCreateDocument.useMutation({
       onSuccess(data) {
-        // localStorage.setItem("AIResponse", aiResponse ?? "");
         setIsGeneratingAIResponse(false);
         utils.writerx.getAllDocs.invalidate();
         showToast({
@@ -529,7 +528,7 @@ export const DynamicForm = ({
                 addTrigger={
                   <button
                     onClick={() => setIsImageSelectorOpen(true)}
-                    className="bg-xw-card hover:bg-xw-card-hover border-xw-border flex h-28 w-28 items-center justify-center rounded-xl border"
+                    className="flex h-28 w-28 items-center justify-center rounded-xl border border-xw-border bg-xw-card hover:bg-xw-card-hover"
                     disabled={isImageSelectorOpen || selectedImages.length > 3}
                   >
                     <Plus className="h-4 w-4" />

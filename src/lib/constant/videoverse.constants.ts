@@ -62,7 +62,7 @@ export const videoDocs = [
 export const VideoTranscriptActions = [
     {
       name: "Publish on Social",
-      icon: "/icons/calender.svg",
+      icon: "/icons/calendar.svg",
       action: () => {},
     },
     {

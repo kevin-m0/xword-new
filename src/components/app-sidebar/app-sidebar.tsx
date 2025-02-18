@@ -5,8 +5,12 @@ import dynamic from "next/dynamic";
 import {
   BookOpen,
   Bot,
+  Cable,
+  Calendar,
   Command,
   Frame,
+  Home,
+  Library,
   LifeBuoy,
   Map,
   PieChart,
@@ -33,19 +37,20 @@ import {
 } from "~/components/ui/sidebar";
 
 import { useUser } from "@clerk/nextjs";
+import WorkspaceSwitcher from "./workspace-switcher";
 
 const data = {
   navMain: [
     {
       title: "Home",
       url: "/dashboard",
-      icon: SquareTerminal,
+      icon: Home,
       isActive: true,
     },
     {
       title: "Media Library",
       url: "/media-library",
-      icon: Bot,
+      icon: Library,
       // items: [
       //   {
       //     title: "Genesis",
@@ -64,12 +69,12 @@ const data = {
     {
       title: "Content Calendar",
       url: "/content-calendar",
-      icon: BookOpen,
+      icon: Calendar,
     },
     {
       title: "Social Accounts",
       url: "/social-accounts",
-      icon: Settings2,
+      icon: Cable,
     },
   ],
   navSecondary: [
@@ -97,27 +102,27 @@ const data = {
     },
     {
       name: "PhotoSonic",
-      url: "photosonic",
+      url: "/photosonic",
       icon: Map,
     },
     {
       name: "WriterX",
-      url: "writerx",
+      url: "/writerx",
       icon: Map,
     },
     {
       name: "ContentVerse",
-      url: "contentverse",
+      url: "/contentverse",
       icon: Map,
     },
     {
       name: "AudioVerse",
-      url: "audioverse",
+      url: "/audioverse",
       icon: Map,
     },
     {
       name: "VideoVerse",
-      url: "videoverse",
+      url: "/videoverse",
       icon: Map,
     },
   ],
@@ -129,23 +134,11 @@ export default function AppSidebar({
   const { user } = useUser();
 
   return (
-    <Sidebar variant="inset" {...props}>
+    <Sidebar collapsible="icon" variant="inset" {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton size="lg" asChild>
-              <a href="#">
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                  <Command className="size-4" />
-                </div>
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">
-                    Kevin&apos;s Workspace
-                  </span>
-                  <span className="truncate text-xs">Free Tier</span>
-                </div>
-              </a>
-            </SidebarMenuButton>
+            <WorkspaceSwitcher />
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>

@@ -66,7 +66,7 @@ const ChatSonicComponent = () => {
 
   return (
     <div className="flex h-dvh w-full overflow-hidden">
-      <div className="bg-xw-sidebar hidden w-full max-w-xs md:flex">
+      <div className="hidden w-full max-w-xs bg-xw-sidebar md:flex">
         <ScrollArea className="w-full">
           <ChatSonicSidebar
             openSections={openSections}

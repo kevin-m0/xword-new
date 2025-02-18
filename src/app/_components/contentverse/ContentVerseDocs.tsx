@@ -35,16 +35,12 @@ import {
   XWDropdownItem,
   XWDropdownTrigger,
 } from "~/components/reusable/xw-dropdown";
-import { useGetActiveSpace } from "~/hooks/workspace/useGetActiveSpace";
 import { docs } from "~/lib/constant/writerx.constants";
 
 type ViewMode = "grid" | "table";
 
 const ContentVerseDocs = () => {
   const [documents, setDocuments] = useState<Document[]>([]);
-
-  const { data: defaultSpace, isLoading: isWorkspaceFetching } =
-    useGetActiveSpace();
 
   const { data: getDocuments, isLoading: isLoadingDocuments } =
     trpc.document.getAllDocuments.useQuery();
@@ -243,11 +239,11 @@ const ContentVerseDocs = () => {
                 <div className="flex w-full items-center justify-between gap-2 p-5">
                   <div className="flex-1">
                     <h1>{doc.title}</h1>
-                    <p className="text-xw-muted text-sm">{doc.createdBy}</p>
+                    <p className="text-sm text-xw-muted">{doc.createdBy}</p>
                   </div>
                 </div>
 
-                <div className="border-xw-secondary tb:px-14 flex w-full items-center justify-center border-t px-10">
+                <div className="tb:px-14 flex w-full items-center justify-center border-t border-xw-secondary px-10">
                   <div className="h-[200px] w-[200px] flex-1">
                     <Image
                       src={(doc.thumbnailImageUrl as string) || ""}
@@ -314,9 +310,9 @@ const ContentVerseDocs = () => {
                 <TableRow
                   key={doc.id}
                   className={cn(
-                    "bg-xw-sidebar border-xw-secondary border-b transition-colors",
+                    "border-b border-xw-secondary bg-xw-sidebar transition-colors",
                     selectedDocs.includes(doc.id) &&
-                      "bg-xw-primary-foreground ring-xw-primary border-xw-primary border ring-1 hover:bg-purple-500/20",
+                      "border border-xw-primary bg-xw-primary-foreground ring-1 ring-xw-primary hover:bg-purple-500/20",
                   )}
                 >
                   <TableCell>
@@ -338,7 +334,7 @@ const ContentVerseDocs = () => {
                   </TableCell>
                   <TableCell>
                     <div className="w-fit rounded-md bg-gradient-to-r from-white/10 via-white/30 to-white/40 p-[0.5px]">
-                      <div className="bg-xw-sidebar rounded-md px-2 py-1 text-xs">
+                      <div className="rounded-md bg-xw-sidebar px-2 py-1 text-xs">
                         Upload
                       </div>
                     </div>
