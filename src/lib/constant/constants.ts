@@ -1,4 +1,4 @@
-import { CategoryWithPrompts } from "~/types";
+import { CategoryWithPrompts, ProjectDoc } from "~/types";
 
 export const DOCUMENTS_LIMIT_HOME_PAGE = 15;
 export const IMAGE_LIMIT = 4;
@@ -63,3 +63,73 @@ export const ADD_FILE_TOOLTIP_CONTENT = {
   ONLY_ONE_TYPE:
     "Either only documents, only images, only audios or only links can be attached",
 } as const;
+
+
+
+export const projectDocs: ProjectDoc[] = [
+  {
+      id: '1',
+      title: 'Project Overview Document',
+      type: 'document',
+      created: new Date().toISOString(),
+      lastEdited: new Date().toISOString(),
+      image: '/images/video-thumbnail.png',
+      link: '/projects/1',
+      creator: {
+          name: 'John Doe',
+          image: '/images/avatar1.png'
+      }
+  },
+  {
+      id: '2',
+      title: 'Marketing Video Campaign',
+      type: 'video',
+      created: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+      lastEdited: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+      image: '/images/video-thumbnail.png',
+      link: '/projects/2',
+      creator: {
+          name: 'Jane Smith',
+          image: '/images/avatar2.png'
+      }
+  },
+  {
+      id: '3',
+      title: 'Technical Documentation',
+      type: 'document',
+      created: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
+      lastEdited: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString(),
+      image: '/images/video-thumbnail.png',
+      link: '/projects/3',
+      creator: {
+          name: 'Mike Johnson',
+          image: '/images/avatar3.png'
+      }
+  },
+  {
+      id: '4',
+      title: 'Product Demo Video',
+      type: 'video',
+      created: new Date(Date.now() - 45 * 24 * 60 * 60 * 1000).toISOString(),
+      lastEdited: new Date(Date.now() - 25 * 24 * 60 * 60 * 1000).toISOString(),
+      image: '/images/video-thumbnail.png',
+      link: '/projects/4',
+      creator: {
+          name: 'Sarah Williams',
+          image: '/images/avatar4.png'
+      }
+  },
+  {
+      id: '5',
+      title: 'Project Timeline',
+      type: 'document',
+      created: new Date(Date.now() - 300 * 24 * 60 * 60 * 1000).toISOString(),
+      lastEdited: new Date(Date.now() - 200 * 24 * 60 * 60 * 1000).toISOString(),
+      image: '/images/video-thumbnail.png',
+      link: '/projects/5',
+      creator: {
+          name: 'Alex Brown',
+          image: '/images/avatar5.png'
+      }
+  }
+]; 

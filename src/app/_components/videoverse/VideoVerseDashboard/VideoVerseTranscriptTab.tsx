@@ -97,7 +97,7 @@ const VideoVerseTranscriptTab = ({ videoProject }: any) => {
             className2="text-sm xw-premium-div w-fit text-sm px-3"
           >
             <Image
-              src={"/icons/calender.svg"}
+              src={"/icons/calendar.svg"}
               alt={"Publish on Social"}
               width={16}
               height={16}
@@ -171,7 +171,7 @@ const VideoVerseTranscriptTab = ({ videoProject }: any) => {
           </TooltipProvider>
         </div>
 
-        <div className="border-xw-muted-foreground xw-premium-div flex h-fit rounded-lg border p-2">
+        <div className="xw-premium-div flex h-fit rounded-lg border border-xw-muted-foreground p-2">
           <textarea
             rows={4}
             placeholder="Enter title here..."
@@ -239,7 +239,7 @@ const VideoVerseTranscriptTab = ({ videoProject }: any) => {
           </div>
         </div>
 
-        <div className="border-xw-muted-foreground xw-premium-div flex h-fit rounded-lg border p-2">
+        <div className="xw-premium-div flex h-fit rounded-lg border border-xw-muted-foreground p-2">
           <textarea
             rows={4}
             placeholder="Enter description here..."
@@ -308,7 +308,7 @@ const VideoVerseTranscriptTab = ({ videoProject }: any) => {
           </div>
         </div>
 
-        <div className="border-xw-muted-foreground xw-premium-div flex h-fit rounded-lg border p-2">
+        <div className="xw-premium-div flex h-fit rounded-lg border border-xw-muted-foreground p-2">
           <textarea
             rows={8}
             placeholder="Enter chapters here..."
@@ -359,7 +359,7 @@ const VideoVerseTranscriptTab = ({ videoProject }: any) => {
           )}
         </div>
       </div>
-      <div className="border-xw-muted-foreground xw-premium-div flex h-fit rounded-lg border p-2">
+      <div className="xw-premium-div flex h-fit rounded-lg border border-xw-muted-foreground p-2">
         <textarea
           rows={20}
           placeholder="Enter chapters here..."

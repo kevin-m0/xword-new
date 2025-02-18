@@ -387,8 +387,6 @@ export const DynamicForm = ({
         const parsedData = parser.parse();
         console.log("parse data: ", parsedData);
 
-        console.log(activeWorkspace, "organization");
-
         createDocument({
           workspaceId: activeWorkspace?.id as string,
           payload: JSON.stringify(parsedData),
