@@ -34,28 +34,26 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning className="dark">
       <body className={cn(font1.variable, font2.variable)}>
-        <RootLayoutComp>
-          <Suspense fallback={<LoadingScreen />}>
-            <ViewProvider>
-              <TRPCReactProvider>
-                <ClerkProvider
-                  appearance={{
-                    baseTheme: dark,
-                  }}
-                >
-                  <Provider>
-                    <ShortCutProvider>
-                      <KeyBordProvider>
-                        <XWAlertProvider>{children}</XWAlertProvider>
-                      </KeyBordProvider>
-                    </ShortCutProvider>
-                  </Provider>
-                </ClerkProvider>
-              </TRPCReactProvider>
-            </ViewProvider>
-            <Toaster />
-          </Suspense>
-        </RootLayoutComp>
+        <Suspense fallback={<LoadingScreen />}>
+          <ViewProvider>
+            <TRPCReactProvider>
+              <ClerkProvider
+                appearance={{
+                  baseTheme: dark,
+                }}
+              >
+                <Provider>
+                  <ShortCutProvider>
+                    <KeyBordProvider>
+                      <XWAlertProvider>{children}</XWAlertProvider>
+                    </KeyBordProvider>
+                  </ShortCutProvider>
+                </Provider>
+              </ClerkProvider>
+            </TRPCReactProvider>
+          </ViewProvider>
+          <Toaster />
+        </Suspense>
       </body>
     </html>
   );

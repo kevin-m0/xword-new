@@ -1,16 +1,26 @@
 "use client";
 
-import { Link } from "lucide-react";
+import { useUser } from "@clerk/nextjs";
 import AppSidebar from "~/components/app-sidebar/app-sidebar";
+import LoadingScreen from "~/components/loaders/loading-screen";
 import TopbarComponent from "~/components/topbar/TopbarComponent";
-import { Separator } from "~/components/ui/separator";
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
 } from "~/components/ui/sidebar";
+import { useDoesUserExist } from "~/hooks/misc/useDoesUserExist";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
+  const { user, isLoading } = useDoesUserExist();
+
+  if (isLoading)
+    return (
+      <div>
+        <LoadingScreen />
+      </div>
+    );
+
   return (
     <SidebarProvider>
       <AppSidebar />

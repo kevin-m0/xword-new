@@ -1,8 +1,6 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import { Button } from "~/components/ui/button";
 import { HydrateClient } from "~/trpc/server";
-import { getUser } from "~/utils/clerk-utility";
 
 export default async function Home() {
   return (
