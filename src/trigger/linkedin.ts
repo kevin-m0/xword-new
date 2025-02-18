@@ -1,8 +1,8 @@
 import { logger, schemaTask } from "@trigger.dev/sdk/v3";
 import { z } from "zod";
 import axios from "axios";
-import { getAwsUrl } from "@/app/(site)/(dashboard)/_lib/get-aws-url";
 import { videoUrlToBase64 } from "./youtube";
+import { getAwsUrl } from "~/lib/get-aws-url";
 
 export const payloadSchema = z.object({
   appUserId: z.string(),

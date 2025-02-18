@@ -5,22 +5,22 @@ import {
   postInstagramImagePost,
   postInstagramReel,
   postInstagramStory,
-} from "@/trigger/instagram";
-import { postThread, postTweet, postTweetWithMedia } from "@/trigger/twitter";
+} from "~/trigger/instagram";
+import { postThread, postTweet, postTweetWithMedia } from "~/trigger/twitter";
 import {
   postFacebookImagePost,
   postFacebookImageStory,
   postFacebookMultipleImagePost,
   postFacebookTextPost,
   // postFacebookVideoStory,
-} from "@/trigger/facebook";
+} from "~/trigger/facebook";
 import {
   postLinkedInCarouselPost,
   postLinkedInImagePost,
   postLinkedInTextPost,
   postLinkedInVideoPost,
-} from "@/trigger/linkedin";
-import { postYoutubeShorts, postYoutubeVideo } from "@/trigger/youtube";
+} from "~/trigger/linkedin";
+import { postYoutubeShorts, postYoutubeVideo } from "~/trigger/youtube";
 
 // INSTAGRAM
 

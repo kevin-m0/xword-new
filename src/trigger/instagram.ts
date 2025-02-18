@@ -1,7 +1,7 @@
 import { logger, schemaTask } from "@trigger.dev/sdk/v3";
 import { z } from "zod";
 import axios from "axios";
-import { getAwsUrl } from "@/app/(site)/(dashboard)/_lib/get-aws-url";
+import { getAwsUrl } from "~/lib/get-aws-url";
 
 export const payloadSchemaWithMedia = z.object({
   appUserId: z.string(),
