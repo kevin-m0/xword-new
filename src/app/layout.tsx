@@ -14,6 +14,7 @@ import { KeyBordProvider } from "~/lib/providers/KeyBoardProvider";
 import { Provider } from "jotai";
 import LoadingScreen from "~/components/loaders/loading-screen";
 import { XWAlertProvider } from "~/components/reusable/xw-alert";
+import { RootLayoutComp } from "~/components/providers/CheckAuth";
 
 const font1 = Noto_Sans({ subsets: ["latin"], variable: "--font-sans" });
 const font2 = Inter({ subsets: ["latin"], variable: "--font-inter" });
@@ -33,26 +34,28 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning className="dark">
       <body className={cn(font1.variable, font2.variable)}>
-        <Suspense fallback={<LoadingScreen />}>
-          <ViewProvider>
-            <TRPCReactProvider>
-              <ClerkProvider
-                appearance={{
-                  baseTheme: dark,
-                }}
-              >
-                <Provider>
-                  <ShortCutProvider>
-                    <KeyBordProvider>
-                      <XWAlertProvider>{children}</XWAlertProvider>
-                    </KeyBordProvider>
-                  </ShortCutProvider>
-                </Provider>
-              </ClerkProvider>
-            </TRPCReactProvider>
-          </ViewProvider>
-          <Toaster />
-        </Suspense>
+        <RootLayoutComp>
+          <Suspense fallback={<LoadingScreen />}>
+            <ViewProvider>
+              <TRPCReactProvider>
+                <ClerkProvider
+                  appearance={{
+                    baseTheme: dark,
+                  }}
+                >
+                  <Provider>
+                    <ShortCutProvider>
+                      <KeyBordProvider>
+                        <XWAlertProvider>{children}</XWAlertProvider>
+                      </KeyBordProvider>
+                    </ShortCutProvider>
+                  </Provider>
+                </ClerkProvider>
+              </TRPCReactProvider>
+            </ViewProvider>
+            <Toaster />
+          </Suspense>
+        </RootLayoutComp>
       </body>
     </html>
   );

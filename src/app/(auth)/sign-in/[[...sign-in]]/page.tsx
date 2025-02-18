@@ -29,12 +29,16 @@ export default function LoginPage() {
           <div className="w-full max-w-xs">
             {/* <LoginForm /> */}
             <SignedIn>
-              <div className="flex flex-col gap-4 items-center justify-center">
-              <Link href={"/dashboard"}><Button>Go to Dashboard</Button></Link><SignOutButton />
+              <div className="flex flex-col items-center justify-center gap-4">
+                <Link href={"/dashboard"}>
+                  <Button>Go to Dashboard</Button>
+                </Link>
+                <SignOutButton />
               </div>
             </SignedIn>
-            <SignedOut><SignIn /></SignedOut>
-            
+            <SignedOut>
+              <SignIn fallbackRedirectUrl={"/dashboard"} />
+            </SignedOut>
           </div>
         </div>
       </div>

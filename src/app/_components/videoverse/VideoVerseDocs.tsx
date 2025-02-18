@@ -31,19 +31,17 @@ import {
   XWDropdownTrigger,
 } from "~/components/reusable/xw-dropdown";
 import { cn } from "~/utils/utils";
-import { useGetActiveSpace } from "~/hooks/workspace/useGetActiveSpace";
-import { useRouter } from "next/navigation";
 import { VideoModel } from "@prisma/client";
 import { VideoVerseUploadModal } from "./VideoVerseUploadModal";
 import { trpc } from "~/trpc/react";
+import { useOrganization } from "@clerk/nextjs";
 
 type ViewMode = "grid" | "table";
 
 const VideoVerseDocs = () => {
   const [recordings, setRecordings] = useState<VideoModel[]>([]);
 
-  const { data: defaultSpace, isLoading: isWorkspaceFetching } =
-    useGetActiveSpace();
+  const { organization: defaultSpace } = useOrganization();
 
   const { data: getRecordings, isLoading: isLoadingRecordings } =
     trpc.videoProject.getAllVideoProjects.useQuery(
@@ -256,13 +254,13 @@ const VideoVerseDocs = () => {
                 <div className="flex w-full items-center justify-between gap-2 p-5">
                   <div className="flex-1">
                     <h1>{doc.title}</h1>
-                    <p className="text-xw-muted text-sm">
+                    <p className="text-sm text-xw-muted">
                       {format(new Date(doc.createdAt), "MMM dd, yyyy")}
                     </p>
                   </div>
                 </div>
 
-                <div className="border-xw-secondary w-full border-t">
+                <div className="w-full border-t border-xw-secondary">
                   <div className="relative h-[200px] w-full">
                     <Image
                       src={`${doc.thumbnailUrl}`}
@@ -273,7 +271,7 @@ const VideoVerseDocs = () => {
                     />
 
                     <div className="absolute left-1 top-1">
-                      <span className="bg-xw-sidebar rounded-sm px-2 py-1 text-xs text-white">
+                      <span className="rounded-sm bg-xw-sidebar px-2 py-1 text-xs text-white">
                         {`${doc.duration} mins`}
                       </span>
                     </div>
@@ -334,9 +332,9 @@ const VideoVerseDocs = () => {
                 <TableRow
                   key={doc.id}
                   className={cn(
-                    "bg-xw-sidebar border-xw-secondary border-b transition-colors",
+                    "border-b border-xw-secondary bg-xw-sidebar transition-colors",
                     selectedDocs.includes(doc.id) &&
-                      "bg-xw-primary-foreground ring-xw-primary border-xw-primary border ring-1 hover:bg-purple-500/20",
+                      "border border-xw-primary bg-xw-primary-foreground ring-1 ring-xw-primary hover:bg-purple-500/20",
                   )}
                 >
                   <TableCell>
@@ -358,7 +356,7 @@ const VideoVerseDocs = () => {
                   </TableCell>
                   <TableCell>
                     <div className="w-fit rounded-md bg-gradient-to-r from-white/10 via-white/30 to-white/40 p-[0.5px]">
-                      <div className="bg-xw-sidebar rounded-md px-2 py-1 text-xs">
+                      <div className="rounded-md bg-xw-sidebar px-2 py-1 text-xs">
                         Video
                       </div>
                     </div>

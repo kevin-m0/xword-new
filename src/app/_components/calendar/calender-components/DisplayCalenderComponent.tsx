@@ -181,7 +181,7 @@ const DisplayCalendarComponent: React.FC<DisplayCalendarComponentProps> =
     );
 
     return (
-      <div className="h-[800px] rounded-lg bg-xw-background p-4">
+      <div className="h-[800px] rounded-lg p-4">
         <Calendar
           localizer={localizer}
           events={events}
@@ -195,7 +195,7 @@ const DisplayCalendarComponent: React.FC<DisplayCalendarComponentProps> =
           components={components}
           className={cn(
             calendarStyles.base,
-            "[&_.rbc-day-bg]:group-hover/cell:bg-xw-background/50",
+            "[&_.rbc-day-bg]:group-hover/cell:bg-blue-500",
             "[&_.rbc-date-cell]:relative",
           )}
           onSelectSlot={(event) => {

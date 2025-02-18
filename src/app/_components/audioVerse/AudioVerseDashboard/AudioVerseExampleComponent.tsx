@@ -13,8 +13,7 @@ import {
   promptLoadingAtom,
   refetchTrigger,
 } from "~/atoms";
-import { useGetActiveSpace } from "~/hooks/workspace/useGetActiveSpace";
-import { useUser } from "@clerk/nextjs";
+import { useOrganization, useUser } from "@clerk/nextjs";
 import TopLoader from "~/components/loaders/top-loader";
 import { ErrorToast } from "../../custom-toast";
 import XWBadge from "~/components/reusable/XWBadge";
@@ -27,8 +26,7 @@ const AudioVerseExampleComponent = ({ audioProject }: any) => {
   const [uniqueCategories, setUniqueCategories] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [_, setRefetchTokenUsage] = useAtom(refetchTrigger);
-  const { data: activeWorkspace, isLoading: isWorkspaceFetching } =
-    useGetActiveSpace();
+  const { organization: activeWorkspace } = useOrganization();
   const { user } = useUser();
   const [, setPromptLoading] = useAtom(promptLoadingAtom);
   const [, setContentResponse] = useAtom(contentResponseAtom);
@@ -236,7 +234,7 @@ const AudioVerseExampleComponent = ({ audioProject }: any) => {
   if (loading) return <TopLoader />;
 
   return (
-    <div className="bg-xw-sidebar border-xw-secondary space-y-8 rounded-xl border p-5">
+    <div className="space-y-8 rounded-xl border border-xw-secondary bg-xw-sidebar p-5">
       {/* Featured Examples Section */}
       <section>
         <h2 className="mb-4 text-2xl font-semibold text-white">
@@ -246,7 +244,7 @@ const AudioVerseExampleComponent = ({ audioProject }: any) => {
           {featuredExamples.map((example) => (
             <Card
               key={example.id}
-              className="xw-premium-div border-xw-secondary h-full border p-5"
+              className="xw-premium-div h-full border border-xw-secondary p-5"
             >
               <div className="flex h-full flex-col">
                 <h3 className="mb-4 text-lg font-medium text-white">
@@ -310,7 +308,7 @@ const AudioVerseExampleComponent = ({ audioProject }: any) => {
             return item.prompts.map((prompt) => (
               <Card
                 key={prompt.promptId}
-                className="xw-premium-div border-xw-secondary h-full border p-5"
+                className="xw-premium-div h-full border border-xw-secondary p-5"
               >
                 <div className="flex h-full flex-col">
                   <h3 className="mb-4 text-lg font-medium text-white">

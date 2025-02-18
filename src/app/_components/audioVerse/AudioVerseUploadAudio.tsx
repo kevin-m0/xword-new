@@ -11,8 +11,7 @@ import {
 import { CgSpinner } from "react-icons/cg";
 import { useXWAlert } from "~/components/reusable/xw-alert";
 import { trpc } from "~/trpc/react";
-import { useGetActiveSpace } from "~/hooks/workspace/useGetActiveSpace";
-import { useUser } from "@clerk/nextjs";
+import { useOrganization, useUser } from "@clerk/nextjs";
 import { uploadFile } from "~/services/aws-file-upload";
 import { Dialog } from "@radix-ui/react-dialog";
 import { DialogHeader } from "~/components/reusable/xw-dialog";
@@ -25,7 +24,7 @@ const AudioVerseUploadAudio = () => {
   const [youtubeURL, setYoutubeURL] = useState<string>("");
   const { showToast } = useXWAlert();
   const utils = trpc.useUtils();
-  const { data: defaultSpace } = useGetActiveSpace();
+  const { organization: defaultSpace } = useOrganization();
 
   const { user } = useUser();
 
@@ -125,7 +124,7 @@ const AudioVerseUploadAudio = () => {
             replacable={false}
           />
 
-          <div className="text-xw-muted-foreground text-center text-lg">OR</div>
+          <div className="text-center text-lg text-xw-muted-foreground">OR</div>
 
           <div className="flex flex-col gap-2">
             <label htmlFor="">Import Url</label>

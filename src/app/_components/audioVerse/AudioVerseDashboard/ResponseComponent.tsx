@@ -10,11 +10,11 @@ import {
 } from "~/atoms";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { useGetActiveSpace } from "~/hooks/workspace/useGetActiveSpace";
 import { trpc } from "~/trpc/react";
 import TopLoader from "~/components/loaders/top-loader";
 import { Button } from "~/components/ui/button";
 import { SuccessToast } from "../../custom-toast";
+import { useOrganization } from "@clerk/nextjs";
 
 type ResponseComponentProps = {};
 
@@ -24,7 +24,7 @@ const ResponseComponent: FC<ResponseComponentProps> = () => {
   const [promptLoading] = useAtom(promptLoadingAtom);
   const [aiResponse] = useAtom(aiPreview);
   const [isLoading] = useAtom(aiPreviewLoading);
-  const { data: defaultSpace } = useGetActiveSpace();
+  const { organization: defaultSpace } = useOrganization();
 
   const router = useRouter();
 
