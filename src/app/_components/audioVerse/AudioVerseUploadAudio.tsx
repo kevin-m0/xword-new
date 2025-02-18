@@ -18,6 +18,9 @@ import { DialogHeader } from "~/components/reusable/xw-dialog";
 import XWDropBox from "~/components/reusable/XWDropBox";
 import { XWInput } from "~/components/reusable/XWInput";
 import XWSecondaryButton from "~/components/reusable/XWSecondaryButton";
+import { toast } from "sonner";
+import { getAwsUrl } from "~/lib/get-aws-url";
+import { uploadAudioFile } from "~/lib/upload-to-aws";
 
 const AudioVerseUploadAudio = () => {
   const [localFile, setLocalFile] = useState<File | null>(null); // Single file state
@@ -34,6 +37,8 @@ const AudioVerseUploadAudio = () => {
   const { mutateAsync: createAudioProject, isPending: creatingAudioProject } =
     trpc.audioProject.createAudioProject.useMutation();
 
+  const { mutateAsync: getAWSUploadUrl } = trpc.aws.getUploadUrl.useMutation();
+
   const handleFileChange = useCallback(
     async (file: File | null) => {
       if (!file) return;
@@ -44,10 +49,20 @@ const AudioVerseUploadAudio = () => {
         const fileKey = crypto.randomUUID();
 
         if (file.type.startsWith("audio/")) {
-          await uploadFile(file, fileKey);
+          const { uploadUrl } = await getAWSUploadUrl({
+            key: fileKey,
+            contentType: file.type,
+          });
+
+          const fileUrl = getAwsUrl(fileKey);
+
+          await uploadAudioFile(file, uploadUrl);
+
+          console.log(fileUrl);
+
           const metadata = await getAudioMetadata({
-            url: fileKey,
-            type: "file",
+            url: fileUrl as string,
+            type: "mux",
             languagecode: "en",
           });
 
@@ -58,9 +73,9 @@ const AudioVerseUploadAudio = () => {
             words: JSON.stringify(metadata.words),
             processStatus: "PROCESSING",
             type: "Upload",
-            createdBy: user?.id || "",
+            createdBy: user?.id as string,
             storageKey: fileKey,
-            workspaceId: defaultSpace?.id || "",
+            workspaceId: defaultSpace?.id as string,
           });
         } else {
           throw new Error("Unsupported file type");
@@ -80,6 +95,10 @@ const AudioVerseUploadAudio = () => {
   );
 
   const handleYTSubmit = async () => {
+    if (youtubeURL.length === 0) {
+      toast.error("Please enter a valid Youtube URL");
+      return;
+    }
     const metadata = await getAudioMetadata({
       url: youtubeURL,
       type: "youtube",
@@ -104,7 +123,7 @@ const AudioVerseUploadAudio = () => {
       <Dialog>
         <DialogTrigger asChild>
           <Button variant={"default"} size={"sm"}>
-            Upload Audio <UploadCloud className="ml-2 h-4 w-4" />
+            New Project <UploadCloud className="h-4 w-4" />
           </Button>
         </DialogTrigger>
         <DialogContent className="flex w-full max-w-lg flex-col gap-5">
@@ -141,17 +160,12 @@ const AudioVerseUploadAudio = () => {
               <XWSecondaryButton size="sm">Cancel</XWSecondaryButton>
             </DialogClose>
             {fetchingMetadata || creatingAudioProject ? (
-              <Button
-                variant={"default"}
-                size="sm"
-                disabled
-                onClick={handleYTSubmit}
-              >
-                Submit
-              </Button>
-            ) : (
               <Button variant={"default"} size="sm" disabled>
                 <CgSpinner className="animate-spin" />
+              </Button>
+            ) : (
+              <Button variant={"default"} size="sm" onClick={handleYTSubmit}>
+                Submit
               </Button>
             )}
           </div>

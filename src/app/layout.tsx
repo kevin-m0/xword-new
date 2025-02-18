@@ -38,9 +38,13 @@ export default function RootLayout({
           <ViewProvider>
             <TRPCReactProvider>
               <ClerkProvider
+                publishableKey="pk_test_dW5iaWFzZWQtbW9sbHVzay04LmNsZXJrLmFjY291bnRzLmRldiQ"
                 appearance={{
                   baseTheme: dark,
                 }}
+                signInFallbackRedirectUrl={"/dashboard"}
+                signUpFallbackRedirectUrl={"/getting-started"}
+                afterSignOutUrl={"/"}
               >
                 <Provider>
                   <ShortCutProvider>

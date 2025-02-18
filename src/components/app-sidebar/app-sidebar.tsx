@@ -10,12 +10,16 @@ import {
   Command,
   Frame,
   Home,
+  Image,
   Library,
   LifeBuoy,
   Map,
+  Pen,
+  PenIcon,
   PieChart,
   Send,
   Settings2,
+  Speaker,
   SquareTerminal,
 } from "lucide-react";
 
@@ -98,17 +102,17 @@ const data = {
     {
       name: "SoundVerse",
       url: "/soundverse",
-      icon: PieChart,
+      icon: Speaker,
     },
     {
       name: "PhotoSonic",
       url: "/photosonic",
-      icon: Map,
+      icon: Image,
     },
     {
       name: "WriterX",
       url: "/writerx",
-      icon: Map,
+      icon: PenIcon,
     },
     {
       name: "ContentVerse",

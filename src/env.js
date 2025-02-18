@@ -92,6 +92,8 @@ export const env = createEnv({
     NEXT_PUBLIC_CLOUDINARY_URL: z.string().optional(),
 
     NEXT_PUBLIC_TRIGGER_SECRET_KEY: z.string().optional(),
+    NEXT_PUBLIC_CLERK_SIGN_IN_FORCE_REDIRECT_URL: z.string().optional(),
+    NEXT_PUBLIC_CLERK_SIGN_UP_FORCE_REDIRECT_URL: z.string().optional(),
   },
 
   /**
@@ -101,6 +103,9 @@ export const env = createEnv({
     DATABASE_URL: process.env.DATABASE_URL,
     DIRECT_URL: process.env.DIRECT_URL,
     NODE_ENV: process.env.NODE_ENV,
+
+    NEXT_PUBLIC_CLERK_SIGN_IN_FORCE_REDIRECT_URL: process.env.CLERK_SIGN_IN_FORCE_REDIRECT_URL,
+    NEXT_PUBLIC_CLERK_SIGN_UP_FORCE_REDIRECT_URL: process.env.CLERK_SIGN_UP_FORCE_REDIRECT_URL,
 
     CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY,
     OPENAI_API_KEY: process.env.OPENAI_API_KEY,

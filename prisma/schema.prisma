@@ -365,7 +365,6 @@ model AudioProject {
     subtitles        String
     words            String
     workspaceId      String
-    workspace        String
     processStatus    ProcessStatus
     storageKey       String
     createdAt        DateTime           @default(now())

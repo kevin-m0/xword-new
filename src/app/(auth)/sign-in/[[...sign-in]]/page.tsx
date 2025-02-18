@@ -37,7 +37,7 @@ export default function LoginPage() {
               </div>
             </SignedIn>
             <SignedOut>
-              <SignIn fallbackRedirectUrl={"/dashboard"} />
+              <SignIn />
             </SignedOut>
           </div>
         </div>
