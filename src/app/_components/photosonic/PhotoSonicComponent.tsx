@@ -15,7 +15,7 @@ interface PhotoSonicComponentProps {
 const PhotoSonicComponent: React.FC<PhotoSonicComponentProps> = ({ userId }) => {
     const [photoSonicMode] = useAtom(photoSonicModeAtom);
 
-    console.log(photoSonicMode);
+    console.log("userId--------------------->", userId);
 
     return (
         <div className="flex flex-col tb:flex-row h-screen w-full overflow-hidden">

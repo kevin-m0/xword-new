@@ -11,13 +11,13 @@ export const uploadFile = async (file: File, fileName: string) => {
   formData.append("ContentType", fileType);
 
   // console.log("formData: ", fileName, fileType, file);
-
+  console.log("absolute url---------------------------->", absoluteURL);
   const response = await axios.post(absoluteURL, formData, {
     headers: {
       "Content-Type": "multipart/form-data",
     },
   });
 
-  // console.log("res: ", response)
+  console.log("res: for uploaded file---------> ", response.data)
   return response.data;
 };

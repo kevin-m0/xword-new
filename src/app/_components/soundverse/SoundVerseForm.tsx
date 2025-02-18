@@ -229,7 +229,6 @@ export default function SoundVerseForm({
   const handleVoiceTabChange = (tab: string) => setActiveTabVoiceType(tab as VoiceTabType);
 
 
-
   return (
     <div className="bg-xw-sidebar p-5 flex flex-col h-full w-full gap-5 overflow-hidden">
       <div className="flex-none">

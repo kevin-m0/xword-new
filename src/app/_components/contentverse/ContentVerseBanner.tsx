@@ -2,7 +2,7 @@ import React from "react";
 import FlowDialog from "../newflow/flow/FlowDialog";
 import { Button } from "~/components/ui/button";
 import { ArrowRight } from "lucide-react";
-import MultiCampaignDynamicDialog from "../newflow/multi-campaign/MultiCampaignDynamicDialog";
+import MultiCampaignDynamicDialog from "../writerx/multi-campaign/MultiCampaignDynamicDialog";
 
 const ContentVerseBanner = () => {
   return (

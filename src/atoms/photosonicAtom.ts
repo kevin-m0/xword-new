@@ -28,3 +28,4 @@ export const refetchTrigger = atom<boolean>(false);
 
 export const realTimeImageAtom = atom<string | null>(null);
 export const isGeneratingRealtimeImageAtom = atom<boolean>(false);
+export const isGeneratingResponseAtom = atom<boolean>(false);

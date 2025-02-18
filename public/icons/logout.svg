@@ -1,0 +1,12 @@
+<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Logout Square" clip-path="url(#clip0_2551_57419)">
+<path id="Vector" d="M1.66602 6.66797V4.16797C1.66602 2.78464 2.78268 1.66797 4.16602 1.66797H15.8327C17.216 1.66797 18.3327 2.78464 18.3327 4.16797V15.8346C18.3327 17.218 17.216 18.3346 15.8327 18.3346H4.16602C2.78268 18.3346 1.66602 17.218 1.66602 15.8346V13.3346" stroke="white" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="Vector_2" d="M14.9993 10H4.16602" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="Vector_3" d="M8.33268 5.83203L4.16602 9.9987L8.33268 14.1654" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+<defs>
+<clipPath id="clip0_2551_57419">
+<rect width="20" height="20" fill="white"/>
+</clipPath>
+</defs>
+</svg>

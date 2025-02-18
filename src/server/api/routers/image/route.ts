@@ -308,6 +308,8 @@ export const imageRouter = createTRPCRouter({
   )
   .query(async ({ ctx, input }) => {
     const { workspaceId } = input;
+    console.log("input-------->", input);
+    
     try {
       const images = await db.imageData.findMany({
         where: {

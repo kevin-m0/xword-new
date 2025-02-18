@@ -3,9 +3,10 @@ import React, { useState, useMemo, useCallback } from 'react';
 import Image from 'next/image';
 import { UserVoice } from '@prisma/client';
 import { useAtom } from 'jotai';
-import { audioVoiceStyleIdAtom, audioVoiceStyleNameAtom } from '~/atoms';
+
 import { Search } from 'lucide-react';
 import { SYSTEM_VOICES, VOICE_IMAGES } from '~/lib/system-voices';
+import { audioVoiceStyleIdAtom, audioVoiceStyleNameAtom } from '~/atoms/soundVerseAtom';
 
 interface SystemVoiceType {
     id: string;
@@ -46,6 +47,7 @@ const SystemVoices = () => {
     const [voiceStyleId, setVoiceStyleId] = useAtom(audioVoiceStyleIdAtom);
     const [voiceStyleName, setVoiceStyleName] = useAtom(audioVoiceStyleNameAtom);
     const [searchTerm, setSearchTerm] = useState("");
+    
 
     // Memoize filtered voices to avoid unnecessary re-filtering
     const filteredVoices = useMemo(() => {

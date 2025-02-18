@@ -27,7 +27,7 @@ const SpeechToSpeech = () => {
 
     const { mutateAsync: getTranscription } = trpc.audio.getFileTranscription.useMutation();
 
-    const { data: fileURL, isLoading: isFetchingURL } =
+    const { data: fileURL, isPending: isFetchingURL } =
         trpc.aws.getObjectURL.useQuery(
             { key: generatedAudioKey ?? "" },
             {
@@ -54,14 +54,11 @@ const SpeechToSpeech = () => {
             if (!fileURL) {
                 throw new Error("File URL is not available yet.");
             }
-
-            // Get the transcription
             const transcription = await getTranscription({
                 type: "mux",
                 url: fileURL ?? "",
                 languagecode: selectedLanguage,
             });
-
             setTranscript(transcription.transcript);
         } catch (error) {
             console.error("Transcription failed:", error);
@@ -86,10 +83,8 @@ const SpeechToSpeech = () => {
                 });
                 return;
             }
-
             // Reset everything upon new file
             handleReset();
-
             const file = acceptedFiles[0];
             setLocalFile(file as File);
             const uniqueKey = uuidv4();
@@ -103,9 +98,6 @@ const SpeechToSpeech = () => {
                     message: "File uploaded successfully!",
                     variant: "success",
                 });
-
-                // Attempt transcription
-                // await handleGenerateTranscript();
             } catch (error) {
                 console.error(error);
                 showToast({
