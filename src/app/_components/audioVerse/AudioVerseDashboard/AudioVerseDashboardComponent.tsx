@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { Button } from "~/components/ui/button";
-import { ArrowLeft, Share, Pencil } from "lucide-react";
+import { ArrowLeft, Share, Pencil, Trash2 } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 import AudioVerseTranscriptTab from "./AudioVerseTranscriptTab";
@@ -64,7 +64,7 @@ const AudioVerseDashboardComponent = () => {
   };
 
   return (
-    <div className="flex flex-col gap-10">
+    <div className="flex flex-col gap-10 pt-10">
       <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-10 p-5">
         {/* Audioverse Dashboard Header */}
         <div className="flex items-center justify-between gap-5">
@@ -72,33 +72,27 @@ const AudioVerseDashboardComponent = () => {
             <div>
               <XWSecondaryButton
                 size="sm"
+                className1="rounded-full"
                 onClick={() => {
                   router.push("/audioverse");
                 }}
               >
                 <ArrowLeft className="h-4 w-4" />
-                Back
               </XWSecondaryButton>
             </div>
             <h1 className="text-2xl font-semibold">{audioProject?.title}</h1>
           </div>
 
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon">
-              <Share className="h-4 w-4" />
-            </Button>
-
-            <Button variant="ghost" size="icon">
-              <Pencil className="h-4 w-4" />
-            </Button>
-
-            <Button variant="ghost" size="icon">
-              <Image
+            <Button variant="ghost" size="icon" className="bg-red-500">
+              {/* <Image
                 src="/icons/trashbin.svg"
                 alt="Delete"
                 width={16}
                 height={16}
-              />
+                className="text-black"
+              /> */}
+              <Trash2 />
             </Button>
           </div>
         </div>
@@ -109,7 +103,7 @@ const AudioVerseDashboardComponent = () => {
             <XWTabs tabs={tabs} activeTab={activeTab} onChange={setActiveTab} />
           </div>
 
-          <Button
+          {/* <Button
             variant={"default"}
             size={"sm"}
             className="flex items-center gap-2"
@@ -121,7 +115,7 @@ const AudioVerseDashboardComponent = () => {
               width={16}
               height={16}
             />
-          </Button>
+          </Button> */}
         </div>
 
         <Separator />

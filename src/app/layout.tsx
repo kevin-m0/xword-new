@@ -34,30 +34,28 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning className="dark">
       <body className={cn(font1.variable, font2.variable)}>
-        <Suspense fallback={<LoadingScreen />}>
-          <ViewProvider>
-            <TRPCReactProvider>
-              <ClerkProvider
-                publishableKey="pk_test_dW5iaWFzZWQtbW9sbHVzay04LmNsZXJrLmFjY291bnRzLmRldiQ"
-                appearance={{
-                  baseTheme: dark,
-                }}
-                signInFallbackRedirectUrl={"/dashboard"}
-                signUpFallbackRedirectUrl={"/getting-started"}
-                afterSignOutUrl={"/"}
-              >
-                <Provider>
-                  <ShortCutProvider>
-                    <KeyBordProvider>
-                      <XWAlertProvider>{children}</XWAlertProvider>
-                    </KeyBordProvider>
-                  </ShortCutProvider>
-                </Provider>
-              </ClerkProvider>
-            </TRPCReactProvider>
-          </ViewProvider>
-          <Toaster />
-        </Suspense>
+        <ViewProvider>
+          <TRPCReactProvider>
+            <ClerkProvider
+              publishableKey="pk_test_dW5iaWFzZWQtbW9sbHVzay04LmNsZXJrLmFjY291bnRzLmRldiQ"
+              appearance={{
+                baseTheme: dark,
+              }}
+              signInFallbackRedirectUrl={"/dashboard"}
+              signUpFallbackRedirectUrl={"/getting-started"}
+              afterSignOutUrl={"/"}
+            >
+              <Provider>
+                <ShortCutProvider>
+                  <KeyBordProvider>
+                    <XWAlertProvider>{children}</XWAlertProvider>
+                  </KeyBordProvider>
+                </ShortCutProvider>
+              </Provider>
+            </ClerkProvider>
+          </TRPCReactProvider>
+        </ViewProvider>
+        <Toaster />
       </body>
     </html>
   );

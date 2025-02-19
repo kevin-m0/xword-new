@@ -173,7 +173,7 @@ const AudioVerseDocs = () => {
   return (
     <div>
       <div className="mb-10 flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Audio Library</h1>
+        <h1 className="text-2xl font-bold">Your Audio Projects</h1>
 
         <div className="flex items-center gap-2">
           <Select

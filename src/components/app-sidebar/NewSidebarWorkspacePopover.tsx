@@ -8,6 +8,9 @@ import { Separator } from "~/components/ui/separator";
 import { useOrganization, useOrganizationList } from "@clerk/nextjs";
 import { CreateOrganizationDialog } from "~/app/_components/organizations/CreateOrganizationDialog";
 import { toast } from "sonner";
+import { Button } from "../ui/button";
+import { Plus, Settings } from "lucide-react";
+import Link from "next/link";
 
 const NewSidebarWorkspacePopover = ({
   children,
@@ -76,9 +79,12 @@ const NewSidebarWorkspacePopover = ({
 
         <CreateOrganizationDialog />
 
-        {/* <Button variant="xw_outline">
-                    Create <Plus className="h-4 w-4 ml-2" />
-                </Button> */}
+        <Link href="/workspace" className="w-full">
+          <Button variant="outline" className="w-full">
+            <Settings className="ml-2 h-4 w-4" />
+            Workspace Settings
+          </Button>
+        </Link>
       </PopoverContent>
     </Popover>
   );

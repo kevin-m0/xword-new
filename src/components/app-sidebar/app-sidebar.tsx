@@ -138,7 +138,7 @@ export default function AppSidebar({
   const { user } = useUser();
 
   return (
-    <Sidebar collapsible="icon" variant="inset" {...props}>
+    <Sidebar className="pt-5" collapsible="icon" variant="inset" {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
