@@ -10,9 +10,9 @@ import { refetchTrigger } from "~/atoms";
 import { useAtom } from "jotai";
 import { trpc } from "~/trpc/react";
 import { useDocumentId } from "~/hooks/editor/useDocumentId";
-import { useGetActiveSpace } from "~/hooks/workspace/useGetActiveSpace";
 import { ErrorToast } from "../../custom-toast";
 import { useUpdateChat } from "./useUpdateChat";
+import { useOrganization } from "@clerk/nextjs";
 interface MessageInputProps {
   // scrollIntoView: () => void;
   context: string;
@@ -29,14 +29,15 @@ const MessageInput = ({
   const documentId = useDocumentId();
   const { mutate: updateChat } = useUpdateChat();
   const { data: user } = trpc.user.getCurrentLoggedInUser.useQuery();
-  const { data: activeWorkspace, isLoading: isWorkspaceFetching } =
-    useGetActiveSpace();
+
+  const { organization: activeWorkspace, isLoaded: isWorkspaceFetching } =
+    useOrganization();
   const { mutate: handleSend, isPending } = useMutation({
     mutationFn: async (payload: {
       messages: AudioProjectChat[];
       context: string;
     }) => {
-      if (isWorkspaceFetching) return;
+      if (!isWorkspaceFetching) return;
 
       const paymentId = `${activeWorkspace?.id}:${user?.id}`;
       const res = await fetch(
@@ -165,7 +166,7 @@ const MessageInput = ({
     <div className="relative w-full">
       <Input
         placeholder="Ask me anything about this recording..."
-        className="bg-xw-background my-2 h-full w-full rounded-xl border-gray-500 p-3 px-4 text-white"
+        className="my-2 h-full w-full rounded-xl border-gray-500 bg-xw-background p-3 px-4 text-white"
         value={input}
         onChange={(e) => setInput(e.target.value)}
         onKeyDown={(e) => handleKeyDown(e)}

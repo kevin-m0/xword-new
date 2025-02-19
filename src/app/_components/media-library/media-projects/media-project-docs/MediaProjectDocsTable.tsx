@@ -23,11 +23,11 @@ import { useAtom } from "jotai";
 import { useXWAlert, XWAlert } from "~/components/reusable/xw-alert";
 import { trpc } from "~/trpc/react";
 import { timeFilterAtom } from "~/atoms/mediaAtoms";
-import { useGetActiveSpace } from "~/hooks/workspace/useGetActiveSpace";
 import { MediaProjectDocs } from "~/types/media.types";
 import TableLoader from "~/components/loaders/TableLoader";
 import EmptyScreen from "~/components/reusable/EmptyScreen";
 import OnTableSelectActions from "~/components/reusable/OnTableSelectActions";
+import { useOrganization } from "@clerk/nextjs";
 
 export default function MediaProjectDocsTable() {
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -39,8 +39,7 @@ export default function MediaProjectDocsTable() {
   );
   const [timeFilter] = useAtom(timeFilterAtom);
 
-  const { data: defaultSpace, isLoading: isWorkspaceFetching } =
-    useGetActiveSpace();
+  const { organization: defaultSpace } = useOrganization();
 
   const {
     data: assets,

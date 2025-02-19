@@ -6,8 +6,7 @@ import { toast } from "sonner";
 import { Button } from "~/components/ui/button";
 import { isValidYoutubeUrl } from "~/utils/utils";
 import { useRouter } from "next/navigation";
-import { useGetActiveSpace } from "~/hooks/workspace/useGetActiveSpace";
-import { useUser } from "@clerk/nextjs";
+import { useOrganization, useUser } from "@clerk/nextjs";
 import { trpc } from "~/trpc/react";
 
 interface YoutubeUploadProps {}
@@ -18,15 +17,13 @@ const YoutubeUpload: FC<YoutubeUploadProps> = ({}) => {
   const [videoUrl, setVideoUrl] = useAtom<string>(videoUrlAtom);
   const [language, setLanguage] = useState<string>("en");
   const [metadata, setMetadata] = useState<any | null>(null);
-  const [cloudinaryData, setCloudinaryData] = useState<any | null>(null);
 
   const router = useRouter();
 
   const { mutateAsync: createVideoProject } =
     trpc.videoProject.createVideoProject.useMutation();
 
-  const { data: defaultSpace, isLoading: isWorkspaceFetching } =
-    useGetActiveSpace();
+  const { organization: defaultSpace } = useOrganization();
 
   const { user } = useUser();
 

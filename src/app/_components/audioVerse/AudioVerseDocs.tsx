@@ -38,7 +38,7 @@ import {
   XWDropdownItem,
   XWDropdownTrigger,
 } from "~/components/reusable/xw-dropdown";
-import { useGetActiveSpace } from "~/hooks/workspace/useGetActiveSpace";
+import { useOrganization } from "@clerk/nextjs";
 
 type ViewMode = "grid" | "table";
 
@@ -57,8 +57,7 @@ const AudioVerseDocs = () => {
 
   const [recordings, setRecordings] = useState<AudioProject[]>([]);
 
-  const { data: defaultSpace, isLoading: isWorkspaceFetching } =
-    useGetActiveSpace();
+  const { organization: defaultSpace } = useOrganization();
 
   const { data: getRecordings, isLoading: isLoadingProjects } =
     trpc.audioProject.getAllAudioProjects.useQuery(
@@ -263,7 +262,7 @@ const AudioVerseDocs = () => {
 
               <div className="flex flex-1 flex-col">
                 <h3 className="text-2xl font-semibold">{doc.title}</h3>
-                <div className="text-xw-muted text-sm">
+                <div className="text-sm text-xw-muted">
                   Updated {format(new Date(doc.createdAt), "MMM dd, yyyy")}
                 </div>
               </div>
@@ -329,9 +328,9 @@ const AudioVerseDocs = () => {
                 <TableRow
                   key={doc.id}
                   className={cn(
-                    "bg-xw-sidebar border-xw-secondary border-b transition-colors",
+                    "border-b border-xw-secondary bg-xw-sidebar transition-colors",
                     selectedDocs.includes(doc.id) &&
-                      "bg-xw-primary-foreground ring-xw-primary border-xw-primary border ring-1 hover:bg-purple-500/20",
+                      "border border-xw-primary bg-xw-primary-foreground ring-1 ring-xw-primary hover:bg-purple-500/20",
                   )}
                 >
                   <TableCell>
@@ -353,7 +352,7 @@ const AudioVerseDocs = () => {
                   </TableCell>
                   <TableCell>
                     <div className="w-fit rounded-md bg-gradient-to-r from-white/10 via-white/30 to-white/40 p-[0.5px]">
-                      <div className="bg-xw-sidebar rounded-md px-2 py-1 text-xs">
+                      <div className="rounded-md bg-xw-sidebar px-2 py-1 text-xs">
                         {doc.type}
                       </div>
                     </div>

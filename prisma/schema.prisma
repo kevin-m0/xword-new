@@ -253,9 +253,6 @@ model Workspace {
 
     organizationId String
     AssetsFolder   AssetsFolder[]
-    VideoModel     VideoModel[]
-    ViralClips     ViralClips[]
-    AudioProject   AudioProject[]
     TiptapDoc      TiptapDoc[]
     Post           Post[]
 }
@@ -368,7 +365,6 @@ model AudioProject {
     subtitles        String
     words            String
     workspaceId      String
-    workspace        Workspace?         @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
     processStatus    ProcessStatus
     storageKey       String
     createdAt        DateTime           @default(now())
@@ -431,7 +427,6 @@ model VideoModel {
     workspaceId   String
     videoUrl      String
     processStatus ProcessStatus
-    workspace     Workspace     @relation(fields: [workspaceId], references: [id])
     createdAt     DateTime      @default(now())
     createdBy     String
     createdByUser User          @relation(fields: [createdBy], references: [id])
@@ -458,7 +453,6 @@ model ViralClips {
     thumbnailUrl  String
     duration      Int
 
-    workspace  Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
     VideoModel VideoModel @relation(fields: [parentVideoId], references: [id], onDelete: Cascade)
 }
 

@@ -12,9 +12,9 @@ import { trim } from "@cloudinary/url-gen/actions/videoEdit";
 import { fill } from "@cloudinary/url-gen/actions/resize";
 import { autoGravity } from "@cloudinary/url-gen/qualifiers/gravity";
 import { pollRequest } from "~/utils/utils";
-import { useGetActiveSpace } from "~/hooks/workspace/useGetActiveSpace";
 import { trpc } from "~/trpc/react";
 import { VideoTranscriptActions } from "~/lib/constant/videoverse.constants";
+import { useOrganization } from "@clerk/nextjs";
 
 interface Timestamp {
   start_time: number;
@@ -28,16 +28,16 @@ interface VideoMetadata {
   words: any[];
 }
 
-const CLOUDINARY_CLOUD_NAME = "dngbwns3v";
+const CLOUDINARY_CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
 const MIN_VIDEO_DURATION = 60; // seconds
-const CLOUDINARY_UPLOAD_URL =
-  "https://api.cloudinary.com/v1_1/dngbwns3v/upload";
+const CLOUDINARY_UPLOAD_URL = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_URL;
 
 const VideoVerseClipsTabRefactored = () => {
   const params = useParams();
   const [creatingClips, setCreatingClips] = useState(false);
   const videoId = params["video-id"] as string;
-  const { data: activeWorkspace } = useGetActiveSpace();
+  const { organization: activeWorkspace } = useOrganization();
+
   const [clipsGenerated, setClipsGenerated] = useState(false);
   const stopRef = useRef(false);
 
@@ -177,7 +177,7 @@ const VideoVerseClipsTabRefactored = () => {
     formData.append("upload_preset", "unsigned-preset");
     formData.append("resource_type", "video");
 
-    const response = await fetch(CLOUDINARY_UPLOAD_URL, {
+    const response = await fetch(CLOUDINARY_UPLOAD_URL as string, {
       method: "POST",
       body: formData,
     });

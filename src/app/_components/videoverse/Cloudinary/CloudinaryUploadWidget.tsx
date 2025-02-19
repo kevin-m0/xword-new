@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { trpc } from "~/trpc/react";
-import { useUser } from "@clerk/nextjs";
+import { useOrganization, useUser } from "@clerk/nextjs";
 import { Button } from "~/components/ui/button";
 import { UploadCloud } from "lucide-react";
 import { useGetActiveSpace } from "~/hooks/workspace/useGetActiveSpace";
@@ -21,26 +21,22 @@ const CloudinaryUploadWidget = ({ uwConfig, setPublicId }: any) => {
 
   const [isCreatingProject, setIsCreatingProject] = useState(false);
 
-  const { data: defaultSpace, isLoading: isWorkspaceFetching } =
-    useGetActiveSpace();
+  const { organization: defaultSpace } = useOrganization();
 
   const { mutateAsync: createVideoProject } =
     trpc.videoProject.createVideoProject.useMutation();
 
-  const {
-    data: metadataData,
-    isLoading,
-    error,
-  } = trpc.videoProject.getVideoMetadata.useQuery(
-    {
-      type: "mux",
-      url: video.url as string,
-      languagecode: "en",
-    },
-    {
-      enabled: !!video.url,
-    },
-  );
+  const { data: metadataData, error } =
+    trpc.videoProject.getVideoMetadata.useQuery(
+      {
+        type: "mux",
+        url: video.url as string,
+        languagecode: "en",
+      },
+      {
+        enabled: !!video.url,
+      },
+    );
 
   useEffect(() => {
     if (metadataData && !isCreatingProject) {

@@ -1,3 +1,5 @@
+"use server";
+
 import { absoluteUrl } from "~/utils/utils";
 import axios from "axios";
 

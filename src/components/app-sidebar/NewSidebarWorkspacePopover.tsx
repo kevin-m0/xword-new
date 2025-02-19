@@ -7,6 +7,7 @@ import {
 import { Separator } from "~/components/ui/separator";
 import { useOrganization, useOrganizationList } from "@clerk/nextjs";
 import { CreateOrganizationDialog } from "~/app/_components/organizations/CreateOrganizationDialog";
+import { toast } from "sonner";
 
 const NewSidebarWorkspacePopover = ({
   children,
@@ -24,7 +25,7 @@ const NewSidebarWorkspacePopover = ({
     if (setActive) {
       try {
         await setActive({ organization: organizationId });
-        console.log(`Active workspace set to: ${organizationId}`);
+        toast(`Active workspace set to: ${organizationId}`);
       } catch (error) {
         console.error("Error setting active workspace:", error);
       }
