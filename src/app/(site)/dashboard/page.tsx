@@ -1,10 +1,7 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
 import { useOrganizationList, useUser } from "@clerk/nextjs";
 import LoadingScreen from "~/components/loaders/loading-screen";
-import { useRouter } from "next/navigation";
-import { isFirstTimeUser } from "~/app/api/actions/isFirstTimeUser";
 import NewTopBarComponent from "~/components/topbar/NewTopBarComponent";
 
 const Page = () => {

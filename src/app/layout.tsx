@@ -14,7 +14,7 @@ import { KeyBordProvider } from "~/lib/providers/KeyBoardProvider";
 import { Provider } from "jotai";
 import LoadingScreen from "~/components/loaders/loading-screen";
 import { XWAlertProvider } from "~/components/reusable/xw-alert";
-import { RootLayoutComp } from "~/components/providers/CheckAuth";
+import { CheckAuth } from "~/components/providers/CheckAuth";
 
 const font1 = Noto_Sans({ subsets: ["latin"], variable: "--font-sans" });
 const font2 = Inter({ subsets: ["latin"], variable: "--font-inter" });
