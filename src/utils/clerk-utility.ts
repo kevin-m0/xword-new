@@ -18,7 +18,6 @@ export async function getUser() {
     });
 
     if (dbUser) {
-      console.log("user found");
       return user;
     }
 

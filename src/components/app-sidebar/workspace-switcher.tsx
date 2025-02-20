@@ -1,12 +1,19 @@
+"use client";
+
 import React from "react";
-import { SidebarMenuButton } from "../ui/sidebar";
+import { SidebarMenuButton, SidebarMenuSkeleton } from "../ui/sidebar";
 import { ArrowRightLeft, ChevronDown, Command } from "lucide-react";
 import { useOrganization } from "@clerk/nextjs";
 import Image from "next/image";
 import NewSidebarWorkspacePopover from "./NewSidebarWorkspacePopover";
+import TableLoader from "../loaders/TableLoader";
 
 const WorkspaceSwitcher = () => {
-  const { organization } = useOrganization();
+  const { organization, isLoaded } = useOrganization();
+
+  if (!isLoaded) {
+    return <>insert custom loader here</>;
+  }
 
   return (
     <NewSidebarWorkspacePopover>

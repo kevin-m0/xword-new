@@ -152,9 +152,7 @@ export default function AppSidebar({
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        <React.Suspense fallback={<SidebarMenuSkeleton />}>
-          {user && <NavUser user={user} />}
-        </React.Suspense>
+        {user ? <NavUser user={user} /> : <>insert custom loader here</>}
       </SidebarFooter>
     </Sidebar>
   );
