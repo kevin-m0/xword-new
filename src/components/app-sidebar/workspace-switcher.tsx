@@ -1,12 +1,11 @@
 "use client";
 
 import React from "react";
-import { SidebarMenuButton, SidebarMenuSkeleton } from "../ui/sidebar";
-import { ArrowRightLeft, ChevronDown, Command } from "lucide-react";
+import { SidebarMenuButton } from "../ui/sidebar";
+import { ArrowRightLeft, Command } from "lucide-react";
 import { useOrganization } from "@clerk/nextjs";
 import Image from "next/image";
 import NewSidebarWorkspacePopover from "./NewSidebarWorkspacePopover";
-import TableLoader from "../loaders/TableLoader";
 
 const WorkspaceSwitcher = () => {
   const { organization, isLoaded } = useOrganization();
@@ -18,7 +17,7 @@ const WorkspaceSwitcher = () => {
   return (
     <NewSidebarWorkspacePopover>
       <SidebarMenuButton size="lg" asChild>
-        <a href="#">
+        <div className="cursor-pointer">
           <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
             {organization?.imageUrl ? (
               <Image
@@ -37,7 +36,7 @@ const WorkspaceSwitcher = () => {
             <span className="truncate text-xs">Free Tier</span>
           </div>
           <ArrowRightLeft className="ml-auto h-4 w-4" />
-        </a>
+        </div>
       </SidebarMenuButton>
     </NewSidebarWorkspacePopover>
   );

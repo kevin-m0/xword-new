@@ -15,7 +15,7 @@ const SearchBar = () => {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="w-1/4">
+    <div className="w-[500px]">
       <Command>
         <CommandInput
           // value={searchKeyword}

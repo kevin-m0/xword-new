@@ -5,7 +5,7 @@ import MultiCampaignDynamicDialog from "../newflow/multi-campaign/MultiCampaignD
 
 const AudioVerseBanner = () => {
   return (
-    <div className="relative py-5">
+    <div className="relative pb-5">
       <div
         className="relative rounded-2xl bg-gradient-to-r from-white/10 via-white/30 to-white/60 p-[1px]"
         style={{
@@ -21,7 +21,7 @@ const AudioVerseBanner = () => {
               <h1 className="text-4xl font-medium capitalize leading-tight text-white">
                 Turn Audio into Content
               </h1>
-              <p className="text-xw-muted-foreground mt-4">
+              <p className="mt-4 text-xw-muted-foreground">
                 Transform voice recordings or podcasts into diverse content
                 formats!
               </p>
