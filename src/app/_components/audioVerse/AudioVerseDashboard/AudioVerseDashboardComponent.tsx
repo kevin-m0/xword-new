@@ -43,11 +43,11 @@ const AudioVerseDashboardComponent = () => {
       label: "MagicChat",
       icon: "/icons/chatoval.svg",
     },
-    {
-      id: "aicontent",
-      label: "AIContent",
-      icon: "/icons/magic.svg",
-    },
+    // {
+    //   id: "aicontent",
+    //   label: "AIContent",
+    //   icon: "/icons/magic.svg",
+    // },
   ];
 
   const renderTabContent = () => {
@@ -64,8 +64,8 @@ const AudioVerseDashboardComponent = () => {
   };
 
   return (
-    <div className="flex flex-col gap-10 pt-10">
-      <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-10 p-5">
+    <div className="flex flex-col gap-10">
+      <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-10 p-5">
         {/* Audioverse Dashboard Header */}
         <div className="flex items-center justify-between gap-5">
           <div className="flex items-center gap-4">

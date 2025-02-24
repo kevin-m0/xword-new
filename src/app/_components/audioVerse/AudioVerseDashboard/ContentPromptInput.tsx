@@ -15,6 +15,8 @@ import { useGetActiveSpace } from "~/hooks/workspace/useGetActiveSpace";
 import { ErrorToast } from "../../custom-toast";
 import { Button } from "~/components/ui/button";
 import { useUpdateChat } from "./useUpdateChat";
+import { useUser } from "@clerk/nextjs";
+import { useDocumentId } from "~/hooks/editor/useDocumentId";
 
 interface MessageInputProps {
   context: string;
@@ -32,12 +34,13 @@ const ContentPromptInput = ({ context, messages }: MessageInputProps) => {
   const [input, setInput] = useState<string>("");
   const [_, setRefetchTokenUsage] = useAtom(refetchTrigger);
   const { mutate: updateChat } = useUpdateChat();
-  const { data: user } = trpc.user.getCurrentLoggedInUser.useQuery();
+  const documentId = useDocumentId();
   const { data: activeWorkspace, isLoading: isWorkspaceFetching } =
     useGetActiveSpace();
   const [, setPromptLoading] = useAtom(promptLoadingAtom);
   const [, setContentResponse] = useAtom(contentResponseAtom);
   const [, setContentInput] = useAtom(contentInputAtom);
+  const { user } = useUser();
 
   const { mutate: handleSend, isPending } = useMutation({
     mutationFn: async (payload: {
@@ -52,7 +55,7 @@ const ContentPromptInput = ({ context, messages }: MessageInputProps) => {
 
       const paymentId = `${activeWorkspace?.id}:${user?.id}`;
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_LLM_PAID_TIER_URL}/generate/chat`,
+        `${process.env.NEXT_PUBLIC_LLM_FREE_TIER_URL}/generate/chatbot/xmail-chatbot`,
         {
           method: "post",
           headers: {
@@ -62,8 +65,13 @@ const ContentPromptInput = ({ context, messages }: MessageInputProps) => {
           },
           body: JSON.stringify({
             userId: paymentId,
+            sessionId: documentId,
+            avatarId: "wizard",
+            mode: "Normal",
+            query: payload?.messages[0]?.content as string,
             messages: payload.messages,
-            context: payload.context,
+            role: "user",
+            mailContext: { body: payload.context },
           }),
         },
       );
