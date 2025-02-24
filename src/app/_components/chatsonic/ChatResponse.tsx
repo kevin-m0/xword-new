@@ -53,7 +53,7 @@ const SourcesList = ({
                     href={source.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-xw-primary hover:text-xw-primary-hover flex items-center gap-2 text-lg transition-colors"
+                    className="flex items-center gap-2 text-lg text-xw-primary transition-colors hover:text-xw-primary-hover"
                   >
                     {/* <ExternalLink className="h-6 w-6" /> */}
                     {source.url.length > 30
@@ -115,7 +115,7 @@ function ChatResponse({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.6, ease: "easeInOut" }}
-      className="relative mb-3 flex gap-4 py-4"
+      className="relative mb-3 flex justify-start gap-4 py-4"
     >
       <div className="relative top-2">
         <div className="ml-1 flex h-9 w-9 items-center justify-center rounded-full">

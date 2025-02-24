@@ -58,7 +58,7 @@ const ChatSonicDefaultScreen = ({
             : "Search about:"}
         </h1>
 
-        <div className="mt-5 flex max-w-lg flex-wrap justify-center gap-2">
+        <div className="mb-3 mt-5 flex max-w-lg flex-wrap justify-center gap-2">
           {(mode === "Web" ? WEB_DEFAULT_PROMPTS : NORMAL_DEFAULT_PROMPTS).map(
             (prompt) => (
               <XWSecondaryButton

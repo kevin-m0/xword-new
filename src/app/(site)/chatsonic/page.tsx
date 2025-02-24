@@ -12,6 +12,7 @@ import ChatSonicSidebar from "~/app/_components/chatsonic/ChatSonicSidebar";
 import ChatSonicMobileSidebar from "~/app/_components/chatsonic/ChatSonicMobileSidebar";
 import ChatSonicChatbox from "~/app/_components/chatsonic/ChatSonicChatbox";
 import ChatSonicChatInput from "~/app/_components/chatsonic/ChatSonicChatInput";
+import { Mic } from "lucide-react";
 
 const Page = () => {
   const [mode, setMode] = useState<"Normal" | "Docs" | "Web">("Normal");
@@ -65,8 +66,9 @@ const Page = () => {
     includeDomains: includeDomains,
     avatarId: selectedCharacter,
   });
+
   return (
-    <div className="flex h-dvh w-full overflow-hidden">
+    <div className="flex h-[calc(100dvh-3rem)] w-full overflow-hidden">
       <div className="hidden w-full max-w-xs bg-xw-sidebar md:flex">
         <ScrollArea className="w-full">
           <ChatSonicSidebar
@@ -84,12 +86,12 @@ const Page = () => {
         </ScrollArea>
       </div>
 
-      <div className="flex h-full w-full flex-1 flex-col">
-        <div className="scrollbar-track-transparent scrollbar-thumb-xw-secondary scrollbar-thin mx-auto flex w-full flex-1 flex-col overflow-y-auto px-5 py-5">
+      <div className="flex flex-1 flex-col">
+        <div className="scrollbar-track-transparent scrollbar-thumb-xw-secondary scrollbar-thin mx-auto flex w-full flex-1 flex-col overflow-y-auto px-5 pt-60">
           <ChatSonicChatbox mode={mode} setChatInput={setChatInput} />
         </div>
 
-        <div className="mx-auto w-full max-w-3xl px-5 pb-5 pt-2">
+        <div className="mx-auto w-full max-w-3xl px-5">
           <ChatSonicChatInput
             setOpenSections={setOpenSections}
             setMode={setMode}

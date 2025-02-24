@@ -161,14 +161,15 @@ const ChatSonicChatInput = ({
             sessionId: newSessionId,
           });
 
-          if (!existingChat) {
-            await createChatMutation.mutateAsync({
-              id: newSessionId,
-              title: "New Chat",
-              userId: user?.id as string,
-              lastPromptPayload: JSON.stringify({ mode: "Normal" }),
-            });
-          }
+          // if chat doesn't exist, create a new one
+          // if (!existingChat) {
+          //   await createChatMutation.mutateAsync({
+          //     id: newSessionId,
+          //     title: "New Chat",
+          //     userId: user?.id as string,
+          //     lastPromptPayload: JSON.stringify({ mode: "Normal" }),
+          //   });
+          // }
         } catch (error) {
           console.error("Error creating chat:", error);
           hasTriedCreatingChat.current = false;
@@ -278,7 +279,7 @@ const ChatSonicChatInput = ({
   };
 
   return (
-    <div className="border-xw-border bg-xw-card rounded-lg border p-5">
+    <div className="rounded-lg border border-xw-border bg-xw-card p-5">
       <textarea
         ref={inputRef}
         value={chatInput}
@@ -296,7 +297,7 @@ const ChatSonicChatInput = ({
           {selectedFiles.map((file) => (
             <div
               key={file.id}
-              className="bg-xw-secondary flex items-center rounded-lg p-1"
+              className="flex items-center rounded-lg bg-xw-secondary p-1"
             >
               <span className="max-w-xs truncate pl-1 text-xs text-white">
                 {getFileIcon(file.type)}
@@ -334,7 +335,7 @@ const ChatSonicChatInput = ({
         </div>
 
         <div className="flex items-center gap-4">
-          <div className="border-xw-border bg-xw-background flex items-center gap-1 rounded-lg border p-[2px]">
+          <div className="flex items-center gap-1 rounded-lg border border-xw-border bg-xw-background p-[2px]">
             {/* <Button
                             size={"xs"}
                             variant={"xw_ghost"}

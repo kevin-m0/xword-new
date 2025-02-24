@@ -28,7 +28,7 @@ export const useSend = ({
 
   const { mutateAsync: sendUserMessageToDb } = useSendMessageDb(
     isChatExist,
-    false
+    false,
   );
 
   const { mutate: sendAIMessage } = useSendMessageDb(isChatExist, true);
@@ -38,7 +38,6 @@ export const useSend = ({
 
   const { mutate: updateLastPromptMutation } =
     trpc.chatsonic.updateLastPrompt.useMutation();
-
 
   const createChatMutation = trpc.chatsonic.createChat.useMutation({
     onSuccess: () => {
@@ -72,14 +71,14 @@ export const useSend = ({
         "⚡️ useEffect: sessionId changed from",
         previousSessionRef.current,
         "to",
-        sessionId
+        sessionId,
       );
 
       if (previousSessionRef.current) {
         const oldSession = previousSessionRef.current;
         console.log(
           "🔶 Calling updatePersonalData for old session:",
-          oldSession
+          oldSession,
         );
         updatePersonalDataMutation.mutate({
           userId: user?.id ?? "",
@@ -159,7 +158,7 @@ export const useSend = ({
         query: chatInput,
         role: "user" as const,
       };
-      
+
       console.log({
         sessionId: sessionId,
         lastPromptPayload: JSON.stringify(newUserMessage),
@@ -184,7 +183,7 @@ export const useSend = ({
             Authorization: `Bearer ${process.env.NEXT_PUBLIC_LLM_TOKEN}`,
             "Content-Type": "application/json",
           },
-        }
+        },
       );
 
       if (res.data?.response) {

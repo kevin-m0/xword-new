@@ -102,7 +102,7 @@ const ChatSonicSidebar = ({
   };
 
   return (
-    <div className="flex h-full w-full flex-col gap-5 rounded-br-lg rounded-tr-lg p-5">
+    <div className="flex w-full flex-col gap-5 rounded-br-lg rounded-tr-lg p-5">
       <Button variant="default" onClick={handleNewChat}>
         New Chat
       </Button>
@@ -209,7 +209,7 @@ const ChatSonicSidebar = ({
             <CollapsibleTrigger asChild>
               <Button
                 variant="ghost"
-                className="hover:bg-xw-sidebar w-full justify-between px-0 focus:ring-0"
+                className="w-full justify-between px-0 hover:bg-xw-sidebar focus:ring-0"
               >
                 <span className="flex items-center gap-2 uppercase">
                   <Network className="h-4 w-4" />
@@ -226,7 +226,7 @@ const ChatSonicSidebar = ({
               {CATEGORIES.map((category) => (
                 <Button
                   key={category}
-                  className="hover:bg-xw-secondary w-full justify-start gap-2 text-sm"
+                  className="w-full justify-start gap-2 text-sm hover:bg-xw-secondary"
                   variant={
                     category === selectedCategory ? "secondary" : "ghost"
                   }
@@ -251,7 +251,7 @@ const ChatSonicSidebar = ({
             <CollapsibleTrigger asChild>
               <Button
                 variant="ghost"
-                className="hover:bg-xw-sidebar w-full justify-between px-0 focus:ring-0"
+                className="w-full justify-between px-0 hover:bg-xw-sidebar focus:ring-0"
               >
                 <span className="flex items-center gap-2 uppercase">
                   <Calendar className="h-4 w-4" />

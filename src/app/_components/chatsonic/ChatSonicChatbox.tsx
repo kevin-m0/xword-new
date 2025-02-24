@@ -65,6 +65,7 @@ const ChatSonicChatbox: React.FC<ChatSonicChatboxProps> = ({
     {
       sessionId,
     },
+    { enabled: isChatExist === true },
   );
 
   const uniqueMessages = useMemo(() => {
@@ -112,7 +113,7 @@ const ChatSonicChatbox: React.FC<ChatSonicChatboxProps> = ({
   }
 
   return (
-    <div className="relative flex h-full flex-1 flex-col overflow-hidden">
+    <div className="relative mx-auto flex max-w-4xl flex-col overflow-hidden">
       {(!isChatExist || !messages?.length) && (
         <div className="chatsonic-welcome-bg absolute top-0 w-full rounded-xl blur-lg" />
       )}
