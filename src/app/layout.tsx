@@ -1,5 +1,4 @@
 import { Toaster } from "sonner";
-import { Suspense } from "react";
 import type { Metadata, Viewport } from "next";
 import { Inter, Noto_Sans } from "next/font/google";
 import "~/styles/globals.css";
@@ -12,9 +11,7 @@ import { dark } from "@clerk/themes";
 import { ShortCutProvider } from "~/lib/providers/ShortCutProvider";
 import { KeyBordProvider } from "~/lib/providers/KeyBoardProvider";
 import { Provider } from "jotai";
-import LoadingScreen from "~/components/loaders/loading-screen";
 import { XWAlertProvider } from "~/components/reusable/xw-alert";
-import { RootLayoutComp } from "~/components/providers/CheckAuth";
 
 const font1 = Noto_Sans({ subsets: ["latin"], variable: "--font-sans" });
 const font2 = Inter({ subsets: ["latin"], variable: "--font-inter" });
@@ -34,37 +31,29 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning className="dark">
       <body className={cn(font1.variable, font2.variable)}>
-        <Suspense fallback={<LoadingScreen />}>
-          <ViewProvider>
-            <TRPCReactProvider>
-              <ClerkProvider
-                publishableKey="pk_test_dW5iaWFzZWQtbW9sbHVzay04LmNsZXJrLmFjY291bnRzLmRldiQ"
-                appearance={{
-                  baseTheme: dark,
-                }}
-                signInFallbackRedirectUrl={"/dashboard"}
-                signUpFallbackRedirectUrl={"/getting-started"}
-                afterSignOutUrl={"/"}
-              >
-                <Provider>
-                  <ShortCutProvider>
-                    <KeyBordProvider>
-                      <XWAlertProvider>{children}</XWAlertProvider>
-                    </KeyBordProvider>
-                  </ShortCutProvider>
-                </Provider>
-              </ClerkProvider>
-            </TRPCReactProvider>
-          </ViewProvider>
-          <Toaster />
-        </Suspense>
+        <ViewProvider>
+          <TRPCReactProvider>
+            <ClerkProvider
+              publishableKey="pk_test_dW5iaWFzZWQtbW9sbHVzay04LmNsZXJrLmFjY291bnRzLmRldiQ"
+              appearance={{
+                baseTheme: dark,
+              }}
+              signInFallbackRedirectUrl={"/dashboard"}
+              signUpFallbackRedirectUrl={"/getting-started"}
+              afterSignOutUrl={"/"}
+            >
+              <Provider>
+                <ShortCutProvider>
+                  <KeyBordProvider>
+                    <XWAlertProvider>{children}</XWAlertProvider>
+                  </KeyBordProvider>
+                </ShortCutProvider>
+              </Provider>
+            </ClerkProvider>
+          </TRPCReactProvider>
+        </ViewProvider>
+        <Toaster />
       </body>
     </html>
   );
 }
-
-// Suspense usage is not correct here. This is a server rendered component.
-// We should use Suspense on the client side.
-// in the previous project iteration, the whole app acted like a client side rendered app
-// because of framer-motion in app/template.tsx
-// is this required? then why are we using next.js?

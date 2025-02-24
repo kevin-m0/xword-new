@@ -73,8 +73,6 @@ const VideoVerseDocs = () => {
     direction: null,
   });
 
-  console.log(defaultSpace?.id, "active workspace");
-
   const isAllSelected = docs.length > 0 && selectedDocs.length === docs.length;
 
   const toggleSelectAll = () => {
@@ -162,6 +160,10 @@ const VideoVerseDocs = () => {
   };
 
   const filteredAndSortedDocs = filterAndSortDocs();
+
+  if (filteredAndSortedDocs.length === 0 || isLoadingRecordings) {
+    return <div>No videos found</div>;
+  }
 
   return (
     <div>

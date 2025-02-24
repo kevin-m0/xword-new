@@ -1,7 +1,7 @@
 import { getUser } from "~/utils/clerk-utility";
 import { redirect } from "next/navigation";
 
-export const RootLayoutComp = async ({
+export const CheckAuth = async ({
   children,
 }: {
   children: React.ReactNode;
@@ -9,5 +9,5 @@ export const RootLayoutComp = async ({
   const user = await getUser();
   if (!user) redirect("/sign-in");
 
-  return <div>{children}</div>;
+  return <div className="">{children}</div>;
 };

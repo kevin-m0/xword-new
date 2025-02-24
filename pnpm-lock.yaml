@@ -353,9 +353,9 @@ importers:
       react-markdown:
         specifier: ^9.0.3
         version: 9.0.3(@types/react@18.3.18)(react@18.3.1)
-      react-pdf-html:
-        specifier: ^2.1.3
-        version: 2.1.3(@react-pdf/renderer@4.2.2(react@18.3.1))(react@18.3.1)
+      react-player:
+        specifier: ^2.16.0
+        version: 2.16.0(react@18.3.1)
       rehype-katex:
         specifier: ^7.0.1
         version: 7.0.1
@@ -4865,9 +4865,8 @@ packages:
   linkifyjs@4.2.0:
     resolution: {integrity: sha512-pCj3PrQyATaoTYKHrgWRF3SJwsm61udVh+vuls/Rl6SptiDhgE7ziUIudAedRY9QEfynmM7/RmLEfPUyw1HPCw==}
 
-  loader-runner@4.3.0:
-    resolution: {integrity: sha512-3R/1M+yS3j5ou80Me59j7F9IMs4PXs3VqRrm0TU3AbKPxlmpoY1TNscJV/oGJXo8qCatFGTfDbY6W6ipGOYXfg==}
-    engines: {node: '>=6.11.5'}
+  load-script@1.0.0:
+    resolution: {integrity: sha512-kPEjMFtZvwL9TaZo0uZ2ml+Ye9HUMmPwbYRJ324qF9tqMejwykJ5ggTyvzmrbBeapCAbk98BSbTeovHEEP1uCA==}
 
   locate-path@6.0.0:
     resolution: {integrity: sha512-iPZK6eYjbxRu3uB4/WZ3EsEIMJFMqAoopl3R+zuq0UjcAm/MO6KCweDgPfP3elTztoKP3KtnVHxTn2NHBSDVUw==}
@@ -5014,8 +5013,8 @@ packages:
   mdurl@2.0.0:
     resolution: {integrity: sha512-Lf+9+2r+Tdp5wXDXC4PcIBjTDtq4UKjCPMQhKIuzpJNW0b96kVqSwW0bT7FhRSfmAiFYgP+SCRvdrDozfh0U5w==}
 
-  media-engine@1.0.3:
-    resolution: {integrity: sha512-aa5tG6sDoK+k70B9iEX1NeyfT8ObCKhNDs6lJVpwF6r8vhUfuKMslIcirq6HIUYuuUYLefcEQOn9bSBOvawtwg==}
+  memoize-one@5.2.1:
+    resolution: {integrity: sha512-zYiwtZUcYyXKo/np96AGZAckk+FWWsUdJ3cHGGmld7+AhvcWmQyGCYUh1hc4Q/pkOhb65dQR/pqCyK0cOaHz4Q==}
 
   memoize-one@6.0.0:
     resolution: {integrity: sha512-rkpe71W0N0c0Xz6QD0eJETuWAJGnJ9afsl1srmwPrI+yBCkge5EycXXbYRyvL29zZVUWQCY7InPRCv3GDXuZNw==}
@@ -5650,6 +5649,9 @@ packages:
     peerDependencies:
       react: '>= 16.8 || 18.0.0'
 
+  react-fast-compare@3.2.2:
+    resolution: {integrity: sha512-nsO+KSNgo1SbJqJEYRE9ERzo7YtYbou/OqjSQKxV7jcKox7+usiUVZOAC+XnDOABXggQTno0Y1CpVnuWEc1boQ==}
+
   react-hook-form@7.54.2:
     resolution: {integrity: sha512-eHpAUgUjWbZocoQYUHposymRb4ZP6d0uwUnooL2uOybA9/3tPUvoAKqEWK1WaSiTxxOfTpffNZP7QwlnM3/gEg==}
     engines: {node: '>=18.0.0'}
@@ -5684,12 +5686,10 @@ packages:
       react: '>=16.3.0'
       react-dom: '>=16.3.0'
 
-  react-pdf-html@2.1.3:
-    resolution: {integrity: sha512-KTTbLUFnpus2Ed6zPGM+LD/evnDcQVz+uG7/kBW4d5qKI9/O6/Hwirh8ZvcbQT/0TeA5vzaqjUnuOs2MhhZjCw==}
-    engines: {node: '>=16.0.0'}
+  react-player@2.16.0:
+    resolution: {integrity: sha512-mAIPHfioD7yxO0GNYVFD1303QFtI3lyyQZLY229UEAp/a10cSW+hPcakg0Keq8uWJxT2OiT/4Gt+Lc9bD6bJmQ==}
     peerDependencies:
-      '@react-pdf/renderer': '>=3.4.4'
-      react: '>=16'
+      react: '>=16.6.0'
 
   react-remove-scroll-bar@2.3.8:
     resolution: {integrity: sha512-9r+yi9+mgU33AKcj6IbT9oRCO78WriSj6t/cF8DWBZJ9aOGPOTEDvdUDz1FwKim7QXWwmHqtdHnRJfhAxEG46Q==}
@@ -12094,7 +12094,7 @@ snapshots:
 
   linkifyjs@4.2.0: {}
 
-  loader-runner@4.3.0: {}
+  load-script@1.0.0: {}
 
   locate-path@6.0.0:
     dependencies:
@@ -12342,7 +12342,7 @@ snapshots:
 
   mdurl@2.0.0: {}
 
-  media-engine@1.0.3: {}
+  memoize-one@5.2.1: {}
 
   memoize-one@6.0.0: {}
 
@@ -13114,6 +13114,8 @@ snapshots:
       prop-types: 15.8.1
       react: 18.3.1
 
+  react-fast-compare@3.2.2: {}
+
   react-hook-form@7.54.2(react@18.3.1):
     dependencies:
       react: 18.3.1
@@ -13161,12 +13163,14 @@ snapshots:
       uncontrollable: 7.2.1(react@18.3.1)
       warning: 4.0.3
 
-  react-pdf-html@2.1.3(@react-pdf/renderer@4.2.2(react@18.3.1))(react@18.3.1):
+  react-player@2.16.0(react@18.3.1):
     dependencies:
-      '@react-pdf/renderer': 4.2.2(react@18.3.1)
-      css-tree: 1.1.3
-      node-html-parser: 6.1.13
+      deepmerge: 4.3.1
+      load-script: 1.0.0
+      memoize-one: 5.2.1
+      prop-types: 15.8.1
       react: 18.3.1
+      react-fast-compare: 3.2.2
 
   react-remove-scroll-bar@2.3.8(@types/react@18.3.18)(react@18.3.1):
     dependencies:

@@ -1,20 +1,25 @@
 "use client";
 import { CreateOrganization, useUser } from "@clerk/nextjs";
-import { redirect } from "next/navigation";
-import React from "react";
+import { useRouter } from "next/navigation";
+import React, { useEffect } from "react";
 
 const Page = () => {
   const { user } = useUser();
+  const router = useRouter();
 
-  if (user) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        <CreateOrganization afterCreateOrganizationUrl={"/dashboard"} />
-      </div>
-    );
-  } else {
-    redirect("/dashboard");
-  }
+  useEffect(() => {
+    if (!user) {
+      router.push("/dashboard"); // Redirect for unauthenticated users
+    }
+  }, [user, router]);
+
+  if (!user) return null; // Prevent rendering before redirect
+
+  return (
+    <div className="flex h-screen items-center justify-center">
+      <CreateOrganization afterCreateOrganizationUrl="/dashboard" />
+    </div>
+  );
 };
 
 export default Page;

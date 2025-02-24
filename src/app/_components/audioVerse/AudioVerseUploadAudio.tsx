@@ -21,6 +21,7 @@ import XWSecondaryButton from "~/components/reusable/XWSecondaryButton";
 import { toast } from "sonner";
 import { getAwsUrl } from "~/lib/get-aws-url";
 import { uploadAudioFile } from "~/lib/upload-to-aws";
+import { useRouter } from "next/navigation";
 
 const AudioVerseUploadAudio = () => {
   const [localFile, setLocalFile] = useState<File | null>(null); // Single file state
@@ -28,6 +29,7 @@ const AudioVerseUploadAudio = () => {
   const { showToast } = useXWAlert();
   const utils = trpc.useUtils();
   const { organization: defaultSpace } = useOrganization();
+  const router = useRouter();
 
   const { user } = useUser();
 
@@ -105,7 +107,7 @@ const AudioVerseUploadAudio = () => {
       languagecode: "en",
     });
 
-    await createAudioProject({
+    const response = await createAudioProject({
       title: metadata.title,
       transcript: metadata.transcript,
       subtitles: metadata.subtitles,
@@ -116,6 +118,10 @@ const AudioVerseUploadAudio = () => {
       storageKey: youtubeURL,
       workspaceId: defaultSpace?.id || "",
     });
+
+    setYoutubeURL("");
+
+    router.push(`/audioverse/${response.id}`);
   };
 
   return (

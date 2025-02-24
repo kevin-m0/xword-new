@@ -121,9 +121,7 @@ const ChatSonicChatbox: React.FC<ChatSonicChatboxProps> = ({
         <ScrollArea
           className={cn(
             "relative z-10 flex h-full w-full flex-col gap-2",
-            "mx-auto",
-            "max-w-2xl sm:max-w-lg md:max-w-xl lg:max-w-3xl xl:max-w-4xl",
-            "px-4 sm:px-8 md:px-16 lg:px-32 xl:px-48 2xl:px-64",
+            "mx-auto sm:max-w-lg md:max-w-xl lg:max-w-3xl xl:max-w-4xl",
           )}
         >
           {uniqueMessages?.map((message: Message) => {

@@ -13,7 +13,6 @@ import {
   TableRow,
 } from "~/components/ui/table";
 import { format } from "date-fns";
-
 import { cn } from "~/utils/utils";
 import AudioVerseUploadAudio from "./AudioVerseUploadAudio";
 import EditRecordingModel from "./EditRecordingModel";
@@ -166,14 +165,14 @@ const AudioVerseDocs = () => {
 
   const filteredAndSortedDocs = filterAndSortDocs();
 
-  if (isLoadingProjects) {
+  if (isLoadingProjects && filteredAndSortedDocs.length === 0) {
     return <LoaderCircle className="animate-spin" />;
   }
 
   return (
-    <div>
+    <div className="flex-1">
       <div className="mb-10 flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Audio Library</h1>
+        <h1 className="text-2xl font-bold">Your Audio Projects</h1>
 
         <div className="flex items-center gap-2">
           <Select

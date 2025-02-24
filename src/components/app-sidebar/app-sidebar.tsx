@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import dynamic from "next/dynamic";
 import {
   BookOpen,
   Bot,
@@ -27,8 +26,6 @@ import { NavMain } from "~/components/app-sidebar/nav-main";
 import { NavProjects } from "~/components/app-sidebar/nav-projects";
 import { NavSecondary } from "~/components/app-sidebar/nav-secondary";
 
-const NavUser = dynamic(() => import("~/components/app-sidebar/nav-user"));
-
 import {
   Sidebar,
   SidebarContent,
@@ -42,6 +39,7 @@ import {
 
 import { useUser } from "@clerk/nextjs";
 import WorkspaceSwitcher from "./workspace-switcher";
+import NavUser from "./nav-user";
 
 const data = {
   navMain: [
@@ -138,7 +136,7 @@ export default function AppSidebar({
   const { user } = useUser();
 
   return (
-    <Sidebar collapsible="icon" variant="inset" {...props}>
+    <Sidebar className="pt-5" collapsible="icon" variant="floating" {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
@@ -149,12 +147,10 @@ export default function AppSidebar({
       <SidebarContent>
         <NavMain items={data.navMain} />
         <NavProjects projects={data.projects} />
-        <NavSecondary items={data.navSecondary} className="mt-auto" />
+        {/* <NavSecondary items={data.navSecondary} className="mt-auto" /> */}
       </SidebarContent>
       <SidebarFooter>
-        <React.Suspense fallback={<SidebarMenuSkeleton />}>
-          {user && <NavUser user={user} />}
-        </React.Suspense>
+        {user ? <NavUser user={user} /> : <>insert custom loader here</>}
       </SidebarFooter>
     </Sidebar>
   );
