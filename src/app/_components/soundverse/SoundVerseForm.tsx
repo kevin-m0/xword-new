@@ -12,9 +12,9 @@ import { SpeedOptions } from "@prisma/client";
 import { CreateUserVoice } from "./CreateUserVoice";
 import SelectLanguage from "./SelectLanguage";
 import UserVoices from "./UserVoices";
-import { useUser } from "@clerk/nextjs";
+import { useOrganization, useUser } from "@clerk/nextjs";
 import { useXWAlert } from "~/components/reusable/xw-alert";
-import { useGetActiveSpace } from "~/hooks/workspace/useGetActiveSpace";
+// import { useGetActiveSpace } from "~/hooks/workspace/useGetActiveSpace";
 import { trpc } from "~/trpc/react";
 import { useGenerationHelpers } from "~/hooks/soundverse/useGenerationHelpers";
 import XWTabs from "~/components/reusable/XWTabs";
@@ -52,7 +52,7 @@ export default function SoundVerseForm({
   const { user } = useUser();
   const { showToast } = useXWAlert();
   const { generateVoice } = useGenerationHelpers();
-  const { data: defaultSpace } = useGetActiveSpace();
+  const {organization : defaultSpace} = useOrganization();
 
   const { mutateAsync: createAudioModel } = trpc.audio.createAudioModel.useMutation();
 

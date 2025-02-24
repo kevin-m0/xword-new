@@ -5,6 +5,8 @@ import { client } from "~/lib/aws-sdk-config";
 const Bucket = process.env.S3_BUCKET_NAME as string;
 export async function POST(req: Request) {
     try {
+        console.log("calllling ---------------------------->");
+        
         const formData = await req.formData();
         const fileData = formData.get("file") as File;
         const fileName = formData.get("fileName") as string;
@@ -36,6 +38,8 @@ export async function POST(req: Request) {
         });
 
         const response = await client.send(command);
+        console.log("res------------------------------------>", response);
+        
         if (response)
             return NextResponse.json(
                 {

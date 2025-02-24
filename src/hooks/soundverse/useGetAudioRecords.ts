@@ -1,12 +1,13 @@
 import { trpc } from "~/trpc/react";
-import { useGetActiveSpace } from "../workspace/useGetActiveSpace";
+
+import { useOrganization } from "@clerk/nextjs";
 
 
 const useGetAudioRecords = () => {
-    const { data: defaultSpace } = useGetActiveSpace();
+    const { organization } = useOrganization();
     const { data: generatedAudios, refetch, isLoading } = trpc.audio.getAudioRecords.useQuery(
-        { workspaceId: defaultSpace?.id },
-        { enabled: !!defaultSpace?.id } 
+        { workspaceId: organization?.id },
+        { enabled: !!organization?.id } 
     );
 
     return { generatedAudios, refetch, isLoading };

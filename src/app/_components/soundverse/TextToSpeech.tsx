@@ -6,7 +6,8 @@ import React, { useState } from 'react'
 import { useAtom } from 'jotai';
 import { isCheckingGrammarAtom, isGeneratingScriptAtom, isProcessingAtom, paraTextAtom } from "~/atoms/soundVerseAtom";
 import { useXWAlert } from '~/components/reusable/xw-alert';
-import { useUser } from '~/hooks/misc/useUser';
+import { useUser } from '@clerk/nextjs';
+// import { useUser } from '~/hooks/misc/useUser';
 
 const TextToSpeech = () => {
 
@@ -15,7 +16,7 @@ const TextToSpeech = () => {
     const [isGeneratingScript, setIsGeneratingScript] = useAtom(isGeneratingScriptAtom);
     const [isCheckingGrammar, setIsCheckingGrammar] = useAtom(isCheckingGrammarAtom);
     
-    const { data: user } = useUser();
+    const { user } = useUser();
     const { showToast } = useXWAlert();
 
     const { mutate: checkGrammar } = useMutation({

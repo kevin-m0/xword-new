@@ -1,14 +1,17 @@
+import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import React from "react";
 import PhotoSonicComponent from "~/app/_components/photosonic/PhotoSonicComponent";
-import { getUser } from "~/utils/clerk-utility";
 
 const Page: React.FC = async() => {
-    const user = await getUser();
-    if (!user) redirect("/sign-in");
+    const { userId } = await auth()
+
+    // console.log("user---------------->", userId, orgId );
+    
+    if (!userId) redirect("/sign-in");
     return (
         <div >
-            <PhotoSonicComponent userId={user.id} />
+            <PhotoSonicComponent userId={userId} />
         </div>
     );
 };

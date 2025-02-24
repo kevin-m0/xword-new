@@ -11,7 +11,7 @@ import Image from 'next/image';
 import { GenerationType } from "@prisma/client";
 import { Loader } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
-import { useGetActiveSpace } from '~/hooks/workspace/useGetActiveSpace';
+// import { useGetActiveSpace } from '~/hooks/workspace/useGetActiveSpace';
 import { useXWAlert } from '~/components/reusable/xw-alert';
 import { trpc } from '~/trpc/react';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '~/components/ui/form';
@@ -22,6 +22,7 @@ import { XWTextarea } from '~/components/reusable/XWTextarea';
 import { Separator } from '~/components/ui/separator';
 import { TooltipContent, TooltipProvider, TooltipTrigger } from '~/components/reusable/xw-tooltip';
 import { aiImageCount, aiImageLoadingRatio, aiImagesLoadingState, currentGeneratingPrompt, imageCurrentState, refetchTrigger } from '~/atoms/photosonicAtom';
+import { useOrganization } from '@clerk/nextjs';
 
 const imagePromptSchema = z.object({
     model: z.string(),
@@ -123,8 +124,8 @@ const PhotoSonicImageGenerationForm = ({ userId }: { userId: string }) => {
     const [, setCurrentPrompt] = useAtom(currentGeneratingPrompt);
     const { showToast } = useXWAlert();
 
-
-    const { data: defaultSpace } = useGetActiveSpace();
+    const { organization: defaultSpace } = useOrganization();
+    // const { data: defaultSpace } = useGetActiveSpace();
     const utils = trpc.useUtils();
 
     const form = useForm<Inputs>({

@@ -4,6 +4,7 @@ import { z } from "zod";
 import { db } from "~/server/db";
 import { Prisma } from "@prisma/client";
 import { createTRPCRouter, privateProcedure } from "../../trpc";
+import { File } from "buffer";
 
 export const MediaSchema = z.object({
   type: z.enum(["audio", "video", "image", "doc"]),

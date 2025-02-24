@@ -15,6 +15,7 @@ import { useGetActiveSpace } from "~/hooks/workspace/useGetActiveSpace";
 import { ErrorToast } from "../../custom-toast";
 import { Button } from "~/components/ui/button";
 import { useUpdateChat } from "./useUpdateChat";
+import { useOrganization } from "@clerk/nextjs";
 
 interface MessageInputProps {
   context: string;
@@ -33,8 +34,8 @@ const ContentPromptInput = ({ context, messages }: MessageInputProps) => {
   const [_, setRefetchTokenUsage] = useAtom(refetchTrigger);
   const { mutate: updateChat } = useUpdateChat();
   const { data: user } = trpc.user.getCurrentLoggedInUser.useQuery();
-  const { data: activeWorkspace, isLoading: isWorkspaceFetching } =
-    useGetActiveSpace();
+   const { organization: activeWorkspace, isLoaded: isWorkspaceFetching } =
+      useOrganization();
   const [, setPromptLoading] = useAtom(promptLoadingAtom);
   const [, setContentResponse] = useAtom(contentResponseAtom);
   const [, setContentInput] = useAtom(contentInputAtom);
@@ -44,7 +45,7 @@ const ContentPromptInput = ({ context, messages }: MessageInputProps) => {
       messages: ContentInput[];
       context: string;
     }) => {
-      if (isWorkspaceFetching) return;
+      
 
       setContentInput("");
       setContentResponse("");

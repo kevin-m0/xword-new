@@ -297,6 +297,7 @@ export const imageRouter = createTRPCRouter({
       });
     }
   }),
+
   getGeneratedImages: privateProcedure
   .input(
     z.object({
@@ -308,25 +309,24 @@ export const imageRouter = createTRPCRouter({
   )
   .query(async ({ ctx, input }) => {
     const { workspaceId } = input;
-    console.log("input-------->", input);
-    
+    console.log("input---------------------------->", input, ctx.userId);
     try {
+      // const  images = await db.imageData.(f/)
       const images = await db.imageData.findMany({
         where: {
           userId: ctx.userId,
-          workspaceId,
-          ...(GenerationType && { GenerationType }),
         },
       });
       return images;
-    } catch (error) {
-      console.error("Error fetching generated images:", error);
+    } catch (error: any) {
+      console.error("Error fetching generated images:", error.message);
       throw new TRPCError({
         code: "INTERNAL_SERVER_ERROR",
-        message: "Failed to fetch generated images",
+        message: error.message,
       });
     }
   }),
+
   getGeneratedImagesWithUrls: privateProcedure
   .input(
     z.object({

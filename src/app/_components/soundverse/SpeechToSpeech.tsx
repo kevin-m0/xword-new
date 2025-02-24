@@ -92,7 +92,11 @@ const SpeechToSpeech = () => {
 
             try {
                 setIsUploading(true);
+                console.log("file is uploading ------------------->",);
+                
                 await uploadFile(file as File, uniqueKey);
+                console.log("filr is plaloaded-----------------------]>");
+                
                 showToast({
                     title: "Success",
                     message: "File uploaded successfully!",

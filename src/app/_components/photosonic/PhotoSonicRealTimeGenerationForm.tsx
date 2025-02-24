@@ -11,7 +11,7 @@ import { Loader, Loader2 } from 'lucide-react';
 import { GenerationType } from '@prisma/client';
 import { trpc } from '~/trpc/react';
 import { ART_STYLES } from '~/lib/constant/art-styles';
-import { useGetActiveSpace } from '~/hooks/workspace/useGetActiveSpace';
+// import { useGetActiveSpace } from '~/hooks/workspace/useGetActiveSpace';
 
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '~/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/reusable/XWSelect';
@@ -21,6 +21,7 @@ import { Button } from '~/components/ui/button';
 import { useXWAlert } from '~/components/reusable/xw-alert';
 import { useDebounce } from '~/hooks/misc/useDebounce';
 import { isGeneratingRealtimeImageAtom, realTimeImageAtom, refetchTrigger } from '~/atoms/photosonicAtom';
+import { useOrganization } from '@clerk/nextjs';
 
 
 
@@ -46,7 +47,8 @@ const PhotoSonicRealTimeGenerationForm = ({ userId }: { userId: string }) => {
     const [isFetching, setIsFetching] = useState(false);
     const [, setRealtimeImage] = useAtom(realTimeImageAtom);
     const [, setRefetchTokenUsage] = useAtom(refetchTrigger);
-    const { data: defaultSpace } = useGetActiveSpace();
+    // const { data: defaultSpace } = useGetActiveSpace();
+    const {organization : defaultSpace} = useOrganization()
 
     const [isGeneratedImage, setIsGeneratingRealtimeImageAtom] = useAtom(isGeneratingRealtimeImageAtom);
 

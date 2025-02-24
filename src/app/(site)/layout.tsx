@@ -9,17 +9,17 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "~/components/ui/sidebar";
-import { useDoesUserExist } from "~/hooks/misc/useDoesUserExist";
+// import { useDoesUserExist } from "~/hooks/misc/useDoesUserExist";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  const { user, isLoading } = useDoesUserExist();
+  // const { user, isLoading } = useDoesUserExist();
 
-  if (isLoading)
-    return (
-      <div>
-        <LoadingScreen />
-      </div>
-    );
+  // if (isLoading)
+  //   return (
+  //     <div>
+  //       <LoadingScreen />
+  //     </div>
+  //   );
 
   return (
     <SidebarProvider>

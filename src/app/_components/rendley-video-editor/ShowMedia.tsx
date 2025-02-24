@@ -1,3 +1,4 @@
+import { useOrganization } from "@clerk/nextjs";
 import Image from "next/image";
 import { FC } from "react";
 import { useGetActiveSpace } from "~/hooks/workspace/useGetActiveSpace";
@@ -8,9 +9,9 @@ interface ShowMediaProps {
 }
 
 const ShowMedia: FC<ShowMediaProps> = ({ rendley }) => {
-  const { data: defaultSpace, isLoading: isWorkspaceFetching } =
-    useGetActiveSpace();
-
+  // const { data: defaultSpace, isLoading: isWorkspaceFetching } =
+  //   useGetActiveSpace();
+  const { organization: defaultSpace, isLoaded: isWorkspaceFetching } = useOrganization();
   const { data: audioMedia, isLoading: isAudioLoading } =
     trpc.audio.getAudioRecords.useQuery(
       { workspaceId: defaultSpace?.id },

@@ -15,12 +15,11 @@ import {
     aiImagesLoadingState,
     currentGeneratingPrompt,
 } from "~/atoms";
-// import EmptyScreen from "../empty/EmptyScreen";
-// import { getAwsUrl } from "../../_lib/get-aws-url";
-import { useGetActiveSpace } from "~/hooks/workspace/useGetActiveSpace";
+// import { useGetActiveSpace } from "~/hooks/workspace/useGetActiveSpace";
 import PhotoSonicImageSlider from "./PhotoSonicImageSlider";
 import { getAwsUrl } from "~/lib/get-aws-url";
 import EmptyScreen from "../empty/EmptyScreen";
+import { useOrganization } from "@clerk/nextjs";
 
 interface GroupedImages {
     prompt: string;
@@ -80,7 +79,8 @@ const ImageDisplay = ({ image, groupImages }: { image: ImageData; groupImages: I
 };
 
 const PhotoSonicDisplayGeneratedImages: React.FC = () => {
-    const { data: activeSpace } = useGetActiveSpace();
+    // const { data: activeSpace } = useGetActiveSpace();
+    const {organization : activeSpace} = useOrganization()
     const [isGenerating] = useAtom(aiImagesLoadingState);
     const [imageCount] = useAtom(aiImageCount);
     const [imageRatio] = useAtom(aiImageLoadingRatio);

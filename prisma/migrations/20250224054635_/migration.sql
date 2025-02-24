@@ -115,8 +115,6 @@ CREATE TABLE "Document" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "userId" TEXT,
     "folderId" TEXT,
-    "organizationId" TEXT,
-    "spaceId" TEXT,
     "isStarred" BOOLEAN NOT NULL DEFAULT false,
     "viewCount" INTEGER DEFAULT 0,
     "redirectId" TEXT,
@@ -132,6 +130,7 @@ CREATE TABLE "Document" (
     "assetFolderId" TEXT,
     "createdBy" TEXT NOT NULL,
     "images" TEXT[],
+    "workSpaceId" TEXT,
 
     CONSTRAINT "Document_pkey" PRIMARY KEY ("id")
 );
@@ -189,7 +188,7 @@ CREATE TABLE "Member" (
     "id" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
     "email" TEXT NOT NULL,
-    "workspaceId" TEXT NOT NULL,
+    "workspaceId" TEXT,
     "memberRole" "MEMBERROLE" NOT NULL DEFAULT 'ADMIN',
 
     CONSTRAINT "Member_pkey" PRIMARY KEY ("id")
@@ -336,6 +335,7 @@ CREATE TABLE "AssetsFolder" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "folderType" "FolderType" NOT NULL DEFAULT 'USER_CREATED',
+    "WorkSpace" TEXT NOT NULL,
 
     CONSTRAINT "AssetsFolder_pkey" PRIMARY KEY ("id")
 );
@@ -469,16 +469,13 @@ ALTER TABLE "AudioModel" ADD CONSTRAINT "AudioModel_userId_fkey" FOREIGN KEY ("u
 ALTER TABLE "Chat" ADD CONSTRAINT "Chat_documentId_fkey" FOREIGN KEY ("documentId") REFERENCES "Document"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Document" ADD CONSTRAINT "Document_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "Document" ADD CONSTRAINT "Document_assetFolderId_fkey" FOREIGN KEY ("assetFolderId") REFERENCES "AssetsFolder"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Document" ADD CONSTRAINT "Document_folderId_fkey" FOREIGN KEY ("folderId") REFERENCES "Folder"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Document" ADD CONSTRAINT "Document_spaceId_fkey" FOREIGN KEY ("spaceId") REFERENCES "Workspace"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Document" ADD CONSTRAINT "Document_assetFolderId_fkey" FOREIGN KEY ("assetFolderId") REFERENCES "AssetsFolder"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Document" ADD CONSTRAINT "Document_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Folder" ADD CONSTRAINT "Folder_spaceId_fkey" FOREIGN KEY ("spaceId") REFERENCES "Workspace"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -496,9 +493,6 @@ ALTER TABLE "ImageData" ADD CONSTRAINT "ImageData_userId_fkey" FOREIGN KEY ("use
 ALTER TABLE "Member" ADD CONSTRAINT "Member_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Member" ADD CONSTRAINT "Member_workspaceId_fkey" FOREIGN KEY ("workspaceId") REFERENCES "Workspace"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "Workspace" ADD CONSTRAINT "Workspace_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -514,31 +508,19 @@ ALTER TABLE "SonicChat" ADD CONSTRAINT "SonicChat_userId_fkey" FOREIGN KEY ("use
 ALTER TABLE "AudioProjectChat" ADD CONSTRAINT "AudioProjectChat_audioProjectId_fkey" FOREIGN KEY ("audioProjectId") REFERENCES "AudioProject"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "AudioProject" ADD CONSTRAINT "AudioProject_workspaceId_fkey" FOREIGN KEY ("workspaceId") REFERENCES "Workspace"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "AudioProject" ADD CONSTRAINT "AudioProject_createdBy_fkey" FOREIGN KEY ("createdBy") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Assets" ADD CONSTRAINT "Assets_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Assets" ADD CONSTRAINT "Assets_folderId_fkey" FOREIGN KEY ("folderId") REFERENCES "AssetsFolder"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "AssetsFolder" ADD CONSTRAINT "AssetsFolder_spaceId_fkey" FOREIGN KEY ("spaceId") REFERENCES "Workspace"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Assets" ADD CONSTRAINT "Assets_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "AssetsFolder" ADD CONSTRAINT "AssetsFolder_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "VideoModel" ADD CONSTRAINT "VideoModel_workspaceId_fkey" FOREIGN KEY ("workspaceId") REFERENCES "Workspace"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "VideoModel" ADD CONSTRAINT "VideoModel_createdBy_fkey" FOREIGN KEY ("createdBy") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "ViralClips" ADD CONSTRAINT "ViralClips_workspaceId_fkey" FOREIGN KEY ("workspaceId") REFERENCES "Workspace"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "ViralClips" ADD CONSTRAINT "ViralClips_parentVideoId_fkey" FOREIGN KEY ("parentVideoId") REFERENCES "VideoModel"("id") ON DELETE CASCADE ON UPDATE CASCADE;

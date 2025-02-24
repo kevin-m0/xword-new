@@ -105,10 +105,10 @@ export const audioRouter = createTRPCRouter({
       workspaceId: z.string().optional(),
     })
   )
-  .query(async ({ input }) => {
+  .query(async ({ input, ctx }) => {
     const audioRecords = await db.audioModel.findMany({
       where: {
-        workspaceId: input.workspaceId,
+        userId: ctx.userId,
       },
       orderBy: {
         createdAt: "desc",
