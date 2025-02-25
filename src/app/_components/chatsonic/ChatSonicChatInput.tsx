@@ -5,6 +5,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { useRouter } from "next/navigation";
 import AddFileDropdown from "./AddFileDropdown";
 import ChatSonicSelectCharacter from "./ChatSonicSelectCharacter";
 import { Button } from "~/components/ui/button";
@@ -50,6 +51,7 @@ interface ChatSonicChatInputProps {
   selectedCharacter: string;
   setSelectedCharacter: React.Dispatch<React.SetStateAction<string>>;
   mode: "Normal" | "Docs" | "Web";
+  sessionId: string;
 }
 
 const ChatSonicChatInput = ({
@@ -70,6 +72,7 @@ const ChatSonicChatInput = ({
   setChatInput,
   selectedCharacter,
   setSelectedCharacter,
+  sessionId,
 }: ChatSonicChatInputProps) => {
   const [isDisabled, setIsDisabled] = useState(true);
   const textAreaRef = useRef<HTMLTextAreaElement>();
@@ -88,7 +91,7 @@ const ChatSonicChatInput = ({
   const updateUrls = (newUrls: string[]) => {
     setUrls(newUrls);
   };
-  const sessionId = useSessionId();
+  // const sessionId = useSessionId();
   const { showToast } = useXWAlert();
 
   useLayoutEffect(() => {
@@ -145,48 +148,48 @@ const ChatSonicChatInput = ({
     },
   });
 
-  useEffect(() => {
-    const checkAndCreateChat = async () => {
-      if (
-        !hasTriedCreatingChat.current &&
-        !isChatExist &&
-        !isChatExistLoading &&
-        !chatExistError &&
-        !sessionId
-      ) {
-        hasTriedCreatingChat.current = true;
-        const newSessionId = crypto.randomUUID();
-        try {
-          const existingChat = await utils.chatsonic.isChatActive.fetch({
-            sessionId: newSessionId,
-          });
+  // useEffect(() => {
+  //   const checkAndCreateChat = async () => {
+  //     if (
+  //       !hasTriedCreatingChat.current &&
+  //       !isChatExist &&
+  //       !isChatExistLoading &&
+  //       !chatExistError &&
+  //       !sessionId
+  //     ) {
+  //       hasTriedCreatingChat.current = true;
+  //       const newSessionId = crypto.randomUUID();
+  //       try {
+  //         const existingChat = await utils.chatsonic.isChatActive.fetch({
+  //           sessionId: newSessionId,
+  //         });
 
-          // if chat doesn't exist, create a new one
-          // if (!existingChat) {
-          //   await createChatMutation.mutateAsync({
-          //     id: newSessionId,
-          //     title: "New Chat",
-          //     userId: user?.id as string,
-          //     lastPromptPayload: JSON.stringify({ mode: "Normal" }),
-          //   });
-          // }
-        } catch (error) {
-          console.error("Error creating chat:", error);
-          hasTriedCreatingChat.current = false;
-        }
-      }
-    };
+  //         // if chat doesn't exist, create a new one
+  //         // if (!existingChat) {
+  //         //   await createChatMutation.mutateAsync({
+  //         //     id: newSessionId,
+  //         //     title: "New Chat",
+  //         //     userId: user?.id as string,
+  //         //     lastPromptPayload: JSON.stringify({ mode: "Normal" }),
+  //         //   });
+  //         // }
+  //       } catch (error) {
+  //         console.error("Error creating chat:", error);
+  //         hasTriedCreatingChat.current = false;
+  //       }
+  //     }
+  //   };
 
-    checkAndCreateChat();
-  }, [
-    sessionId,
-    isChatExist,
-    isChatExistLoading,
-    chatExistError,
-    user?.id,
-    createChatMutation,
-    utils.chatsonic.isChatActive,
-  ]);
+  //   checkAndCreateChat();
+  // }, [
+  //   sessionId,
+  //   isChatExist,
+  //   isChatExistLoading,
+  //   chatExistError,
+  //   user?.id,
+  //   createChatMutation,
+  //   utils.chatsonic.isChatActive,
+  // ]);
 
   const handleChatInput = useCallback(
     (value: string) => {
@@ -196,10 +199,41 @@ const ChatSonicChatInput = ({
     [isDisabled, setChatInput],
   );
 
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+  const router = useRouter();
+
+  const handleKeyPress = async (
+    e: React.KeyboardEvent<HTMLTextAreaElement>,
+  ) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      handleSend();
+
+      if (!isChatExist && !sessionId) {
+        const newSessionId = crypto.randomUUID();
+        try {
+          await createChatMutation.mutateAsync({
+            id: newSessionId,
+            title: "New Chat",
+            userId: user?.id as string,
+            lastPromptPayload: JSON.stringify({ mode: "Normal" }),
+          });
+
+          router.push(`/chatsonic/${newSessionId}`);
+
+          // Wait briefly for the navigation to complete
+          setTimeout(() => {
+            handleSend();
+          }, 100);
+        } catch (error) {
+          showToast({
+            title: "Error",
+            message: "Failed to create new chat. Please try again.",
+          });
+          console.error("Error creating chat:", error);
+        }
+      } else {
+        router.push(`/chatsonic/${sessionId}`);
+        handleSend();
+      }
     }
   };
 

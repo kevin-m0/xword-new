@@ -13,6 +13,7 @@ import {
   Library,
   LifeBuoy,
   Map,
+  MessageCircle,
   Pen,
   PenIcon,
   PieChart,
@@ -94,8 +95,8 @@ const data = {
   projects: [
     {
       name: "ChatSonic",
-      url: "/chatsonic/aa",
-      icon: Frame,
+      url: "/chatsonic",
+      icon: MessageCircle,
     },
     {
       name: "SoundVerse",

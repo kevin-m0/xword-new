@@ -109,6 +109,7 @@ const ChatSonicComponent = () => {
             setMode={setMode}
             handleSend={handleSend}
             isGeneratingResponse={isGeneratingResponse}
+            sessionId=""
             urls={urls}
             setUrls={setUrls}
             mode={mode}

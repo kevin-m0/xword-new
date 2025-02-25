@@ -1,18 +1,16 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useMemo } from "react";
 
 import { ScrollArea, ScrollBar } from "~/components/ui/scroll-area";
 import { useCallback, useState } from "react";
 import { useSend } from "~/hooks/chatsonic/use-send";
-import { useSessionId } from "~/hooks/chatsonic/useSessionId";
 import { useSessionWatcher } from "~/hooks/chatsonic/use-send/useSessionWatcher";
 import { UploadedFile } from "~/types/chatsonic.types";
 import ChatSonicSidebar from "~/app/_components/chatsonic/ChatSonicSidebar";
-import ChatSonicMobileSidebar from "~/app/_components/chatsonic/ChatSonicMobileSidebar";
 import ChatSonicChatbox from "~/app/_components/chatsonic/ChatSonicChatbox";
 import ChatSonicChatInput from "~/app/_components/chatsonic/ChatSonicChatInput";
-import { Mic } from "lucide-react";
+import { useUser } from "@clerk/nextjs";
 
 const Page = () => {
   const [mode, setMode] = useState<"Normal" | "Docs" | "Web">("Normal");
@@ -30,8 +28,12 @@ const Page = () => {
     { id: string; mimeType: string }[]
   >([]); // For images/audio
   const [urls, setUrls] = useState<string[]>([]);
-  const sessionId = useSessionId();
-  useSessionWatcher(sessionId);
+
+  const newSessionId = useMemo(() => crypto.randomUUID(), []);
+
+  console.log("this is the new session id in /chatsonic", newSessionId);
+
+  useSessionWatcher(newSessionId);
 
   // New state to track selected files
   const [selectedFiles, setSelectedFiles] = useState<UploadedFile[]>([]);
@@ -53,11 +55,11 @@ const Page = () => {
   }, []);
 
   const { handleSend, isGeneratingResponse } = useSend({
-    isChatExist: true,
+    isChatExist: false,
     chatInput,
     fileIds,
     otherFiles: { files: otherFiles },
-    sessionId,
+    sessionId: newSessionId,
     clearInput,
     urls,
     mode,
@@ -96,11 +98,12 @@ const Page = () => {
             setOpenSections={setOpenSections}
             setMode={setMode}
             handleSend={handleSend}
+            sessionId={newSessionId}
             isGeneratingResponse={isGeneratingResponse}
-            urls={[]}
+            urls={urls}
             setUrls={setUrls}
-            mode={"Normal"}
-            fileIds={[]}
+            mode={mode}
+            fileIds={fileIds}
             setFileIds={setFileIds} // Existing
             otherFiles={otherFiles}
             setOtherFiles={setOtherFiles} // Existing
@@ -108,7 +111,7 @@ const Page = () => {
             setSelectedFiles={setSelectedFiles} // New
             chatInput={chatInput}
             setChatInput={setChatInput}
-            selectedCharacter={""}
+            selectedCharacter={selectedCharacter}
             setSelectedCharacter={setSelectedCharacter}
           />
         </div>

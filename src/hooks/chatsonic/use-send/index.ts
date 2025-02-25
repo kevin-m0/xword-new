@@ -2,10 +2,10 @@ import { useMemo, useEffect, useRef, useState, useCallback } from "react";
 import useSendMessageDb from "./useSendMessageDb";
 import { useAtom, useAtomValue } from "jotai";
 import axios from "axios";
-import { useUser } from "../../misc/useUser";
 import { trpc } from "~/trpc/react";
 import { UseSend } from "~/types/chatsonic.types";
 import { brandVoiceAtom } from "~/atoms";
+import { useUser } from "@clerk/nextjs";
 
 export const useSend = ({
   fileIds,
@@ -22,7 +22,7 @@ export const useSend = ({
   includeDomains,
 }: UseSend) => {
   const utils = trpc.useUtils();
-  const { data: user } = useUser();
+  const { user } = useUser();
   const createAssetMutation = trpc.image.createAssets.useMutation();
   const [isGeneratingResponse, setIsGeneratingResponse] = useState(false);
 

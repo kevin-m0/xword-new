@@ -20,7 +20,7 @@ const ChatSonicDefaultScreen = ({
     .join(" ");
 
   return (
-    <div className="my-auto flex flex-col items-center justify-center gap-2 text-center">
+    <div className="flex flex-col items-center justify-center gap-2 text-center">
       <Image
         src="/icons/chatmagic.svg"
         height={30}
