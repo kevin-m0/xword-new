@@ -131,6 +131,8 @@ const data = {
   ],
 };
 
+console.log("AppSidebar is rendering");
+
 export default function AppSidebar({
   ...props
 }: React.ComponentProps<typeof Sidebar>) {

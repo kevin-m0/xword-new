@@ -16,7 +16,7 @@ import {
   Search,
   PanelLeft,
 } from "lucide-react";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Input } from "~/components/ui/input";
 import moment from "moment";
 import { CATEGORIES, PUBLISH_DATES } from "./constants";
@@ -57,7 +57,11 @@ const ChatSonicSidebar = ({
 
   const sessionId = useSessionId();
   const handleNewChat = useNewChat();
-  const { data: chats, isLoading } = trpc.chatsonic.fetchAllChats.useQuery();
+  const {
+    data: chats,
+    isLoading,
+    refetch,
+  } = trpc.chatsonic.fetchAllChats.useQuery();
   const router = useRouter();
 
   const toggleSection = (section: keyof OpenSections) => {
@@ -97,9 +101,9 @@ const ChatSonicSidebar = ({
     });
   };
 
-  const handleChatSelect = (chatId: string) => {
+  const handleChatSelect = useCallback((chatId: string) => {
     router.push(`/chatsonic/${chatId}`);
-  };
+  }, []);
 
   return (
     <div className="flex w-full flex-col gap-5 rounded-br-lg rounded-tr-lg p-5">

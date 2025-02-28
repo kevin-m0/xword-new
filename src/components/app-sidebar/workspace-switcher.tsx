@@ -2,7 +2,7 @@
 
 import React from "react";
 import { SidebarMenuButton } from "../ui/sidebar";
-import { ArrowRightLeft, Command } from "lucide-react";
+import { ArrowUpDown, Command } from "lucide-react";
 import { useOrganization } from "@clerk/nextjs";
 import Image from "next/image";
 import NewSidebarWorkspacePopover from "./NewSidebarWorkspacePopover";
@@ -35,7 +35,7 @@ const WorkspaceSwitcher = () => {
             <span className="truncate font-semibold">{organization?.name}</span>
             <span className="truncate text-xs">Free Tier</span>
           </div>
-          <ArrowRightLeft className="ml-auto h-4 w-4" />
+          <ArrowUpDown className="ml-auto h-4 w-4" />
         </div>
       </SidebarMenuButton>
     </NewSidebarWorkspacePopover>

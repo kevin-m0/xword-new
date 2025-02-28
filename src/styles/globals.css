@@ -13,7 +13,7 @@
     --xw-card-hover: rgba(20, 20, 29, 1);
     --xw-input: rgba(25, 8, 40, 1);
     --xw-border: rgba(110, 94, 132, 0.35);
-    --xw-background: rgb(0, 0, 0);
+    --xw-background: #121212;
     --xw-text: rgba(225, 225, 225);
     --xw-danger: rgba(232, 54, 44, 1);
     --xw-danger-hover: rgba(232, 54, 44, 0.6);
@@ -59,7 +59,7 @@
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%}
   .dark {
-    --background: 240 10% 3.9%;
+    --background: 0 0% 7%;
     --foreground: 0 0% 98%;
     --card: 240 10% 3.9%;
     --card-foreground: 0 0% 98%;

@@ -1,6 +1,6 @@
 import { toast } from "sonner";
 import { motion } from "framer-motion";
-import { useRef } from "react";
+import { useCallback, useRef } from "react";
 import { Copy } from "lucide-react";
 import { Card, CardHeader, CardTitle } from "~/components/ui/card";
 import useCopyToClipboard from "~/hooks/chatsonic/useCopyToClipBoard";
@@ -10,6 +10,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
 import { RenderMarkdown } from "~/components/render-markdown/render-markdown";
 import { Message } from "~/types/chatsonic.types";
+import { useAtom } from "jotai";
+import { isGeneratingResponseAtom } from "~/atoms";
 
 type ChatResponseProp = {
   message: Message;
@@ -84,7 +86,11 @@ function ChatResponse({
   const [_, copy] = useCopyToClipboard();
   const { user } = useUser();
 
-  const handleCopyToClipBoard = async () => {
+  const [isGeneratingResponse, setIsGeneratingResponse] = useAtom(
+    isGeneratingResponseAtom,
+  );
+
+  const handleCopyToClipBoard = useCallback(async () => {
     // if (message.fileIds.some((id) => id.startsWith("image_"))) {
     //   copyImage(imageRef);
     //   return;
@@ -108,7 +114,7 @@ function ChatResponse({
           />
         ));
     }
-  };
+  }, []);
 
   return (
     <motion.div

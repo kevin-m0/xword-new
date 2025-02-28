@@ -23,12 +23,7 @@ const ChatPrompt = ({ prompt, nameInitial, userImageSrc }: ChatPromptProps) => {
       : prompt.fileIds;
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.3 }}
-      className="flex min-w-[800px] justify-end gap-4 py-4"
-    >
+    <div className="flex min-w-[800px] justify-end gap-4 py-4">
       <Avatar>
         <AvatarImage src={userImageSrc} />
         <AvatarFallback>{nameInitial}</AvatarFallback>
@@ -68,7 +63,7 @@ const ChatPrompt = ({ prompt, nameInitial, userImageSrc }: ChatPromptProps) => {
           )}
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 };
 

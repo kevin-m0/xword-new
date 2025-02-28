@@ -9,5 +9,5 @@ export const CheckAuth = async ({
   const user = await getUser();
   if (!user) redirect("/sign-in");
 
-  return <div className="">{children}</div>;
+  return <div>{children}</div>;
 };

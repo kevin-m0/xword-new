@@ -181,7 +181,7 @@ const DisplayCalendarComponent: React.FC<DisplayCalendarComponentProps> =
     );
 
     return (
-      <div className="h-[800px] rounded-lg p-4">
+      <div className="h-[800px] rounded-lg">
         <Calendar
           localizer={localizer}
           events={events}

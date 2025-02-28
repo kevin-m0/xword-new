@@ -26,7 +26,6 @@ const ChatSonicChatbox: React.FC<ChatSonicChatboxProps> = ({
   mode,
   setChatInput,
 }) => {
-  const [ref, { height }] = useMeasure();
   const bottomRef = useRef<HTMLDivElement | null>(null);
   const sessionId = useSessionId();
   const { user } = useUser();
@@ -42,24 +41,21 @@ const ChatSonicChatbox: React.FC<ChatSonicChatboxProps> = ({
   } = trpc.chatsonic.fetchAllMessages.useQuery(
     { sessionId },
     {
-      enabled: !!sessionId,
+      enabled: isChatExist === true && !!sessionId,
       refetchOnWindowFocus: false,
-      refetchInterval: isGeneratingResponse ? 2000 : false,
+      refetchInterval: isGeneratingResponse ? 1000 : false || 0,
       staleTime: 0,
     },
   );
 
+  const lastMessage = useMemo(() => messages?.at(-1), [messages]);
+
   useEffect(() => {
+    console.log(messages?.length, "message length");
     if (messages?.length && messages?.length > 0 && !isChatExist) {
       utils.chatsonic.isChatActive.invalidate({ sessionId });
     }
   }, [messages, isChatExist, sessionId, utils.chatsonic.isChatActive]);
-
-  useEffect(() => {
-    if (isChatExist) {
-      refetchMessages();
-    }
-  }, [isChatExist, refetchMessages]);
 
   const { data: lastPromptPayload } = trpc.chatsonic.lastPromptPayload.useQuery(
     {
@@ -84,7 +80,11 @@ const ChatSonicChatbox: React.FC<ChatSonicChatboxProps> = ({
     );
   }, [messages]);
 
-  const lastMessage = useMemo(() => messages?.at(-1), [messages]);
+  useEffect(() => {
+    if (sessionId) {
+      refetchMessages();
+    }
+  }, [isChatExist, refetchMessages, isGeneratingResponse]);
 
   const useSendOptions = useMemo(() => {
     const lastPrompt = lastPromptPayload as string;
@@ -95,8 +95,7 @@ const ChatSonicChatbox: React.FC<ChatSonicChatboxProps> = ({
     };
   }, [lastPromptPayload, sessionId, user?.id]);
 
-  const { handleSend: handleRegenerate, isGeneratingResponse: isRegenerating } =
-    useSend(useSendOptions);
+  const { handleSend: handleRegenerate } = useSend(useSendOptions);
 
   useEffect(() => {
     if (bottomRef.current) {
@@ -104,18 +103,14 @@ const ChatSonicChatbox: React.FC<ChatSonicChatboxProps> = ({
     }
   }, [messages]);
 
-  if (isChatExistLoading || messagesLoading) {
-    return (
-      <div className="flex h-full items-center justify-center">
-        <LoaderCircle className="size-11 animate-spin" />
-      </div>
-    );
-  }
+  // DEBUGGING
+  console.log("isgenreatingresponse", isGeneratingResponse);
+  // END DEBUGGING
 
   return (
     <div className="relative mx-auto flex max-w-4xl flex-col overflow-hidden">
       {(!isChatExist || !messages?.length) && (
-        <div className="chatsonic-welcome-bg absolute top-0 w-full rounded-xl blur-lg" />
+        <div className="chatsonic-welcome-bg absolute top-0 w-full rounded-xl bg-red-600 blur-lg" />
       )}
 
       {isChatExist && messages?.length && messages?.length > 0 ? (
@@ -145,13 +140,20 @@ const ChatSonicChatbox: React.FC<ChatSonicChatboxProps> = ({
                     message.id === messages[messages.length - 1]?.id
                   }
                   handleRegenerate={handleRegenerate}
-                  isRegenarating={isRegenerating}
+                  isRegenarating={isGeneratingResponse}
                   userId={user?.id}
                 />
               );
             }
             return null;
           })}
+          {isGeneratingResponse && (
+            <div className="my-2 ml-4 flex animate-pulse items-center space-x-2 text-gray-400">
+              <span className="h-2 w-2 animate-bounce rounded-full bg-gray-400 [animation-delay:0.2s]"></span>
+              <span className="h-2 w-2 animate-bounce rounded-full bg-gray-400 [animation-delay:0.4s]"></span>
+              <span className="h-2 w-2 animate-bounce rounded-full bg-gray-400 [animation-delay:0.6s]"></span>
+            </div>
+          )}
           <div ref={bottomRef} />
         </ScrollArea>
       ) : (

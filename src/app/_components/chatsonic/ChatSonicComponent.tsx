@@ -3,7 +3,7 @@
 import { ScrollArea, ScrollBar } from "~/components/ui/scroll-area";
 import ChatSonicSidebar from "./ChatSonicSidebar";
 import ChatSonicChatbox from "./ChatSonicChatbox";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import ChatSonicChatInput from "./ChatSonicChatInput";
 import { useSend } from "~/hooks/chatsonic/use-send";
 import ChatSonicMobileSidebar from "./ChatSonicMobileSidebar";
@@ -30,7 +30,6 @@ const ChatSonicComponent = () => {
   const sessionId = useSessionId();
   useSessionWatcher(sessionId);
 
-  // New state to track selected files
   const [selectedFiles, setSelectedFiles] = useState<UploadedFile[]>([]);
 
   const [openSections, setOpenSections] = useState({
@@ -49,20 +48,36 @@ const ChatSonicComponent = () => {
     setUrls([]);
   }, []);
 
-  const { handleSend, isGeneratingResponse } = useSend({
-    isChatExist: true,
-    chatInput,
-    fileIds,
-    otherFiles: { files: otherFiles },
-    sessionId,
-    clearInput,
-    urls,
-    mode,
-    category: selectedCategory,
-    publishDate: selectedPublishDate,
-    includeDomains: includeDomains,
-    avatarId: selectedCharacter,
-  });
+  const { handleSend } = useSend(
+    useMemo(
+      () => ({
+        isChatExist: true,
+        chatInput,
+        fileIds,
+        otherFiles: { files: otherFiles },
+        sessionId,
+        clearInput,
+        urls,
+        mode,
+        category: selectedCategory,
+        publishDate: selectedPublishDate,
+        includeDomains,
+        avatarId: selectedCharacter,
+      }),
+      [
+        chatInput,
+        fileIds,
+        otherFiles,
+        sessionId,
+        urls,
+        mode,
+        selectedCategory,
+        selectedPublishDate,
+        includeDomains,
+        selectedCharacter,
+      ],
+    ),
+  );
 
   return (
     <div className="flex h-[calc(100dvh-3rem)] w-full overflow-hidden">
@@ -103,13 +118,12 @@ const ChatSonicComponent = () => {
           <ChatSonicChatbox mode={mode} setChatInput={setChatInput} />
         </div>
 
-        <div className="mx-auto w-full max-w-3xl px-5 pb-5 pt-2">
+        <div className="mx-auto w-full max-w-3xl px-5">
           <ChatSonicChatInput
             setOpenSections={setOpenSections}
             setMode={setMode}
             handleSend={handleSend}
-            isGeneratingResponse={isGeneratingResponse}
-            sessionId=""
+            sessionId={sessionId}
             urls={urls}
             setUrls={setUrls}
             mode={mode}

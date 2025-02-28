@@ -1,11 +1,11 @@
-import { useMemo, useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef } from "react";
 import useSendMessageDb from "./useSendMessageDb";
 import { useAtom, useAtomValue } from "jotai";
 import axios from "axios";
 import { trpc } from "~/trpc/react";
-import { UseSend } from "~/types/chatsonic.types";
-import { brandVoiceAtom } from "~/atoms";
 import { useUser } from "@clerk/nextjs";
+import { brandVoiceAtom, isGeneratingResponseAtom } from "~/atoms";
+import { UseSend } from "~/types/chatsonic.types";
 
 export const useSend = ({
   fileIds,
@@ -24,7 +24,9 @@ export const useSend = ({
   const utils = trpc.useUtils();
   const { user } = useUser();
   const createAssetMutation = trpc.image.createAssets.useMutation();
-  const [isGeneratingResponse, setIsGeneratingResponse] = useState(false);
+  const [isGeneratingResponse, setIsGeneratingResponse] = useAtom(
+    isGeneratingResponseAtom,
+  );
 
   const { mutateAsync: sendUserMessageToDb } = useSendMessageDb(
     isChatExist,
@@ -102,13 +104,17 @@ export const useSend = ({
     if (!user?.id || !sessionId) return;
 
     const firstMessage = !isChatExist;
+
     const newTitle = firstMessage
       ? chatInput.length > 30
         ? `${chatInput.slice(0, 30)}...`
         : chatInput
       : "Untitled";
 
+    console.log(chatInput, "latest message");
+
     try {
+      setIsGeneratingResponse(true);
       // Create chat row if not present
       if (firstMessage) {
         await createChatMutation.mutateAsync({
@@ -116,7 +122,7 @@ export const useSend = ({
           title: newTitle,
           userId: user.id,
           lastPromptPayload: JSON.stringify({
-            query: chatInput,
+            query: chatInput.trim(),
             mode,
             category,
             publishDate,
@@ -128,7 +134,6 @@ export const useSend = ({
         });
       }
 
-      setIsGeneratingResponse(true);
       // const lastMessagePair =
       //   messages.length >= 2
       //     ? messages.slice(-2).filter((msg) => msg[1] !== null)
@@ -142,7 +147,7 @@ export const useSend = ({
       const userMessageId = crypto.randomUUID();
       const newUserMessage = {
         id: userMessageId,
-        userId: user.id as string,
+        userId: user.id,
         sessionId,
         avatarId,
         brandVoice: mergedBrandVoice,
@@ -153,23 +158,12 @@ export const useSend = ({
         category,
         publishDate,
         includeDomains,
-        otherFiles: otherFiles,
+        otherFiles: otherFiles.files.length > 0 ? otherFiles : undefined,
         Urls: urls || [],
         query: chatInput,
         role: "user" as const,
+        files: fileIds,
       };
-
-      console.log({
-        sessionId: sessionId,
-        lastPromptPayload: JSON.stringify(newUserMessage),
-      });
-
-      // if (chatInput.trim().length > 0) {
-      //   updateLastPromptMutation({
-      //     sessionId: sessionId,
-      //     lastPromptPayload: JSON.stringify(newUserMessage),
-      //   });
-      // }
 
       await sendUserMessageToDb(newUserMessage);
 
@@ -233,6 +227,5 @@ export const useSend = ({
 
   return {
     handleSend,
-    isGeneratingResponse,
   };
 };

@@ -30,6 +30,14 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" suppressHydrationWarning className="dark">
+      {/* remove on PROD react-scan testing */}
+      {/* <head>
+        <script
+          crossOrigin="anonymous"
+          src="//unpkg.com/react-scan/dist/auto.global.js"
+        />
+      </head> */}
+      {/* remove on PROD react-scan testing */}
       <body className={cn(font1.variable, font2.variable)}>
         <ViewProvider>
           <TRPCReactProvider>

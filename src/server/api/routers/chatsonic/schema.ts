@@ -21,22 +21,28 @@ export const MessageSchema = z.object({
   brandVoice: BrandVoiceSchema,
   lastMessages: z.array(z.string()),
   mode: z.string(),
-  fileIds: z.array(z.object({
-    id: z.string(),
-    filename: z.string(),
-  })),
+  fileIds: z.array(
+    z.object({
+      id: z.string(),
+      filename: z.string(),
+    }),
+  ),
   category: z.string().optional(),
   publishDate: z.string().optional(),
   includeDomains: z.array(z.string()).optional(),
-  otherFiles: z.object({
-    files: z.array(z.object({
-      id: z.string(),
-      mimeType: z.string(),
-    })),
-  }),
+  otherFiles: z
+    .object({
+      files: z.array(
+        z.object({
+          id: z.string(),
+          mimeType: z.string(),
+        }),
+      ),
+    })
+    .optional(),
   Urls: z.array(z.string()),
   query: z.string(),
-  role: z.enum(['user', 'ai']).default('user'),
+  role: z.enum(["user", "ai"]).default("user"),
   sources: z.string().optional(),
 });
 

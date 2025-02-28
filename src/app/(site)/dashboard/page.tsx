@@ -2,7 +2,6 @@
 
 import { useOrganizationList, useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 import LoadingScreen from "~/components/loaders/loading-screen";
 import NewTopBarComponent from "~/components/topbar/NewTopBarComponent";
 
@@ -16,6 +15,7 @@ const Page = () => {
 
   const router = useRouter();
 
+  // FOR REDIRECTING TO ONBOARDING PAGE
   // useEffect(() => {
   //   const timer = setTimeout(() => {
   //     console.log(userMemberships.data?.length, "userMemberships");

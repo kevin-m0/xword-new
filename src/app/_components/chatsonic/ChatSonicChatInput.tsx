@@ -20,6 +20,9 @@ import AddDoc from "~/icons/AddDoc";
 import { OpenSections, UploadedFile } from "~/types/chatsonic.types";
 import { useUser } from "@clerk/nextjs";
 import { useXWAlert } from "~/components/reusable/xw-alert";
+import { useDocumentId } from "~/hooks/editor/useDocumentId";
+import { useAtomValue } from "jotai";
+import { isGeneratingResponseAtom } from "~/atoms";
 
 function updateTextAreaSize(textArea?: HTMLTextAreaElement) {
   if (textArea == null) return;
@@ -33,7 +36,6 @@ interface ChatSonicChatInputProps {
   setOpenSections: React.Dispatch<React.SetStateAction<OpenSections>>;
   setMode: React.Dispatch<React.SetStateAction<"Normal" | "Docs" | "Web">>;
   handleSend: () => void;
-  isGeneratingResponse: boolean;
   urls: string[];
   setUrls: React.Dispatch<React.SetStateAction<string[]>>;
   fileIds: { id: string; filename: string }[];
@@ -58,7 +60,6 @@ const ChatSonicChatInput = ({
   setOpenSections,
   setMode,
   handleSend,
-  isGeneratingResponse,
   urls,
   setUrls,
   mode,
@@ -79,11 +80,14 @@ const ChatSonicChatInput = ({
   const hasTriedCreatingChat = useRef(false);
   const utils = trpc.useUtils();
   const { user } = useUser();
+  const isGeneratingResponse = useAtomValue(isGeneratingResponseAtom);
 
   const { mutate: updateLastPromptMutation } =
     trpc.chatsonic.updateLastPrompt.useMutation();
   const { data: avatars, isLoading: isLoadingAvatars } =
     trpc.chatsonic.getAvatars.useQuery();
+
+  const documentId = useDocumentId();
 
   const isFileUploadDisabled = selectedFiles.length >= MAX_FILES;
   const isWebModeDisabled = selectedFiles.length > 0;
@@ -148,6 +152,13 @@ const ChatSonicChatInput = ({
     },
   });
 
+  console.log(isChatExist, sessionId, "reqs");
+
+  // useEffect(() => {
+  //   if (sessionId === "") console.log(documentId, "docId");
+  //   sessionId = documentId ? documentId : crypto.randomUUID();
+  // }, []);
+
   // useEffect(() => {
   //   const checkAndCreateChat = async () => {
   //     if (
@@ -202,38 +213,55 @@ const ChatSonicChatInput = ({
   const router = useRouter();
 
   const handleKeyPress = async (
-    e: React.KeyboardEvent<HTMLTextAreaElement>,
+    e:
+      | React.KeyboardEvent<HTMLTextAreaElement>
+      | React.MouseEvent<HTMLButtonElement>,
   ) => {
-    if (e.key === "Enter" && !e.shiftKey) {
+    // Prevent default behavior if Enter key is pressed (without Shift)
+    if ("key" in e && e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
+    }
 
-      if (!isChatExist && !sessionId) {
-        const newSessionId = crypto.randomUUID();
-        try {
-          await createChatMutation.mutateAsync({
-            id: newSessionId,
-            title: "New Chat",
-            userId: user?.id as string,
-            lastPromptPayload: JSON.stringify({ mode: "Normal" }),
-          });
+    // Determine if we should proceed
+    const isEnterPress = "key" in e && e.key === "Enter" && !e.shiftKey;
+    const isButtonClick = "button" in e; // Mouse event means button click
 
-          router.push(`/chatsonic/${newSessionId}`);
+    if (!isEnterPress && !isButtonClick) return; // Ignore other key presses
 
-          // Wait briefly for the navigation to complete
-          setTimeout(() => {
-            handleSend();
-          }, 100);
-        } catch (error) {
-          showToast({
-            title: "Error",
-            message: "Failed to create new chat. Please try again.",
-          });
-          console.error("Error creating chat:", error);
-        }
-      } else {
+    // Handle different chat scenarios
+    if (!isChatExist && !sessionId) {
+      console.log("no chat, no session id");
+      // const newSessionId = crypto.randomUUID();
+      try {
+        await createChatMutation.mutateAsync({
+          id: sessionId,
+          title: "New Chat",
+          userId: user?.id as string,
+          lastPromptPayload: JSON.stringify({ mode: "Normal" }),
+        });
+
         router.push(`/chatsonic/${sessionId}`);
-        handleSend();
+
+        // Wait briefly for navigation to complete, then send the message
+        setTimeout(() => {
+          handleSend();
+        }, 100);
+      } catch (error) {
+        showToast({
+          title: "Error",
+          message: "Failed to create new chat. Please try again.",
+        });
+        console.error("Error creating chat:", error);
       }
+    } else if (isChatExist && sessionId) {
+      console.log("chat, session id");
+      handleSend();
+    } else if (!isChatExist && sessionId) {
+      console.log("no chat, session id");
+      router.push(`/chatsonic/${sessionId}`);
+      setTimeout(() => {
+        handleSend();
+      }, 100);
     }
   };
 
@@ -418,7 +446,7 @@ const ChatSonicChatInput = ({
           <Button
             size={"sm"}
             variant={"ghost"}
-            onClick={handleSend}
+            onClick={handleKeyPress}
             disabled={isGeneratingResponse || chatInput === ""}
           >
             {isGeneratingResponse ? (

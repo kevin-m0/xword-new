@@ -165,7 +165,7 @@ const SocialAccountComponentRefactored = () => {
   ];
 
   return (
-    <div className="pt-10">
+    <div>
       <Script
         src="https://labs.pathfix.com/helper.js"
         id="pinc.helper"
