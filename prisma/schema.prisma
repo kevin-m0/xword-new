@@ -315,9 +315,9 @@ model SonicMessage {
     userId         String
     sessionId      String
     avatarId       String
-    brandVoice     Json?
+    brandVoice     Json
     lastMessages   String[]
-    mode           String?
+    mode           String
     fileIds        Json[]
     category       String?
     publishDate    String?

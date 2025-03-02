@@ -24,12 +24,8 @@ const ChatPrompt = ({ prompt, nameInitial, userImageSrc }: ChatPromptProps) => {
 
   return (
     <div className="flex min-w-[800px] justify-end gap-4 py-4">
-      <Avatar>
-        <AvatarImage src={userImageSrc} />
-        <AvatarFallback>{nameInitial}</AvatarFallback>
-      </Avatar>
-      <div className="mt-2 flex flex-col gap-2">
-        <div className="font-normal text-xw-muted-foreground">
+      <div className="mt-2 flex flex-col gap-2 rounded-full bg-gray-500 p-4 text-black">
+        <div className="font-normal">
           <RenderMarkdown content={prompt.query} />
           {fileIdsObj && fileIdsObj.length > 0 && (
             <div className="mt-2 flex flex-wrap gap-4">

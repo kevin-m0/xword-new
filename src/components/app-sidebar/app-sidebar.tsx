@@ -131,15 +131,13 @@ const data = {
   ],
 };
 
-console.log("AppSidebar is rendering");
-
 export default function AppSidebar({
   ...props
 }: React.ComponentProps<typeof Sidebar>) {
   const { user } = useUser();
 
   return (
-    <Sidebar className="pt-5" collapsible="icon" variant="floating" {...props}>
+    <Sidebar collapsible="icon" variant="sidebar" {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>

@@ -12,9 +12,19 @@ import { ShortCutProvider } from "~/lib/providers/ShortCutProvider";
 import { KeyBordProvider } from "~/lib/providers/KeyBoardProvider";
 import { Provider } from "jotai";
 import { XWAlertProvider } from "~/components/reusable/xw-alert";
+import { NextFont, NextFontWithVariable } from "next/dist/compiled/@next/font";
 
 const font1 = Noto_Sans({ subsets: ["latin"], variable: "--font-sans" });
 const font2 = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const font3: NextFontWithVariable & NextFont = {
+  className: "font-pp-editorial",
+  style: {
+    fontFamily: "PPEditorialNew-UltralightItalic",
+    fontWeight: 200,
+    fontStyle: "italic",
+  },
+  variable: "--font-pp-editorial",
+};
 
 export const metadata: Metadata = {
   manifest: "/manifest.json",
@@ -31,14 +41,14 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning className="dark">
       {/* remove on PROD react-scan testing */}
-      {/* <head>
+      <head>
         <script
           crossOrigin="anonymous"
           src="//unpkg.com/react-scan/dist/auto.global.js"
         />
-      </head> */}
+      </head>
       {/* remove on PROD react-scan testing */}
-      <body className={cn(font1.variable, font2.variable)}>
+      <body className={cn(font2.variable, font3.variable)}>
         <ViewProvider>
           <TRPCReactProvider>
             <ClerkProvider

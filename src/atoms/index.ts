@@ -2,7 +2,11 @@ import { AssetType, Document, VideoModel, Workspace } from "@prisma/client";
 import { CollabHistoryVersion } from "@tiptap-pro/extension-collaboration-history";
 import { Editor } from "@tiptap/react";
 import { atom } from "jotai";
-import { DocumentSidebarTabs, PromptLibraryProps, StoryboardStyle } from "~/types";
+import {
+  DocumentSidebarTabs,
+  PromptLibraryProps,
+  StoryboardStyle,
+} from "~/types";
 
 type DragComponent = {
   type: "link" | "card";
@@ -42,7 +46,18 @@ export enum PHOTOSONIC_MODE {
 }
 
 // Global state for brandVoice
-export const brandVoiceAtom = atom<object | null>(null);
+export const brandVoiceAtom = atom({
+  name: "",
+  specialization: "",
+  audience: "",
+  purpose: "",
+  tone: [],
+  emotions: [],
+  character: [],
+  genre: [],
+  languageStyle: [],
+  brandVoice: "",
+});
 
 // Global state for modelType
 export const modelTypeAtom = atom<MODEL_TYPE>(MODEL_TYPE.WIZARD);
@@ -167,3 +182,4 @@ export const isFacebookConnectedAtom = atom<boolean>(false);
 export const isYoutubeConnectedAtom = atom<boolean>(false);
 export const isTwitterConnectedAtom = atom<boolean>(false);
 export const isLinkedInConnectedAtom = atom<boolean>(false);
+export const messagesAtom = atom<any[]>([]);

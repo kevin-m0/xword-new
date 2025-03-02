@@ -1,8 +1,21 @@
 import React from "react";
-import ChatSonicComponent from "~/app/_components/chatsonic/ChatSonicComponent";
+import NewChatComponent from "~/app/_components/chatsonic/NewChatComponent";
+import { api } from "~/trpc/server";
+import { generateUUID } from "~/utils/utils";
 
-const Page = () => {
-  return <ChatSonicComponent />;
+const Page = async () => {
+  const id = generateUUID();
+
+  const chats = await api.chatsonic.fetchAllChats();
+
+  return (
+    <NewChatComponent
+      key={id}
+      sessionId={id}
+      messages={[]}
+      chat={[]}
+      chats={chats}
+    />
+  );
 };
-
 export default Page;

@@ -1,7 +1,7 @@
 import { toast } from "sonner";
 import { motion } from "framer-motion";
-import { useCallback, useRef } from "react";
-import { Copy } from "lucide-react";
+import { useCallback, useRef, useState } from "react";
+import { Check, Copy, CopyCheck } from "lucide-react";
 import { Card, CardHeader, CardTitle } from "~/components/ui/card";
 import useCopyToClipboard from "~/hooks/chatsonic/useCopyToClipBoard";
 import { useUser } from "@clerk/nextjs";
@@ -85,21 +85,16 @@ function ChatResponse({
   const imageRef = useRef<HTMLImageElement>(null);
   const [_, copy] = useCopyToClipboard();
   const { user } = useUser();
+  const [isCopied, setIsCopied] = useState(false);
 
   const [isGeneratingResponse, setIsGeneratingResponse] = useAtom(
     isGeneratingResponseAtom,
   );
 
   const handleCopyToClipBoard = useCallback(async () => {
-    // if (message.fileIds.some((id) => id.startsWith("image_"))) {
-    //   copyImage(imageRef);
-    //   return;
-    // }
     try {
+      setIsCopied(true);
       await copy(message.query);
-      toast.custom((t) => (
-        <SuccessToast t={t} title="" description="Copied to clipboard" />
-      ));
     } catch {
       if (!message.query)
         toast.custom((t) => (
@@ -114,6 +109,7 @@ function ChatResponse({
           />
         ));
     }
+    setTimeout(() => setIsCopied(false), 3000);
   }, []);
 
   return (
@@ -174,8 +170,17 @@ function ChatResponse({
               <RefreshCcw className="h-3 w-3" />
             </Button>
           )} */}
-          <Button size={"sm"} variant={"ghost"} onClick={handleCopyToClipBoard}>
-            <Copy className="h-3 w-3" />
+          <Button
+            size={"sm"}
+            variant={"ghost"}
+            className="hover:bg-transparent"
+            onClick={handleCopyToClipBoard}
+          >
+            {isCopied ? (
+              <Check className="h-4 w-4" />
+            ) : (
+              <Copy className="h-4 w-4" />
+            )}
           </Button>
         </div>
       </div>

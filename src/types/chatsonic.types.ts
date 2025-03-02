@@ -1,13 +1,15 @@
-import { SonicMessage } from "@prisma/client";
+import { SonicChat, SonicMessage } from "@prisma/client";
+import { Dispatch, SetStateAction } from "react";
+
 export interface UploadedFile {
   id: string;
   mimeType: string;
-  originalFileName:string;
+  originalFileName: string;
   type: "document" | "image" | "audio";
 }
 
 export type UseSend = {
-  fileIds: { id: string; filename: string }[];
+  fileIds: { id: string; filename: string }[] | [];
   otherFiles: {
     files: { id: string; mimeType: string }[];
   };
@@ -21,6 +23,9 @@ export type UseSend = {
   category: string;
   publishDate: string;
   includeDomains: string[];
+  messages: any[];
+  setMessages: Dispatch<SetStateAction<any[]>>;
+  setChats: Dispatch<SetStateAction<SonicChat[]>>;
 };
 
 export interface FileInfo {
@@ -61,9 +66,7 @@ export type Source = {
   url: string;
 };
 
-export type Message = SonicMessage & {
-  sources?: string | Source[];
-};
+export type Message = SonicMessage;
 
 export const Roles = {
   User: "user",

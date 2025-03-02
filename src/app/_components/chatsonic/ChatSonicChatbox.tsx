@@ -3,11 +3,9 @@
 import { ScrollArea } from "~/components/ui/scroll-area";
 import React, { useEffect, useMemo, useRef } from "react";
 import { cn } from "~/utils/utils";
-import ChatSonicDefaultScreen from "./ChatSonicDefaultScreen";
 import ChatPrompt from "./ChatPrompt";
 import ChatResponse from "./ChatResponse";
 import { useAtomValue } from "jotai";
-import useMeasure from "~/hooks/misc/useMeasure";
 import { useSessionId } from "~/hooks/chatsonic/useSessionId";
 import { useUser } from "@clerk/nextjs";
 import { isGeneratingResponseAtom } from "~/atoms";
@@ -16,15 +14,18 @@ import useChatExist from "~/hooks/chatsonic/useChatExist";
 import { Message, Roles } from "~/types/chatsonic.types";
 import { useSend } from "~/hooks/chatsonic/use-send";
 import LoaderCircle from "~/icons/LoaderCircle";
+import ChatDefaultScreen from "./ChatDefaultScreen";
 
 interface ChatSonicChatboxProps {
   mode: "Normal" | "Docs" | "Web";
   setChatInput: (props: string) => void;
+  messages: Message[];
 }
 
 const ChatSonicChatbox: React.FC<ChatSonicChatboxProps> = ({
   mode,
   setChatInput,
+  messages,
 }) => {
   const bottomRef = useRef<HTMLDivElement | null>(null);
   const sessionId = useSessionId();
@@ -34,28 +35,27 @@ const ChatSonicChatbox: React.FC<ChatSonicChatboxProps> = ({
 
   const { data: isChatExist, isLoading: isChatExistLoading } = useChatExist();
 
-  const {
-    data: messages,
-    isLoading: messagesLoading,
-    refetch: refetchMessages,
-  } = trpc.chatsonic.fetchAllMessages.useQuery(
-    { sessionId },
-    {
-      enabled: isChatExist === true && !!sessionId,
-      refetchOnWindowFocus: false,
-      refetchInterval: isGeneratingResponse ? 1000 : false || 0,
-      staleTime: 0,
-    },
-  );
+  // const {
+  //   data: messages,
+  //   isPending: messagesLoading,
+  //   refetch: refetchMessages,
+  // } = trpc.chatsonic.fetchAllMessages.useQuery(
+  //   { sessionId },
+  //   {
+  //     enabled: isChatExist === true && !!sessionId,
+  //     refetchOnWindowFocus: false,
+  //     refetchInterval: isGeneratingResponse ? 1000 : false || 0,
+  //     staleTime: 0,
+  //   },
+  // );
 
-  const lastMessage = useMemo(() => messages?.at(-1), [messages]);
+  // const lastMessage = useMemo(() => messages?.at(-1), [messages]);
 
-  useEffect(() => {
-    console.log(messages?.length, "message length");
-    if (messages?.length && messages?.length > 0 && !isChatExist) {
-      utils.chatsonic.isChatActive.invalidate({ sessionId });
-    }
-  }, [messages, isChatExist, sessionId, utils.chatsonic.isChatActive]);
+  // useEffect(() => {
+  //   if (messages?.length && messages?.length > 0 && !isChatExist) {
+  //     utils.chatsonic.isChatActive.invalidate({ sessionId });
+  //   }
+  // }, [messages, isChatExist, sessionId, utils.chatsonic.isChatActive]);
 
   const { data: lastPromptPayload } = trpc.chatsonic.lastPromptPayload.useQuery(
     {
@@ -80,11 +80,11 @@ const ChatSonicChatbox: React.FC<ChatSonicChatboxProps> = ({
     );
   }, [messages]);
 
-  useEffect(() => {
-    if (sessionId) {
-      refetchMessages();
-    }
-  }, [isChatExist, refetchMessages, isGeneratingResponse]);
+  // useEffect(() => {
+  //   if (sessionId) {
+  //     refetchMessages();
+  //   }
+  // }, [isChatExist, refetchMessages, isGeneratingResponse]);
 
   const useSendOptions = useMemo(() => {
     const lastPrompt = lastPromptPayload as string;
@@ -103,9 +103,13 @@ const ChatSonicChatbox: React.FC<ChatSonicChatboxProps> = ({
     }
   }, [messages]);
 
-  // DEBUGGING
-  console.log("isgenreatingresponse", isGeneratingResponse);
-  // END DEBUGGING
+  // if (messagesLoading) {
+  //   return (
+  //     <div className="flex h-full w-full items-center justify-center">
+  //       <LoaderCircle className="h-15 w-15 animate-spin" />
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="relative mx-auto flex max-w-4xl flex-col overflow-hidden">
@@ -157,7 +161,8 @@ const ChatSonicChatbox: React.FC<ChatSonicChatboxProps> = ({
           <div ref={bottomRef} />
         </ScrollArea>
       ) : (
-        <ChatSonicDefaultScreen mode={mode} setChatInput={setChatInput} />
+        // <ChatSonicDefaultScreen mode={mode} setChatInput={setChatInput} />
+        <ChatDefaultScreen />
       )}
     </div>
   );

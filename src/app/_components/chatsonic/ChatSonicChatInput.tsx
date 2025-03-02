@@ -17,12 +17,13 @@ import { trpc } from "~/trpc/react";
 import { useSessionId } from "~/hooks/chatsonic/useSessionId";
 import useChatExist from "~/hooks/chatsonic/useChatExist";
 import AddDoc from "~/icons/AddDoc";
-import { OpenSections, UploadedFile } from "~/types/chatsonic.types";
+import { Message, OpenSections, UploadedFile } from "~/types/chatsonic.types";
 import { useUser } from "@clerk/nextjs";
 import { useXWAlert } from "~/components/reusable/xw-alert";
 import { useDocumentId } from "~/hooks/editor/useDocumentId";
 import { useAtomValue } from "jotai";
 import { isGeneratingResponseAtom } from "~/atoms";
+import { SonicChat } from "@prisma/client";
 
 function updateTextAreaSize(textArea?: HTMLTextAreaElement) {
   if (textArea == null) return;
@@ -87,15 +88,12 @@ const ChatSonicChatInput = ({
   const { data: avatars, isLoading: isLoadingAvatars } =
     trpc.chatsonic.getAvatars.useQuery();
 
-  const documentId = useDocumentId();
-
   const isFileUploadDisabled = selectedFiles.length >= MAX_FILES;
   const isWebModeDisabled = selectedFiles.length > 0;
 
   const updateUrls = (newUrls: string[]) => {
     setUrls(newUrls);
   };
-  // const sessionId = useSessionId();
   const { showToast } = useXWAlert();
 
   useLayoutEffect(() => {
@@ -152,56 +150,6 @@ const ChatSonicChatInput = ({
     },
   });
 
-  console.log(isChatExist, sessionId, "reqs");
-
-  // useEffect(() => {
-  //   if (sessionId === "") console.log(documentId, "docId");
-  //   sessionId = documentId ? documentId : crypto.randomUUID();
-  // }, []);
-
-  // useEffect(() => {
-  //   const checkAndCreateChat = async () => {
-  //     if (
-  //       !hasTriedCreatingChat.current &&
-  //       !isChatExist &&
-  //       !isChatExistLoading &&
-  //       !chatExistError &&
-  //       !sessionId
-  //     ) {
-  //       hasTriedCreatingChat.current = true;
-  //       const newSessionId = crypto.randomUUID();
-  //       try {
-  //         const existingChat = await utils.chatsonic.isChatActive.fetch({
-  //           sessionId: newSessionId,
-  //         });
-
-  //         // if chat doesn't exist, create a new one
-  //         // if (!existingChat) {
-  //         //   await createChatMutation.mutateAsync({
-  //         //     id: newSessionId,
-  //         //     title: "New Chat",
-  //         //     userId: user?.id as string,
-  //         //     lastPromptPayload: JSON.stringify({ mode: "Normal" }),
-  //         //   });
-  //         // }
-  //       } catch (error) {
-  //         console.error("Error creating chat:", error);
-  //         hasTriedCreatingChat.current = false;
-  //       }
-  //     }
-  //   };
-
-  //   checkAndCreateChat();
-  // }, [
-  //   sessionId,
-  //   isChatExist,
-  //   isChatExistLoading,
-  //   chatExistError,
-  //   user?.id,
-  //   createChatMutation,
-  //   utils.chatsonic.isChatActive,
-  // ]);
-
   const handleChatInput = useCallback(
     (value: string) => {
       setChatInput(value);
@@ -226,21 +174,22 @@ const ChatSonicChatInput = ({
     const isEnterPress = "key" in e && e.key === "Enter" && !e.shiftKey;
     const isButtonClick = "button" in e; // Mouse event means button click
 
-    if (!isEnterPress && !isButtonClick) return; // Ignore other key presses
+    if (!isEnterPress && !isButtonClick) return;
+
+    console.log(isChatExist, sessionId); // Ignore other key presses
 
     // Handle different chat scenarios
-    if (!isChatExist && !sessionId) {
-      console.log("no chat, no session id");
-      // const newSessionId = crypto.randomUUID();
+    if (!isChatExist && sessionId) {
+      router.push(`/chatsonic/${sessionId}`);
+
+      console.log("home page or new chat");
       try {
         await createChatMutation.mutateAsync({
           id: sessionId,
-          title: "New Chat",
+          title: chatInput?.trim(),
           userId: user?.id as string,
           lastPromptPayload: JSON.stringify({ mode: "Normal" }),
         });
-
-        router.push(`/chatsonic/${sessionId}`);
 
         // Wait briefly for navigation to complete, then send the message
         setTimeout(() => {
@@ -254,15 +203,16 @@ const ChatSonicChatInput = ({
         console.error("Error creating chat:", error);
       }
     } else if (isChatExist && sessionId) {
-      console.log("chat, session id");
+      console.log("existing chat");
       handleSend();
-    } else if (!isChatExist && sessionId) {
-      console.log("no chat, session id");
-      router.push(`/chatsonic/${sessionId}`);
-      setTimeout(() => {
-        handleSend();
-      }, 100);
     }
+    // } else if (!isChatExist && sessionId) {
+    //   console.log("new chat page");
+    //   router.push(`/chatsonic/${sessionId}`);
+    //   setTimeout(() => {
+    //     handleSend();
+    //   }, 100);
+    // }
   };
 
   const handleFileSelect = useCallback(
@@ -448,6 +398,7 @@ const ChatSonicChatInput = ({
             variant={"ghost"}
             onClick={handleKeyPress}
             disabled={isGeneratingResponse || chatInput === ""}
+            className="rounded-full bg-purple-700 p-4"
           >
             {isGeneratingResponse ? (
               <Loader2 className="h-4 w-4 animate-spin" />

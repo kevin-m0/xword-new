@@ -221,20 +221,19 @@ export const chatSonicRouter = createTRPCRouter({
     }),
 
   fetchAllChats: privateProcedure.query(async ({ ctx }) => {
-    const chats = await db.sonicChat.findMany({
-      where: {
-        userId: ctx.userId,
-      },
-      orderBy: {
-        createdAt: "desc", // Change to ascending order
-      },
-    });
-    if (!chats)
+    try {
+      const chats = await db.sonicChat.findMany({
+        where: { userId: ctx.userId },
+        orderBy: { createdAt: "desc" },
+      });
+      return chats;
+    } catch (error) {
       throw new TRPCError({
         code: "INTERNAL_SERVER_ERROR",
         message: "Failed to fetch Chats from db",
+        cause: error,
       });
-    return chats;
+    }
   }),
 
   //fetch paginated chat can be used for infinite scroll or pagination
