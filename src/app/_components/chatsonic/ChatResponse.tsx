@@ -144,7 +144,10 @@ function ChatResponse({
         </div> */}
         <RenderMarkdown content={message.query} />
 
-        <SourcesList sources={message.sources} mode={message.mode || ""} />
+        <SourcesList
+          sources={message.sources as string}
+          mode={message.mode || ""}
+        />
 
         {/* {message.fileIds && message.fileIds.length > 0 && (
           <div className="flex gap-4">
