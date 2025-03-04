@@ -4,8 +4,10 @@ import { useOrganizationList, useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import Carousel from "~/app/_components/dashboard/Carousel";
+import RecentProjects from "~/app/_components/dashboard/recent-projects";
 import LoadingScreen from "~/components/loaders/loading-screen";
 import NewTopBarComponent from "~/components/topbar/NewTopBarComponent";
+import { trpc } from "~/trpc/react";
 
 const Page = () => {
   const { isLoaded: isUserLoaded, user } = useUser();
@@ -14,6 +16,11 @@ const Page = () => {
       infinite: true,
     },
   });
+
+  const { data: recentProjects, isLoading: isRecentProjectsLoading } =
+    trpc.user.recentProjects.useQuery();
+
+  console.log(recentProjects);
 
   const router = useRouter();
 
@@ -45,6 +52,17 @@ const Page = () => {
         <div className="h-[500px] w-full gap-4 rounded-xl p-5">
           {/* <h1>Welcome, {user?.firstName}</h1> */}
           <Carousel />
+        </div>
+        <div className="flex flex-col gap-4">
+          <h1 className="text-4xl font-bold">Jump right back in</h1>
+          <p className="text-sm text-muted-foreground">
+            Here are some of your most recent projects
+          </p>
+          {isRecentProjectsLoading ? (
+            <LoadingScreen />
+          ) : (
+            <RecentProjects sessions={recentProjects || []} />
+          )}
         </div>
       </div>
     );
