@@ -15,6 +15,13 @@ const config = {
         pathname: '/**',  // Allows any path under img.clerk.com
         search: '',
       },
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
+        port: '',
+        pathname: '/**',
+        search: '',
+      },
       // {
       //   protocol: 'https',
       //   hostname: 'xword.s3.ap-south-1.amazonaws.com',

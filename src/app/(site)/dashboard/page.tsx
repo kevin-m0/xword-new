@@ -43,8 +43,8 @@ const Page = () => {
       <div className="flex flex-col p-5">
         <NewTopBarComponent />
         <div className="h-[500px] w-full gap-4 rounded-xl p-5">
-          <Carousel />
           {/* <h1>Welcome, {user?.firstName}</h1> */}
+          <Carousel />
         </div>
       </div>
     );

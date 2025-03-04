@@ -7,7 +7,7 @@ const Carousel = () => {
   const carouselRef = useRef<HTMLDivElement>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  const items = ["kevin", "roy", 3, 4, 5]; // Placeholder numbers
+  const items = ["m0", "ventures", 3, 4, 5]; // Placeholder numbers
 
   useEffect(() => {
     const handleScroll = () => {
@@ -62,7 +62,7 @@ const Carousel = () => {
         ))}
       </div>
       {/* Dots Indicator */}
-      <div className="font-ppEditorial absolute bottom-8 left-0 right-0 flex justify-center space-x-2">
+      <div className="absolute bottom-8 left-0 right-0 flex justify-center space-x-2 font-ppEditorial">
         {items.map((_, index) => (
           <div
             key={index}

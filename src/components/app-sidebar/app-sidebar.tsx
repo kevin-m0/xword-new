@@ -114,11 +114,6 @@ const data = {
       icon: PenIcon,
     },
     {
-      name: "ContentVerse",
-      url: "/contentverse",
-      icon: Map,
-    },
-    {
       name: "AudioVerse",
       url: "/audioverse",
       icon: Map,

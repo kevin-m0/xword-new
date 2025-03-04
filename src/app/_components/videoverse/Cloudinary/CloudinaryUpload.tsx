@@ -2,10 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { Cloudinary } from "@cloudinary/url-gen";
+import React from "react";
 
 import CloudinaryUploadWidget from "./CloudinaryUploadWidget";
 
-const CloudinaryUpload = () => {
+interface CloudinaryUploadProps {
+  onClick: () => void; // Accept onClick prop
+}
+
+const CloudinaryUpload: React.FC<CloudinaryUploadProps> = ({ onClick }) => {
   // Configuration
   const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
   const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
@@ -53,7 +58,7 @@ const CloudinaryUpload = () => {
   }, []);
 
   return (
-    <div>
+    <div onClick={onClick} className="cloudinary-upload">
       <div>
         <CloudinaryUploadWidget uwConfig={uwConfig} setPublicId={setPublicId} />
       </div>

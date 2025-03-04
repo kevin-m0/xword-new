@@ -1,6 +1,6 @@
 import { Toaster } from "sonner";
 import type { Metadata, Viewport } from "next";
-import { Inter, Noto_Sans } from "next/font/google";
+import { Geist, Noto_Sans } from "next/font/google";
 import "~/styles/globals.css";
 import "~/styles/gradient.css";
 import { cn } from "~/utils/utils";
@@ -14,9 +14,14 @@ import { Provider } from "jotai";
 import { XWAlertProvider } from "~/components/reusable/xw-alert";
 import { NextFont, NextFontWithVariable } from "next/dist/compiled/@next/font";
 
-const font1 = Noto_Sans({ subsets: ["latin"], variable: "--font-sans" });
-const font2 = Inter({ subsets: ["latin"], variable: "--font-inter" });
-const font3: NextFontWithVariable & NextFont = {
+const font1 = Noto_Sans({
+  subsets: ["latin"],
+  weight: "variable",
+  display: "swap",
+  variable: "--font-sans",
+});
+
+const font2: NextFontWithVariable & NextFont = {
   className: "font-pp-editorial",
   style: {
     fontFamily: "PPEditorialNew-UltralightItalic",
@@ -25,6 +30,13 @@ const font3: NextFontWithVariable & NextFont = {
   },
   variable: "--font-pp-editorial",
 };
+
+const font3 = Geist({
+  subsets: ["latin"],
+  weight: "variable",
+  display: "swap",
+  variable: "--font-geist",
+});
 
 export const metadata: Metadata = {
   manifest: "/manifest.json",
@@ -41,14 +53,14 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning className="dark">
       {/* remove on PROD react-scan testing */}
-      <head>
+      {/* <head>
         <script
           crossOrigin="anonymous"
           src="//unpkg.com/react-scan/dist/auto.global.js"
         />
-      </head>
+      </head> */}
       {/* remove on PROD react-scan testing */}
-      <body className={cn(font2.variable, font3.variable)}>
+      <body className={cn(font1.variable, font2.variable, font3.variable)}>
         <ViewProvider>
           <TRPCReactProvider>
             <ClerkProvider

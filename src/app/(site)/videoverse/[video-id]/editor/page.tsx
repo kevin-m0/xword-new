@@ -7,6 +7,7 @@ import { useParams, useSearchParams } from "next/navigation";
 import { recordingAtom } from "~/atoms";
 import { trpc } from "~/trpc/react";
 import RendleyEditor from "~/app/_components/rendley-video-editor/Editor";
+import LoadingScreen from "~/components/loaders/loading-screen";
 
 interface PageProps {}
 
@@ -54,7 +55,9 @@ const Page: FC<PageProps> = () => {
       {recording ? (
         <RendleyEditor recording={recording} />
       ) : (
-        <p>No video found.</p>
+        <>
+          <LoadingScreen />
+        </>
       )}
     </div>
   );

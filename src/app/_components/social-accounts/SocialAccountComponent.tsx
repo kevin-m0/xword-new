@@ -16,6 +16,7 @@ import {
 } from "~/atoms";
 import { trpc } from "~/trpc/react";
 import InviteMembersModel from "../workspace/InviteMembersModel";
+import LoadingScreen from "~/components/loaders/loading-screen";
 
 const SocialAccountComponentRefactored = () => {
   const { user } = useUser();
@@ -45,48 +46,53 @@ const SocialAccountComponentRefactored = () => {
     }
   }, []);
 
-  const twitterQuery = trpc.pathfix.fetchTwitterUserDetails.useQuery(
-    { appUserId: userEmail as string },
-    { enabled: !!userEmail },
-  );
+  const { data: twitterData, isLoading: isTwitterLoading } =
+    trpc.pathfix.fetchTwitterUserDetails.useQuery(
+      { appUserId: userEmail as string },
+      { enabled: !!userEmail },
+    );
 
-  const linkedInQuery = trpc.pathfix.fetchLinkedInUserDetails.useQuery(
-    { appUserId: userEmail as string },
-    { enabled: !!userEmail },
-  );
+  const { data: linkedInData, isLoading: isLinkedInLoading } =
+    trpc.pathfix.fetchLinkedInUserDetails.useQuery(
+      { appUserId: userEmail as string },
+      { enabled: !!userEmail },
+    );
 
-  const facebookQuery = trpc.pathfix.fetchFacebookUserDetails.useQuery(
-    { appUserId: userEmail as string },
-    { enabled: !!userEmail },
-  );
+  const { data: facebookData, isLoading: isFacebookLoading } =
+    trpc.pathfix.fetchFacebookUserDetails.useQuery(
+      { appUserId: userEmail as string },
+      { enabled: !!userEmail },
+    );
 
-  const youtubeQuery = trpc.pathfix.fetchYoutubeUserDetails.useQuery(
-    { appUserId: userEmail as string },
-    { enabled: !!userEmail },
-  );
+  const { data: youtubeData, isLoading: isYoutubeLoading } =
+    trpc.pathfix.fetchYoutubeUserDetails.useQuery(
+      { appUserId: userEmail as string },
+      { enabled: !!userEmail },
+    );
 
-  const igGraphQuery = trpc.pathfix.fetchIgGraphUserDetails.useQuery(
-    { appUserId: userEmail as string },
-    { enabled: !!userEmail },
-  );
+  const { data: instaData, isLoading: isInstaLoading } =
+    trpc.pathfix.fetchIgGraphUserDetails.useQuery(
+      { appUserId: userEmail as string },
+      { enabled: !!userEmail },
+    );
 
   useEffect(() => {
-    if (twitterQuery.data?.rows[0]?.pincStatus === "success")
+    if (twitterData?.rows[0]?.pincStatus === "success")
       setIsTwitterConnected(true);
-    if (linkedInQuery.data?.rows[0]?.pincStatus === "success")
+    if (linkedInData?.rows[0]?.pincStatus === "success")
       setIsLinkedInConnected(true);
-    if (facebookQuery.data?.rows[0]?.pincStatus === "success")
+    if (facebookData?.rows[0]?.pincStatus === "success")
       setIsFacebookConnected(true);
-    if (youtubeQuery.data?.rows[0]?.pincStatus === "success")
+    if (youtubeData?.rows[0]?.pincStatus === "success")
       setIsYoutubeConnected(true);
-    if (igGraphQuery.data?.rows[0]?.pincStatus === "success")
+    if (instaData?.rows[0]?.pincStatus === "success")
       setIsIgGraphConnected(true);
   }, [
-    twitterQuery.data,
-    linkedInQuery.data,
-    facebookQuery.data,
-    youtubeQuery.data,
-    igGraphQuery.data,
+    twitterData,
+    linkedInData,
+    facebookData,
+    youtubeData,
+    instaData,
     setIsTwitterConnected,
     setIsLinkedInConnected,
     setIsYoutubeConnected,
@@ -164,6 +170,38 @@ const SocialAccountComponentRefactored = () => {
     },
   ];
 
+  if (
+    isTwitterLoading ||
+    isLinkedInLoading ||
+    isFacebookLoading ||
+    isYoutubeLoading ||
+    isInstaLoading
+  ) {
+    return <LoadingScreen />;
+  }
+
+  const disconnectUser = (provider: string) => {
+    disconnectMutation.mutate({
+      provider: provider,
+      user_id: userEmail as string,
+    });
+    if (provider === "twitteroauth2") {
+      setIsTwitterConnected(false);
+    }
+    if (provider === "linkedin") {
+      setIsLinkedInConnected(false);
+    }
+    if (provider === "youtube") {
+      setIsYoutubeConnected(false);
+    }
+    if (provider === "facebook") {
+      setIsFacebookConnected(false);
+    }
+    if (provider === "iggraphapi") {
+      setIsIgGraphConnected(false);
+    }
+  };
+
   return (
     <div>
       <Script
@@ -230,11 +268,7 @@ const SocialAccountComponentRefactored = () => {
                     size={"lg"}
                     className="w-full bg-xw-danger font-bold"
                     onClick={() => {
-                      console.log("disconnecting");
-                      disconnectMutation.mutate({
-                        provider: account.disconnectCommand,
-                        user_id: userEmail as string,
-                      });
+                      disconnectUser(account.disconnectCommand);
                     }}
                   >
                     Disconnect

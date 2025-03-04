@@ -14,6 +14,7 @@ import { contentResponseAtom } from "~/atoms";
 import { trpc } from "~/trpc/react";
 import XWTabs from "~/components/reusable/XWTabs";
 import XWSecondaryButton from "~/components/reusable/XWSecondaryButton";
+import LoadingScreen from "~/components/loaders/loading-screen";
 
 const AudioVerseDashboardComponent = () => {
   const [activeTab, setActiveTab] = useState("transcript");
@@ -43,11 +44,6 @@ const AudioVerseDashboardComponent = () => {
       label: "MagicChat",
       icon: "/icons/chatoval.svg",
     },
-    // {
-    //   id: "aicontent",
-    //   label: "AIContent",
-    //   icon: "/icons/magic.svg",
-    // },
   ];
 
   const renderTabContent = () => {
@@ -62,6 +58,10 @@ const AudioVerseDashboardComponent = () => {
         return <AudioVerseTranscriptTab />;
     }
   };
+
+  if (isLoading) {
+    return <LoadingScreen />;
+  }
 
   return (
     <div className="flex flex-col gap-10">

@@ -5,7 +5,7 @@ import MultiCampaignDynamicDialog from "../newflow/multi-campaign/MultiCampaignD
 
 const AudioVerseBanner = () => {
   return (
-    <div className="relative pb-5">
+    <div className="relative mt-5 pb-5">
       <div
         className="relative rounded-2xl bg-gradient-to-r from-white/10 via-white/30 to-white/60 p-[1px]"
         style={{

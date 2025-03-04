@@ -472,15 +472,6 @@ export default function TranscriptEditor({
         <h2 className="text-sm font-medium text-muted-foreground">
           TRANSCRIPT
         </h2>
-        {/* <Button
-          variant="ghost"
-          size="sm"
-          className="text-xs text-muted-foreground hover:text-foreground"
-          onClick={handleRegenerate}
-        >
-          <RefreshCw className="h-3 w-3 mr-2" />
-          Something wrong? Regenerate
-        </Button> */}
       </div>
 
       <div
