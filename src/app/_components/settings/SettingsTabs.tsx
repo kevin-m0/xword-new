@@ -22,8 +22,8 @@ const SettingsTabs = () => {
           onClick={() => setActiveTab(tab.value as any)}
           className={`rounded-none border-b-2 px-4 hover:border-b-2 hover:border-xw-primary ${
             activeTab === tab.value
-              ? "border-xw-primary bg-gradient-to-t from-xw-primary-foreground to-transparent"
-              : "border-xw-secondary"
+              ? "border-xw-primary bg-gradient-to-t from-xw-primary-foreground to-transparent text-white hover:bg-transparent"
+              : "bg-transparent bg-gradient-to-t text-white hover:bg-xw-secondary hover:bg-gradient-to-t"
           }`}
         >
           {tab.label}

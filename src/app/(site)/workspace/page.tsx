@@ -1,7 +1,8 @@
 import React from "react";
+import OrganizationsComponent from "~/app/_components/organizations/OrganizationsComponent";
 
-const Page = () => {
-  return <div>Workspace Page</div>;
+const page = () => {
+  return <OrganizationsComponent />;
 };
 
-export default Page;
+export default page;
