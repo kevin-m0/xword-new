@@ -10,7 +10,6 @@ export default function LoadingButton() {
   const handleComplete = () => {
     setOpen(false);
     // You can add any post-completion logic here
-    console.log("Export completed!");
   };
 
   return (

@@ -13,7 +13,6 @@ const SocialFlowDesign = ({ doc, loading }: { doc: any; loading: boolean }) => {
   const [flowId, setFlowId] = useAtom(socialFlowId);
   const [images, setImages] = useAtom(flowImages);
 
-  console.log(doc);
   setPostText(doc?.content || "");
   setPostImage(doc?.thumbnailImageUrl || "");
   setFlowId(doc?.id || "");
@@ -25,7 +24,7 @@ const SocialFlowDesign = ({ doc, loading }: { doc: any; loading: boolean }) => {
         <h1 className="text-2xl font-semibold">Edit</h1>
         <SocialMobileSidebar variations={doc?.variations} />
       </div>
-      <div className="tb:block bg-xw-sidebar border-xw-border hidden w-full max-w-lg border-r">
+      <div className="tb:block hidden w-full max-w-lg border-r border-xw-border bg-xw-sidebar">
         <SocialFlowSidebar variations={doc?.variations} />
       </div>
       <SocialFlowContent

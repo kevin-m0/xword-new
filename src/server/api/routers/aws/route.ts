@@ -60,7 +60,6 @@ export const awsRouter = createTRPCRouter({
         // const src = await getSignedUrl(s3, command);
         const src = `https://${Bucket}.s3.${process.env.AWS_REGION}.digitaloceanspaces.com/${key}`;
 
-        console.log("src: ", src);
         return src;
       } catch (error) {
         throw new TRPCError({

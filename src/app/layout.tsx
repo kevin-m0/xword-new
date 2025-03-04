@@ -60,7 +60,7 @@ export default function RootLayout({
         />
       </head> */}
       {/* remove on PROD react-scan testing */}
-      <body className={cn(font1.variable, font2.variable, font3.variable)}>
+      <body className={cn(font3.className)}>
         <ViewProvider>
           <TRPCReactProvider>
             <ClerkProvider

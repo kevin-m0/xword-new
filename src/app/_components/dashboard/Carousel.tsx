@@ -49,7 +49,7 @@ const Carousel = () => {
     <div className="relative h-full w-full overflow-hidden">
       <div
         ref={carouselRef}
-        className="scrollbar-hide flex h-full w-full snap-x snap-mandatory overflow-x-auto"
+        className="scrollbar-hide flex h-full w-full snap-x snap-mandatory overflow-x-auto font-ppEditorial"
         style={{ scrollBehavior: "smooth" }} // Ensure smooth scrolling
       >
         {items.map((item, index) => (

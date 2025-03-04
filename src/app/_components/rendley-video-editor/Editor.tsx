@@ -45,7 +45,6 @@ const RendleyEditor: FC<RendleyEditorProps> = ({ recording }) => {
   const loadInitVideo = async () => {
     const engineInstance = await rendleyRef.current.getEngine();
     const engine = engineInstance.getInstance();
-    console.log("Loading default video...");
     const ffmpeg = engine.getFFmpeg();
     if (ffmpeg.loaded === false) return;
     const mediaId = await engine.getLibrary().addMedia(`${recording.videoUrl}`);

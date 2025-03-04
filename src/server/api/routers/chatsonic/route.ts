@@ -11,7 +11,6 @@ export const chatSonicRouter = createTRPCRouter({
     .input(createChatSchema)
     .mutation(async ({ input }) => {
       const { id, title, userId, lastPromptPayload } = input;
-      console.log({ id, title, userId, lastPromptPayload });
       return await db.sonicChat.create({
         data: {
           id: id ?? crypto.randomUUID(),
@@ -288,7 +287,6 @@ export const chatSonicRouter = createTRPCRouter({
           createdAt: "asc",
         },
       });
-      console.log("hai");
       return messages;
     }),
 
