@@ -360,7 +360,7 @@ const CalendarSchedulePostModel = ({
       status: status as "draft" | "scheduled" | "posted" | "failed",
       workspaceId: defaultSpace?.id as string,
     };
-    await updatePostMutation.mutateAsync(body);
+    // await updatePostMutation.mutateAsync(body);
   };
 
   const handleModal = () => {
