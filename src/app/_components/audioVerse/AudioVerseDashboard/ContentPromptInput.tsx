@@ -11,7 +11,6 @@ import {
 } from "~/atoms";
 import { useAtom } from "jotai";
 import { trpc } from "~/trpc/react";
-import { useGetActiveSpace } from "~/hooks/workspace/useGetActiveSpace";
 import { ErrorToast } from "../../custom-toast";
 import { Button } from "~/components/ui/button";
 import { useUpdateChat } from "./useUpdateChat";
@@ -32,7 +31,6 @@ export type ContentInput = {
 const ContentPromptInput = ({ context, messages }: MessageInputProps) => {
   const [input, setInput] = useState<string>("");
   const [_, setRefetchTokenUsage] = useAtom(refetchTrigger);
-  const { mutate: updateChat } = useUpdateChat();
   const { data: user } = trpc.user.getCurrentLoggedInUser.useQuery();
    const { organization: activeWorkspace, isLoaded: isWorkspaceFetching } =
       useOrganization();

@@ -29,7 +29,7 @@ const formSchema = z.object({
 
 type FormData = z.infer<typeof formSchema>;
 
-const SocialFlowSidebar = ({ variations }: { variations: string[] }) => {
+const SocialFlowSidebar = ({ variations }: { variations: string[]}) => {
   const { showToast } = useXWAlert();
   const [selectedLanguage, setSelectedLanguage] = useAtom(selectedLanguageAtom);
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
@@ -82,6 +82,16 @@ const SocialFlowSidebar = ({ variations }: { variations: string[] }) => {
   const onSubmit = (data: FormData) => {
     setPostText(data.postText);
     setSelectedLanguage(data.language);
+    console.log("------------->", {
+      id: flowId as string,
+      content: data.postText,
+      thumbnailImageUrl:
+        selectedImageIndex !== null
+          ? (images[selectedImageIndex] as string)
+          : (images[0] as string),
+      images: images,
+    });
+    
     editDocument({
       id: flowId as string,
       content: data.postText,

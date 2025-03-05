@@ -280,16 +280,16 @@ export const writerxRouter = createTRPCRouter({
 
             try {
                 const getId = UUIDv4();
-                // const response = await axios.post(
-                //     `${process.env.TIPTAP_BASE_URL}/api/documents/${getId}?format=json`,
-                //     newContent,
-                //     {
-                //         headers: {
-                //             'Content-Type': 'application/json',
-                //             'Authorization': `${process.env.TIPTAP_JWT_SECRET}`,
-                //         },
-                //     }
-                // );
+                const response = await axios.post(
+                    `${process.env.TIPTAP_BASE_URL}/api/documents/${getId}?format=json`,
+                    newContent,
+                    {
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `${process.env.TIPTAP_JWT_SECRET}`,
+                        },
+                    }
+                );
                 // console.log("res----------------------------------->", response);
 
                 // If successful, return the document name/id
@@ -339,7 +339,7 @@ export const writerxRouter = createTRPCRouter({
             const { workspaceId } = input;
             const docs = await db.document.findMany({
                 where: {
-                    userId: ctx.userId,
+                    // userId: ctx.userId,
                     workSpaceId: workspaceId
                 },
                 orderBy: {
@@ -353,21 +353,22 @@ export const writerxRouter = createTRPCRouter({
         .input(
             z.object({
                 id: z.string(),
-                spaceId: z.string(),
+                workSpaceId: z.string(),
             }),
         )
         .query(async ({ input, ctx }) => {
             console.log("logs----------------->", input);
             
-            const { id, spaceId } = input;
+            const { id, workSpaceId} = input;
             const doc = await db.document.findFirst({
                 where: {
                     id: id,
-                    // organizationId: spaceId
+                    workSpaceId : workSpaceId
                 },
             });
             return doc;
         }),
+        
     changeDocTitle: privateProcedure
         .input(
             z.object({
@@ -435,8 +436,10 @@ export const writerxRouter = createTRPCRouter({
     fetchSocialDocument: privateProcedure
         .input(z.object({ id: z.string(), spaceId: z.string() }))
         .query(async ({ input }) => {
+            console.log("input------------------------------>", input);
+            
             try {
-                const response = db.document.findUnique({
+                const response = await db.document.findUnique({
                     where: {
                         id: input.id,
                         workSpaceId: input.spaceId

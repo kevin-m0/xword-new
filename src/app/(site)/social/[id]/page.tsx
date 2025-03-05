@@ -1,33 +1,32 @@
-'use client';
+import React from "react";
+import SocialFlowDesign from "~/app/_components/writerx/social-flow/SocialFlowDesign";
+import { auth } from "@clerk/nextjs/server";
 
-import React from 'react';
-import { Loader2 } from 'lucide-react';
-import { useOrganization } from '@clerk/nextjs';
-import { trpc } from '~/trpc/react';
-import SocialFlowDesign from '~/app/_components/writerx/social-flow/SocialFlowDesign';
+type Params = Promise<{ id: string }>;
 
-const Page = ({ params }: { params: { id: string } }) => {
-    const { organization } = useOrganization(); 
-    const orgId = organization?.id  || ""; 
-
-    const { data, isLoading } = trpc.writerx.fetchSocialDocument.useQuery(
-        { id: params.id, spaceId: orgId },
-        { enabled: !!orgId }
-    );
-
-    console.log("data------------->", data);
-    
+const Page = async({params} :{params: Params}) => {
+    const {id} = await params;
     return (
-        <div>
-            {isLoading && !data ? (
-                <div className='h-dvh w-full flex flex-col items-center justify-center'>
-                    <Loader2 className='h-12 w-12 animate-spin' />
-                </div>
-            ) : (
-                <SocialFlowDesign doc={data} loading={isLoading} />
-            )}
+        <div className="h-screen overflow-hidden">
+            <AuthWrapper docId={id} />
         </div>
     );
+};
+
+// Separate the async logic into a child component
+const AuthWrapper = async ({ docId }: { docId: string }) => {
+    const authData = await auth();
+    const orgId = authData?.orgId;
+
+    if (!orgId) {
+        return (
+            <div className="h-screen flex items-center justify-center text-red-500">
+                Authentication failed. Please try again.
+            </div>
+        );
+    }
+
+    return <SocialFlowDesign orgId={orgId} docId={docId} />;
 };
 
 export default Page;

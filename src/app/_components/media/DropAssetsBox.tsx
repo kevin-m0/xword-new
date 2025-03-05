@@ -4,6 +4,7 @@ import { useOrganization } from '@clerk/nextjs';
 import React, { useCallback, useState } from 'react';
 import { useXWAlert } from '~/components/reusable/xw-alert';
 import XWDropBox from '~/components/reusable/XWDropBox';
+import { uploadToS3 } from '~/lib/upload-to-s3';
 // import { useGetActiveSpace } from '~/hooks/workspace/useGetActiveSpace';
 import { uploadFile } from '~/services/aws-file-upload';
 import { trpc } from '~/trpc/react';
@@ -60,17 +61,19 @@ const DropAssetsBox = () => {
             setLocalFile(file);
 
             try {
-                const fileKey = crypto.randomUUID();
+                // const fileKey = crypto.randomUUID();
 
                 if (file.type.startsWith('audio/')) {
-                    await uploadFile(file, fileKey);
+                    const res = await uploadToS3(file);
+                    const fileKey = res.fileKey.split('/')[1] as string;
                     addAudioAsset({
                         audioKey: fileKey,
                         text: file.name,
                         workspaceId: defaultSpace?.id || '',
                     });
                 } else if (file.type.startsWith('image/')) {
-                    await uploadFile(file, fileKey);
+                    const res = await uploadToS3(file);
+                    const fileKey = res.fileKey;
                     addImageAsset({
                         imageKey: fileKey,
                         workspaceId: defaultSpace?.id || '',

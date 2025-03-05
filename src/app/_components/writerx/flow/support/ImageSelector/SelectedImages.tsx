@@ -8,7 +8,8 @@ interface SelectedImagesProps {
 
 export const SelectedImages = ({ images, onRemove }: SelectedImagesProps) => {
   if (images.length === 0) return null;
-
+  console.log("images--->",);
+  
   return (
     <div className="flex flex-wrap items-center gap-3">
       <span className="text-sm font-medium text-xw-muted">

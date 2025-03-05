@@ -1,14 +1,12 @@
 "use client"
 import React from 'react';
 import { useOrganization, useUser } from '@clerk/nextjs';
-import { useRouter } from 'next/navigation';
 import { IDocument } from '~/types/docs.types';
 import CollabEditorComponent from './collab-editor/CollabEditorComponent';
 
 const WriterXComponent = ({ doc }: { doc: IDocument }) => {
-    const router = useRouter();
     const { user } = useUser();
-    const { organization, isLoaded, memberships } = useOrganization({
+    const { memberships } = useOrganization({
         memberships: {
             infinite: true
         }

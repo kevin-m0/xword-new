@@ -439,27 +439,32 @@ createUserVoice: privateProcedure
     })
   )
   .mutation(async ({ input }) => {
-    const { url, type, languagecode } = input;
+    try {
+      const { url, type, languagecode } = input;
 
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_LLM_FREE_TIER_URL}/generate/handle-transcription`,
-      {
-        method: "POST",
-        headers: {
-          "accept": "*/*",
-          "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbHRyYjE1MXYwMDAwZXNlMmFmb2VsMnoxIiwiZW1haWwiOiJhZG1pbkBhZG1pbi5jb20iLCJpYXQiOjE3MTA0OTIwNzl9.ObDtBsSd1uLgh8dOnzPktdaMINtgG-IM2Uhq70qz7i8",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ url, type, languagecode }),
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_LLM_FREE_TIER_URL}/generate/handle-transcription`,
+        {
+          method: "POST",
+          headers: {
+            "accept": "*/*",
+            "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbHRyYjE1MXYwMDAwZXNlMmFmb2VsMnoxIiwiZW1haWwiOiJhZG1pbkBhZG1pbi5jb20iLCJpYXQiOjE3MTA0OTIwNzl9.ObDtBsSd1uLgh8dOnzPktdaMINtgG-IM2Uhq70qz7i8",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ url, type, languagecode }),
+        }
+      );
+  
+      if (!response.ok) {
+        throw new Error(`Failed to fetch transcription: ${response.statusText}`);
       }
-    );
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch transcription: ${response.statusText}`);
+  
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.log("error------------------------->", error);
     }
-
-    const data = await response.json();
-    return data;
+   
   })
 
 });

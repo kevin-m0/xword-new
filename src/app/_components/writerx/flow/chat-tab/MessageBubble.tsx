@@ -10,7 +10,7 @@ export const MessageBubble = ({ message, role, createdAt, image, name }: { role:
                 <AvatarImage
                     src={role === 'user' ? image : "/icons/chatsonic-fake.svg"}
                 />
-                <AvatarFallback>{role === 'user' ? name.slice(0, 2) : 'AI'}</AvatarFallback>
+                <AvatarFallback>{role === 'user' ? name?.slice(0, 2) : 'AI'}</AvatarFallback>
             </Avatar>
             <div className="flex flex-col gap-2">
                 <div className="flex items-center gap-2">

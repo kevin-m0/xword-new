@@ -4,10 +4,6 @@ import { TextOptions } from "~/lib/extension-ai";
 import { BubbleMenu, Editor } from "@tiptap/react";
 import { refetchTrigger } from "~/atoms";
 import { Button } from "~/components/ui/button";
-// import { createTokens } from "~/services/openmeter";
-// import useWriteContent from "../../../../_hooks/others/useWriteContent";
-// import { useUser } from "../../../../_hooks/others/useUser";
-// import { useGetActiveSpace } from "../../../../_hooks/workspace/useGetActiveSpace";
 import { useOrganization, useUser } from "@clerk/nextjs";
 import { MODEL_TYPE, modelTypeAtom } from "~/atoms";
 
@@ -16,7 +12,6 @@ import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover
 import Image from "next/image";
 import NewLinkPopoverModel from "./NewLinkPopoverModel";
 import NewBubbleTextListPopover from "./NewBubbleTextListPopover";
-import { useGetActiveSpace } from "~/hooks/workspace/useGetActiveSpace";
 import useWriteContent from "~/hooks/misc/useWriteContent";
 import { useXWAlert } from "~/components/reusable/xw-alert";
 // import { createTokens } from "~/services/openMeter";

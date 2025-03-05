@@ -3,12 +3,13 @@
 import { db } from "~/server/db";
 import { PLANS } from "~/lib/constant/constants";
 import { stripe } from "~/utils/stripe";
-import { getUser } from "~/utils/clerk-utility";
+import { auth } from "@clerk/nextjs/server";
+// import { getUser } from "~/utils/clerk-utility";
 
 export async function getUserSubscriptionPlan() {
-  const user = await getUser();
+  const {userId} = await auth();
 
-  if (!user?.id) {
+  if (!userId) {
     return {
       ...PLANS[0],
       isSubscribed: false,
@@ -19,7 +20,7 @@ export async function getUserSubscriptionPlan() {
 
   const dbUser = await db.user.findFirst({
     where: {
-      id: user.id,
+      id: userId,
     },
   });
 

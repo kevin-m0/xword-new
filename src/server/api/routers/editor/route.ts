@@ -55,36 +55,91 @@ const defaultContent = {
 };
 
 export const editorRouter = createTRPCRouter({
- // Create a new document with a default table structure.
+    // Create a new document with a default table structure.
     createDocument: privateProcedure
-    .input(z.object({ name: z.string() }))
-    .mutation(async ({ input }) => {
-        try {
-            const response = await axios.post(
-                `${process.env.TIPTAP_BASE_URL}/api/documents/${input.name}?format=json`,
-                defaultContent,
-                {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `${process.env.TIPTAP_JWT_SECRET}`,
-                    },
-                }
-            );
+        .input(z.object({ name: z.string() }))
+        .mutation(async ({ input }) => {
+            try {
+                const response = await axios.post(
+                    `${process.env.TIPTAP_BASE_URL}/api/documents/${input.name}?format=json`,
+                    defaultContent,
+                    {
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `${process.env.TIPTAP_JWT_SECRET}`,
+                        },
+                    }
+                );
 
-            // If successful, return the document name/id
-            return {
-                id: input.name,
-                message: 'Document created successfully'
-            };
+                // If successful, return the document name/id
+                return {
+                    id: input.name,
+                    message: 'Document created successfully'
+                };
+            } catch (error) {
+                // Detailed error logging and throwing
+                if (axios.isAxiosError(error)) {
+                    throw new TRPCError({
+                        code: 'INTERNAL_SERVER_ERROR',
+                        message: error.response?.data?.message || 'Failed to create document',
+                    });
+                }
+
+                throw new TRPCError({
+                    code: 'INTERNAL_SERVER_ERROR',
+                    message: 'Unexpected error occurred',
+                });
+            }
+        }),
+
+    /**
+ * Fetch a single document by its ID.
+ */
+    fetchDocument: privateProcedure
+        .input(z.object({ id: z.string() }))
+        .query(async ({ input }) => {
+            try {
+                const response = await axios.get(
+                    `${process.env.TIPTAP_BASE_URL}/api/documents/${input.id}`,
+                    {
+                        headers: {
+                            Authorization: `${process.env.TIPTAP_JWT_SECRET}`,
+                        },
+                    }
+                );
+                return response.data;
+            } catch (error: any) {
+                if (axios.isAxiosError(error)) {
+                    throw new TRPCError({
+                        code: 'INTERNAL_SERVER_ERROR',
+                        message: error.response?.data?.message || 'Failed to fetch document',
+                    });
+                }
+                throw new TRPCError({
+                    code: 'INTERNAL_SERVER_ERROR',
+                    message: 'Unexpected error occurred',
+                });
+            }
+        }),
+
+    /**
+     * Fetch all documents.
+     */
+    fetchAllDocuments: privateProcedure.query(async () => {
+        try {
+            const response = await axios.get(`${process.env.TIPTAP_BASE_URL}/api/documents`, {
+                headers: {
+                    Authorization: `${process.env.TIPTAP_JWT_SECRET}`,
+                },
+            });
+            return response.data;
         } catch (error) {
-            // Detailed error logging and throwing
             if (axios.isAxiosError(error)) {
                 throw new TRPCError({
                     code: 'INTERNAL_SERVER_ERROR',
-                    message: error.response?.data?.message || 'Failed to create document',
+                    message: error.response?.data?.message || 'Failed to fetch documents',
                 });
             }
-
             throw new TRPCError({
                 code: 'INTERNAL_SERVER_ERROR',
                 message: 'Unexpected error occurred',
@@ -93,265 +148,220 @@ export const editorRouter = createTRPCRouter({
     }),
 
     /**
- * Fetch a single document by its ID.
- */
-fetchDocument: privateProcedure
-.input(z.object({ id: z.string() }))
-.query(async ({ input }) => {
-    try {
-        const response = await axios.get(
-            `${process.env.TIPTAP_BASE_URL}/api/documents/${input.id}`,
-            {
-                headers: {
-                    Authorization: `${process.env.TIPTAP_JWT_SECRET}`,
-                },
-            }
-        );
-        return response.data;
-    } catch (error) {
-        if (axios.isAxiosError(error)) {
-            throw new TRPCError({
-                code: 'INTERNAL_SERVER_ERROR',
-                message: error.response?.data?.message || 'Failed to fetch document',
-            });
-        }
-        throw new TRPCError({
-            code: 'INTERNAL_SERVER_ERROR',
-            message: 'Unexpected error occurred',
-        });
-    }
-}),
-
-/**
- * Fetch all documents.
- */
-fetchAllDocuments: privateProcedure.query(async () => {
-    try {
-        const response = await axios.get(`${process.env.TIPTAP_BASE_URL}/api/documents`, {
-            headers: {
-                Authorization: `${process.env.TIPTAP_JWT_SECRET}`,
-            },
-        });
-        return response.data;
-    } catch (error) {
-        if (axios.isAxiosError(error)) {
-            throw new TRPCError({
-                code: 'INTERNAL_SERVER_ERROR',
-                message: error.response?.data?.message || 'Failed to fetch documents',
-            });
-        }
-        throw new TRPCError({
-            code: 'INTERNAL_SERVER_ERROR',
-            message: 'Unexpected error occurred',
-        });
-    }
-}),
-
-/**
- * Delete a document by its ID.
- */
-deleteDocument: privateProcedure
-    .input(z.object({ id: z.string() }))
-    .mutation(async ({ input }) => {
-        try {
-            const response = await axios.delete(
-                `${process.env.TIPTAP_BASE_URL}/api/documents/${input.id}`,
-                {
-                    headers: {
-                        Authorization: `${process.env.TIPTAP_JWT_SECRET}`,
-                    },
+     * Delete a document by its ID.
+     */
+    deleteDocument: privateProcedure
+        .input(z.object({ id: z.string() }))
+        .mutation(async ({ input }) => {
+            try {
+                const response = await axios.delete(
+                    `${process.env.TIPTAP_BASE_URL}/api/documents/${input.id}`,
+                    {
+                        headers: {
+                            Authorization: `${process.env.TIPTAP_JWT_SECRET}`,
+                        },
+                    }
+                );
+                return response.data;
+            } catch (error) {
+                if (axios.isAxiosError(error)) {
+                    throw new TRPCError({
+                        code: 'INTERNAL_SERVER_ERROR',
+                        message: error.response?.data?.message || 'Failed to delete document',
+                    });
                 }
-            );
-            return response.data;
-        } catch (error) {
-            if (axios.isAxiosError(error)) {
                 throw new TRPCError({
                     code: 'INTERNAL_SERVER_ERROR',
-                    message: error.response?.data?.message || 'Failed to delete document',
+                    message: 'Unexpected error occurred',
                 });
             }
-            throw new TRPCError({
-                code: 'INTERNAL_SERVER_ERROR',
-                message: 'Unexpected error occurred',
-            });
-        }
-    }),
+        }),
 
     updateDocument: privateProcedure
-    .input(z.object({ id: z.string(), content: z.string() }))
-    .mutation(async ({ input }) => {
+        .input(z.object({ id: z.string(), content: z.any() })) // Accept any valid JSON structure
+        .mutation(async ({ input }) => {
+            const url = `${process.env.TIPTAP_BASE_URL}/api/documents/${input.id}?format=json`;
 
-        const content = input.content;
+            console.log("url-------------------->", url);
+            console.log("content-------------------->", JSON.stringify(input.content, null, 2)); // Ensure correct formatting
+            console.log("secret-------------------->", process.env.TIPTAP_JWT_SECRET);
 
-        try {
-            const response = await axios.patch(
-                `${process.env.TIPTAP_BASE_URL}/api/documents/${input.id}?format=json`,
-                content,
-                {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `${process.env.TIPTAP_JWT_SECRET}`,
-                    },
+            try {
+                const response = await axios.patch(
+                    url,
+                    input.content, // Directly pass the object without JSON.parse()
+                    {
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": process.env.TIPTAP_JWT_SECRET, // Ensure correct authorization format
+                        },
+                    }
+                );
+
+                console.log("res--------->", response?.data);
+
+                return {
+                    id: input.id,
+                    message: "Document updated successfully",
+                };
+            } catch (error: any) {
+                console.log("error--------------------------->", error.message);
+
+                if (axios.isAxiosError(error)) {
+                    throw new TRPCError({
+                        code: "INTERNAL_SERVER_ERROR",
+                        message:
+                            error.response?.data?.message || "Failed to update document",
+                    });
                 }
-            );
 
-            return {
-                id: input.id,
-                message: 'Document updated successfully'
-            };
-        } catch (error) {
-            if (axios.isAxiosError(error)) {
                 throw new TRPCError({
-                    code: 'INTERNAL_SERVER_ERROR',
-                    message: error.response?.data?.message || 'Failed to update document',
+                    code: "INTERNAL_SERVER_ERROR",
+                    message: "Unexpected error occurred",
                 });
             }
+        }),
 
-            throw new TRPCError({
-                code: 'INTERNAL_SERVER_ERROR',
-                message: 'Unexpected error occurred',
-            });
-        }
-    }),
+
     fetchRealtimeDoc: privateProcedure
-    .input(z.object({ id: z.string() }))
-    .query(async ({ input }) => {
-        try {
-            const response = await axios.get(
-                `${process.env.TIPTAP_BASE_URL}/api/documents/${input.id}?format=yjs`,
-                {
-                    headers: {
-                        Authorization: `${process.env.TIPTAP_JWT_SECRET}`,
-                    },
+        .input(z.object({ id: z.string() }))
+        .query(async ({ input }) => {
+            try {
+                const response = await axios.get(
+                    `${process.env.TIPTAP_BASE_URL}/api/documents/${input.id}?format=yjs`,
+                    {
+                        headers: {
+                            Authorization: `${process.env.TIPTAP_JWT_SECRET}`,
+                        },
+                    }
+                );
+                return response.data;
+            } catch (error) {
+                if (axios.isAxiosError(error)) {
+                    throw new TRPCError({
+                        code: 'INTERNAL_SERVER_ERROR',
+                        message: error.response?.data?.message || 'Failed to fetch document',
+                    });
                 }
-            );
-            return response.data;
-        } catch (error) {
-            if (axios.isAxiosError(error)) {
                 throw new TRPCError({
                     code: 'INTERNAL_SERVER_ERROR',
-                    message: error.response?.data?.message || 'Failed to fetch document',
+                    message: 'Unexpected error occurred',
                 });
             }
-            throw new TRPCError({
-                code: 'INTERNAL_SERVER_ERROR',
-                message: 'Unexpected error occurred',
-            });
-        }
-    }),
+        }),
 
     updateRealtimeDoc: privateProcedure
-    .input(z.object({ id: z.string(), content: z.any() }))
-    .mutation(async ({ input }) => {
+        .input(z.object({ id: z.string(), content: z.any() }))
+        .mutation(async ({ input }) => {
 
-        const content = input.content;
+            const content = input.content;
 
-        try {
-            const response = await axios.patch(
-                `${process.env.TIPTAP_BASE_URL}/api/documents/${input.id}?format=yjs`,
-                content,
-                {
-                    headers: {
-                        'Authorization': `${process.env.TIPTAP_JWT_SECRET}`,
-                    },
+            try {
+                const response = await axios.patch(
+                    `${process.env.TIPTAP_BASE_URL}/api/documents/${input.id}?format=yjs`,
+                    content,
+                    {
+                        headers: {
+                            'Authorization': `${process.env.TIPTAP_JWT_SECRET}`,
+                        },
+                    }
+                );
+
+                return {
+                    id: input.id,
+                    message: 'Document updated successfully'
+                };
+            } catch (error) {
+                if (axios.isAxiosError(error)) {
+                    throw new TRPCError({
+                        code: 'INTERNAL_SERVER_ERROR',
+                        message: error.response?.data?.message || 'Failed to update document',
+                    });
                 }
-            );
 
-            return {
-                id: input.id,
-                message: 'Document updated successfully'
-            };
-        } catch (error) {
-            if (axios.isAxiosError(error)) {
                 throw new TRPCError({
                     code: 'INTERNAL_SERVER_ERROR',
-                    message: error.response?.data?.message || 'Failed to update document',
+                    message: 'Unexpected error occurred',
                 });
             }
-
-            throw new TRPCError({
-                code: 'INTERNAL_SERVER_ERROR',
-                message: 'Unexpected error occurred',
-            });
-        }
-    }),
+        }),
     createVersion: privateProcedure
-    .input(z.object({ id: z.string() }))
-    .mutation(async ({ input }) => {
-        try {
-            const response = await axios.post(
-                `${process.env.TIPTAP_BASE_URL}/api/documents/${input.id}/versions`,
-                {},
-                {
-                    headers: {
-                        Authorization: `${process.env.TIPTAP_JWT_SECRET}`,
-                    },
+        .input(z.object({ id: z.string() }))
+        .mutation(async ({ input }) => {
+            try {
+                const response = await axios.post(
+                    `${process.env.TIPTAP_BASE_URL}/api/documents/${input.id}/versions`,
+                    {},
+                    {
+                        headers: {
+                            Authorization: `${process.env.TIPTAP_JWT_SECRET}`,
+                        },
+                    }
+                );
+                return response.data;
+            } catch (error) {
+                if (axios.isAxiosError(error)) {
+                    throw new TRPCError({
+                        code: 'INTERNAL_SERVER_ERROR',
+                        message: error.response?.data?.message || 'Failed to create version',
+                    });
                 }
-            );
-            return response.data;
-        } catch (error) {
-            if (axios.isAxiosError(error)) {
                 throw new TRPCError({
                     code: 'INTERNAL_SERVER_ERROR',
-                    message: error.response?.data?.message || 'Failed to create version',
-                });
+                    message: 'Unexpected error occurred',
+                })
             }
-            throw new TRPCError({
-                code: 'INTERNAL_SERVER_ERROR',
-                message: 'Unexpected error occurred',
-            })
-        }
-    }),
+        }),
     getAllVersions: privateProcedure
-    .input(z.object({ id: z.string() }))
-    .query(async ({ input }) => {
-        try {
-            const response = await axios.get(
-                `${process.env.TIPTAP_BASE_URL}/api/documents/${input.id}/versions`,
-                {
-                    headers: {
-                        Authorization: `${process.env.TIPTAP_JWT_SECRET}`,
-                    },
+        .input(z.object({ id: z.string() }))
+        .query(async ({ input }) => {
+            try {
+                const response = await axios.get(
+                    `${process.env.TIPTAP_BASE_URL}/api/documents/${input.id}/versions`,
+                    {
+                        headers: {
+                            Authorization: `${process.env.TIPTAP_JWT_SECRET}`,
+                        },
+                    }
+                );
+                return response.data;
+            } catch (error) {
+                if (axios.isAxiosError(error)) {
+                    throw new TRPCError({
+                        code: 'INTERNAL_SERVER_ERROR',
+                        message: error.response?.data?.message || 'Failed to fetch versions',
+                    });
                 }
-            );
-            return response.data;
-        } catch (error) {
-            if (axios.isAxiosError(error)) {
                 throw new TRPCError({
                     code: 'INTERNAL_SERVER_ERROR',
-                    message: error.response?.data?.message || 'Failed to fetch versions',
-                });
+                    message: 'Unexpected error occurred',
+                })
             }
-            throw new TRPCError({
-                code: 'INTERNAL_SERVER_ERROR',
-                message: 'Unexpected error occurred',
-            })
-        }
-    }),
+        }),
     deleteVersion: privateProcedure
-    .input(z.object({ id: z.string(), versionId: z.number() }))
-    .mutation(async ({ input }) => {
-        try {
-            const response = await axios.delete(
-                `${process.env.TIPTAP_BASE_URL}/api/documents/${input.id}/versions/${input.versionId}`,
-                {
-                    headers: {
-                        Authorization: `${process.env.TIPTAP_JWT_SECRET}`,
-                    },
-                });
-            return response.data;
-        } catch (error) {
-            if (axios.isAxiosError(error)) {
+        .input(z.object({ id: z.string(), versionId: z.number() }))
+        .mutation(async ({ input }) => {
+            try {
+                const response = await axios.delete(
+                    `${process.env.TIPTAP_BASE_URL}/api/documents/${input.id}/versions/${input.versionId}`,
+                    {
+                        headers: {
+                            Authorization: `${process.env.TIPTAP_JWT_SECRET}`,
+                        },
+                    });
+                return response.data;
+            } catch (error) {
+                if (axios.isAxiosError(error)) {
+                    throw new TRPCError({
+                        code: 'INTERNAL_SERVER_ERROR',
+                        message: error.response?.data?.message || 'Failed to delete version',
+                    });
+                }
                 throw new TRPCError({
                     code: 'INTERNAL_SERVER_ERROR',
-                    message: error.response?.data?.message || 'Failed to delete version',
-                });
+                    message: 'Unexpected error occurred',
+                })
             }
-            throw new TRPCError({
-                code: 'INTERNAL_SERVER_ERROR',
-                message: 'Unexpected error occurred',
-            })
-        }
-    }),
+        }),
 
 });

@@ -1,5 +1,5 @@
 import React from "react";
-import { Sheet, SheetContent, SheetTrigger } from "~/components/ui/sheet";
+import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "~/components/ui/sheet";
 import { Button } from "~/components/ui/button";
 import { Edit } from "lucide-react";
 import SocialFlowSidebar from "./SocialFlowSidebar";
@@ -13,6 +13,7 @@ const SocialMobileSidebar = ({ variations }: { variations: string[] }) => {
         </Button>
       </SheetTrigger>
       <SheetContent side="left" className="w-[300px] sm:w-[400px]">
+        <SheetTitle> </SheetTitle>
         <SocialFlowSidebar variations={variations} />
       </SheetContent>
     </Sheet>

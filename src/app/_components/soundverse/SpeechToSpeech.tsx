@@ -1,14 +1,15 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import Dropzone from 'react-dropzone';
-import { Download, Loader2, Paperclip, Repeat } from 'lucide-react';
+import { Download, FileKey, Loader2, Paperclip, Repeat } from 'lucide-react';
 import { toast } from "sonner";
 import { useAtom } from 'jotai';
-import { audioVoiceStyleIdAtom, audioVoiceStyleNameAtom, generatedAudioKeyAtom, isGeneratingTransScriptAtom, isUploadingAtom, localFileAtom, paraTextAtom, selectedLanguageAtom, transcriptAtom, transcriptionErrorAtom } from "~/atoms/soundVerseAtom";
+import { audioVoiceStyleIdAtom, audioVoiceStyleNameAtom, fileUrlAtom, generatedAudioKeyAtom, isGeneratingTransScriptAtom, isUploadingAtom, localFileAtom, paraTextAtom, selectedLanguageAtom, transcriptAtom, transcriptionErrorAtom } from "~/atoms/soundVerseAtom";
 import { v4 as uuidv4 } from "uuid";
 import { Button } from '~/components/ui/button';
 import { useXWAlert } from '~/components/reusable/xw-alert';
 import { trpc } from '~/trpc/react';
 import { uploadFile } from '~/services/aws-file-upload';
+import { uploadToS3 } from '~/lib/upload-to-s3';
 
 
 const SpeechToSpeech = () => {
@@ -24,17 +25,9 @@ const SpeechToSpeech = () => {
     const [selectedLanguage, setSelectedLanguage] = useAtom(selectedLanguageAtom);
     const [voiceStyleId, setVoiceStyleId] = useAtom(audioVoiceStyleIdAtom);
     const [voiceStyleName, setVoiceStyleName] = useAtom(audioVoiceStyleNameAtom);
+    const [fileUrl, setFileUrl] = useAtom(fileUrlAtom);
 
     const { mutateAsync: getTranscription } = trpc.audio.getFileTranscription.useMutation();
-
-    const { data: fileURL, isPending: isFetchingURL } =
-        trpc.aws.getObjectURL.useQuery(
-            { key: generatedAudioKey ?? "" },
-            {
-                enabled: !!generatedAudioKey,
-                refetchOnWindowFocus: false,
-            }
-        );
 
     const handleReset = () => {
         setParaText("");
@@ -51,12 +44,12 @@ const SpeechToSpeech = () => {
             setIsGeneratingTransScript(true);
             setTranscriptionError(false);
 
-            if (!fileURL) {
+            if (!fileUrl) {
                 throw new Error("File URL is not available yet.");
             }
             const transcription = await getTranscription({
                 type: "mux",
-                url: fileURL ?? "",
+                url: fileUrl ?? "",
                 languagecode: selectedLanguage,
             });
             setTranscript(transcription.transcript);
@@ -87,16 +80,17 @@ const SpeechToSpeech = () => {
             handleReset();
             const file = acceptedFiles[0];
             setLocalFile(file as File);
-            const uniqueKey = uuidv4();
-            setGeneratedAudioKey(uniqueKey);
+            // const uniqueKey = uuidv4();
+            // setGeneratedAudioKey(uniqueKey);
 
             try {
                 setIsUploading(true);
                 console.log("file is uploading ------------------->",);
-                
-                await uploadFile(file as File, uniqueKey);
-                console.log("filr is plaloaded-----------------------]>");
-                
+                const response =  await uploadToS3(file as File);
+                console.log("file is uploaded-----------------------]>", response);
+                const fileKey = response?.fileKey.split("/")[1] as string;
+                setGeneratedAudioKey(fileKey);
+                setFileUrl(response.fileUrl);
                 showToast({
                     title: "Success",
                     message: "File uploaded successfully!",
@@ -123,7 +117,7 @@ const SpeechToSpeech = () => {
             !isUploading &&
             localFile &&
             generatedAudioKey &&
-            fileURL &&
+            fileUrl &&
             !transcriptionError &&
             !transcript
         ) {
@@ -135,7 +129,7 @@ const SpeechToSpeech = () => {
                 }
             })();
         }
-    }, [ isUploading, localFile, generatedAudioKey, fileURL, transcriptionError, transcript]);
+    }, [ isUploading, localFile, generatedAudioKey, fileUrl, transcriptionError, transcript]);
 
     return (
         <div>

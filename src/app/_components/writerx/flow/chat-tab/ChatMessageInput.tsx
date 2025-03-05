@@ -15,7 +15,7 @@ import { trpc } from "~/trpc/react";
 import { SendMessageIcon } from "~/icons";
 import { useXWAlert } from "~/components/reusable/xw-alert";
 import { selectedSuggestionAtom } from "~/atoms/writerXAtoms";
-import { useGetActiveSpace } from "~/hooks/workspace/useGetActiveSpace";
+// import { useGetActiveSpace } from "~/hooks/workspace/useGetActiveSpace";
 import { useOrganization } from "@clerk/nextjs";
 
 interface MessageInputProps {

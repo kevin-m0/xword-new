@@ -34,12 +34,12 @@ const NewImageUpload: React.FC<NewImageUploadProps> = ({ onImageUploaded, select
         return assets.images.map((image: any, index) => (
             <Image
                 key={index}
-                src={getAwsUrl(image.imageKey) || ''}
+                src={`https://sample1.blr1.digitaloceanspaces.com/${image.imageKey}`|| ''}
                 height={300}
                 width={300}
                 sizes='100vh'
-                alt={`Image ${getAwsUrl(image.imageKey) || ''}`}
-                onClick={() => handleImageClick(getAwsUrl(image.imageKey) as string)}
+                alt={``}
+                onClick={() => handleImageClick(`https://sample1.blr1.digitaloceanspaces.com/${image.imageKey}` as string)}
                 className={`cursor-pointer aspect-square rounded-lg focus:border focus:border-xw-primary object-cover hover:opacity-85 transition-all duration-300 ${selectedImages.includes(getAwsUrl(image.imageKey) as string) ? 'border-2 border-xw-primary' : '' }`}
             />
         ));

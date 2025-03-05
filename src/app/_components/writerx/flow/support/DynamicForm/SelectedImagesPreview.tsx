@@ -16,7 +16,7 @@ export const SelectedImagesPreview = ({
   onClearAll,
   addTrigger
 }: SelectedImagesPreviewProps) => {
-
+  console.log("selected images------->", selectedImages);
   return (
     <div className="space-y-4 w-full">
       <Label>Selected Images</Label>

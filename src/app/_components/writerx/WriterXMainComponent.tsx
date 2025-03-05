@@ -22,6 +22,8 @@ import { Button } from "~/components/ui/button";
 import { XWInput } from "~/components/reusable/XWInput";
 import TopBarComponent from "../topbar/TopbarComponent";
 import WriterXBannerComponent from "./WriterXBannerComponent";
+import { Card, CardDescription, CardHeader, CardTitle } from "~/components/ui/card";
+import EmptyScreen from "../empty/EmptyScreen";
 
 
 
@@ -35,12 +37,14 @@ const WriterXMainComponent: React.FC = () => {
     const utils = trpc.useUtils();
     const router = useRouter();
 
-    console.log("user----------------------->", user);
+    // console.log("user----------------------->", user);
     
 
-    const { data: docs = [], isPending: isDocsLoading } = trpc.writerx.getAllDocs.useQuery({
-        workspaceId: defaultSpace?.id as string,
-    });
+    const workspaceId = defaultSpace?.id || "";
+    const { data: docs = [], isPending: isDocsLoading } = trpc.writerx.getAllDocs.useQuery(
+      { workspaceId },
+      { enabled: !!workspaceId } 
+    );
 
     console.log("docs--------------------------->", docs);
     
@@ -144,7 +148,7 @@ const WriterXMainComponent: React.FC = () => {
                 </Dialog>
             </div>
 
-            {/* <div className="grid grid-cols-3 gap-5 px-5">
+            <div className="grid grid-cols-3 gap-5 px-5">
                 {!isDocsLoading && docs.length > 0 ? (
                     docs.map((doc) => (
                         <Card key={doc.id}>
@@ -175,7 +179,7 @@ const WriterXMainComponent: React.FC = () => {
                     title="No documents found"
                     description="Create a new document to get started"
                 />
-            )} */}
+            )}
         </div>
     );
 };

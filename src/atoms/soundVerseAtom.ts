@@ -7,6 +7,7 @@ export const audioLanguageAtom = atom<LanguageModel | null>(null);
 export const audioApplyToAllParaAtom = atom<boolean>(false);
 export const audioVoiceStyleIdAtom = atom<string | null>(null);
 export const audioVoiceStyleNameAtom = atom<string | null>(null);
+export const fileUrlAtom = atom<string | null>(null);
 
 // Define atoms with TypeScript types
 export const paraTextAtom = atom<string>("");

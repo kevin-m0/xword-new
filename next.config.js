@@ -19,6 +19,13 @@ const config = {
                 pathname: "/**", // Allows all paths under this domain
                 search: "",
             },
+            {
+                protocol: "https",
+                hostname: "sample1.blr1.digitaloceanspaces.com",
+                port: "",
+                pathname: "/**", // Allows all paths under this domain
+                search: "",
+            },
         ],
     },
     experimental: {
