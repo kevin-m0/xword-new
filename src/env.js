@@ -27,13 +27,14 @@ export const env = createEnv({
     TIPTAP_BASE_URL: z.string().optional(),
     TIPTAP_JWT_SECRET: z.string().optional(),
 
-    CLOUDINARY_API_SECRET: z.string().optional(),
-
     DIGITALOCEAN_SPACES_ENDPOINT: z.string(),
     DIGITALOCEAN_SPACES_REGION: z.string(),
     DIGITALOCEAN_SPACES_BUCKET_NAME: z.string(),
     DIGITALOCEAN_SPACES_ACCESS_KEY_ID: z.string(),
     DIGITALOCEAN_SPACES_SECRET_ACCESS_KEY: z.string(),
+
+    CLOUDINARY_API_KEY: z.string(),
+    CLOUDINARY_API_SECRET: z.string(),
   },
 
   /**
@@ -136,6 +137,7 @@ export const env = createEnv({
     TIPTAP_JWT_SECRET: process.env.TIPTAP_JWT_SECRET,
 
     CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET,
+    CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,
 
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
     NEXT_PUBLIC_CLERK_SIGN_IN_URL: process.env.NEXT_PUBLIC_CLERK_SIGN_IN_URL,

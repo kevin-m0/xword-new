@@ -61,10 +61,10 @@ const VideoVerseDashboardComponent = () => {
     switch (activeTab) {
       case "transcript":
         return <VideoVerseTranscriptTab videoProject={videoProject} />;
-      case "magic-chat":
-        return <VideoVerseMagicChat />;
-      case "ai-content":
-        return <VideoVerseAIContentScreen />;
+      // case "magic-chat":
+      //   return <VideoVerseMagicChat />;
+      // case "ai-content":
+      //   return <VideoVerseAIContentScreen />;
       case "clips":
         return <VideoVerseClipsTab />;
       default:
