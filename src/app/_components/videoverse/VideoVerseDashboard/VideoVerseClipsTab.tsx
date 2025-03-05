@@ -52,7 +52,7 @@ const VideoVerseClipsTabRefactored = () => {
   const { data: video } = trpc.videoProject.getVideoProjectById.useQuery(
     { id: videoId },
     {
-      enabled: viralClips?.length > 0,
+      enabled: !viralClips?.length,
       refetchOnWindowFocus: false,
     },
   );
