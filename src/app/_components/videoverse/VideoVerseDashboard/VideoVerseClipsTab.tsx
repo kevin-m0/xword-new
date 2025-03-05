@@ -7,67 +7,57 @@ import { Separator } from "~/components/ui/separator";
 import { Copy, Loader2 } from "lucide-react";
 import XWSecondaryButton from "~/components/reusable/XWSecondaryButton";
 import type { ViralClips } from "@prisma/client";
-import { Cloudinary } from "@cloudinary/url-gen";
-import { trim } from "@cloudinary/url-gen/actions/videoEdit";
-import { fill } from "@cloudinary/url-gen/actions/resize";
-import { autoGravity } from "@cloudinary/url-gen/qualifiers/gravity";
-import { pollRequest } from "~/utils/utils";
+
 import { trpc } from "~/trpc/react";
-import { VideoTranscriptActions } from "~/lib/constant/videoverse.constants";
+import {
+  MIN_VIDEO_DURATION,
+  VideoTranscriptActions,
+} from "~/lib/constant/videoverse.constants";
 import { useOrganization } from "@clerk/nextjs";
-
-interface Timestamp {
-  start_time: number;
-  end_time: number;
-}
-
-interface VideoMetadata {
-  title: string;
-  transcript: string;
-  subtitles: string;
-  words: any[];
-}
-
-const CLOUDINARY_CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
-const MIN_VIDEO_DURATION = 60; // seconds
-const CLOUDINARY_UPLOAD_URL = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_URL;
+import { generateViralClipsTrigger } from "~/app/api/actions/generating-viral-clips/actions";
+import { useAtom } from "jotai";
+import { creatingClipsAtom } from "~/atoms/videoverseAtoms";
+import { motion } from "framer-motion";
 
 const VideoVerseClipsTabRefactored = () => {
   const params = useParams();
-  const [creatingClips, setCreatingClips] = useState(false);
+  const [creatingClips, setCreatingClips] = useAtom(creatingClipsAtom);
   const videoId = params["video-id"] as string;
-  const { organization: activeWorkspace } = useOrganization();
 
-  const [clipsGenerated, setClipsGenerated] = useState(false);
+  const { organization: workspace } = useOrganization();
+
   const stopRef = useRef(false);
-
-  const cld = new Cloudinary({
-    cloud: { cloudName: CLOUDINARY_CLOUD_NAME },
-  });
-
-  const createVideoProjectMutation =
-    trpc.videoProject.createViralClip.useMutation();
 
   const {
     data: viralClips,
-    isLoading: isLoadingClipsFromDB,
+    isFetching: isLoadingClipsFromDB,
     error: clipsError,
   } = trpc.videoProject.getViralClips.useQuery<ViralClips[]>(
     { id: videoId },
-    { enabled: Boolean(videoId), refetchOnWindowFocus: false },
-  );
-
-  const {
-    data: video,
-    isLoading: videoLoading,
-    error: videoError,
-  } = trpc.videoProject.getVideoProjectById.useQuery(
-    { id: videoId },
     {
-      enabled: Boolean(videoId) && !viralClips?.length,
+      enabled: Boolean(videoId),
       refetchOnWindowFocus: false,
     },
   );
+
+  if (isLoadingClipsFromDB) {
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <Loader2 className="h-6 w-6 animate-spin" />
+        <span className="ml-2">Fetching your clips...</span>
+      </div>
+    );
+  }
+
+  const { data: video } = trpc.videoProject.getVideoProjectById.useQuery(
+    { id: videoId },
+    {
+      enabled: viralClips?.length > 0,
+      refetchOnWindowFocus: false,
+    },
+  );
+
+  // console.log(video, "current video project");
 
   const {
     data: viralClipTimestamps,
@@ -75,144 +65,20 @@ const VideoVerseClipsTabRefactored = () => {
     error: viralClipError,
   } = trpc.videoProject.generateViralClipTimestamps.useQuery(
     { url: video?.videoUrl as string, type: "mux" },
-    { enabled: !!video?.videoUrl && !viralClips?.length },
+    {
+      enabled: !!video?.videoUrl && !viralClips?.length,
+      refetchOnWindowFocus: false,
+    },
   );
 
-  useEffect(() => {
-    if (
-      viralClipTimestamps &&
-      video &&
-      !viralClips?.length &&
-      !stopRef.current
-    ) {
-      createClips(viralClipTimestamps, video, videoId);
-    }
-  }, [viralClipTimestamps, video, videoId, viralClips]);
-
-  const createClips = async (
-    timestamps: Timestamp[],
-    video: { videoUrl: string; thumbnailUrl: string | null },
-    videoId: string,
-  ) => {
-    if (!timestamps.length || !video?.videoUrl) {
-      console.log("No timestamps generated");
-      return;
-    }
-
-    setCreatingClips(true);
-
-    try {
-      const publicId = video.videoUrl.split("/").pop()?.split(".")[0];
-      if (!publicId) throw new Error("Invalid video URL");
-
-      for (const clip of timestamps) {
-        await processClip(
-          clip,
-          publicId,
-          {
-            videoUrl: video.videoUrl,
-            thumbnailUrl: video.thumbnailUrl as string,
-          },
-          videoId,
-        );
-      }
-
-      setClipsGenerated(true);
-    } catch (error) {
-      console.error("Error creating clips:", error);
-    } finally {
-      setCreatingClips(false);
-    }
-  };
-
-  const processClip = async (
-    clip: Timestamp,
-    publicId: string,
-    video: { videoUrl: string; thumbnailUrl: string },
-    videoId: string,
-  ) => {
-    const createdClip = createCloudinaryTransformation(clip, publicId);
-    const videoUrl = createdClip.toURL();
-
-    const isTransformationComplete = await pollRequest(videoUrl);
-    if (!isTransformationComplete) {
-      throw new Error("Video transformation failed");
-    }
-
-    const uploadData = await uploadToCloudinary(videoUrl);
-    const metadata = await generateMetadata(videoUrl);
-
-    await createVideoProjectMutation.mutateAsync({
-      title: metadata.title,
-      description: "Generated clip",
-      parentVideoId: videoId,
-      workspaceId: activeWorkspace?.id as string,
-      videoUrl: uploadData.secure_url,
-      processStatus: "COMPLETED",
-      thumbnailUrl: video.thumbnailUrl,
-      transcript: metadata?.transcript as string,
-      subtitles: metadata?.subtitles as string,
-      duration: clip.end_time - clip.start_time,
-      words: JSON.stringify(metadata?.words),
-    });
-  };
-
-  const createCloudinaryTransformation = (
-    clip: Timestamp,
-    publicId: string,
-  ) => {
-    return cld
-      .video(publicId)
-      .videoEdit(
-        trim()
-          .startOffset(clip.start_time / 1000)
-          .endOffset(clip.end_time / 1000),
-      )
-      .resize(fill().width(1080).height(1920).gravity(autoGravity()));
-  };
-
-  const uploadToCloudinary = async (videoUrl: string) => {
-    const formData = new FormData();
-    formData.append("file", videoUrl);
-    formData.append("upload_preset", "unsigned-preset");
-    formData.append("resource_type", "video");
-
-    const response = await fetch(CLOUDINARY_UPLOAD_URL as string, {
-      method: "POST",
-      body: formData,
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to upload video");
-    }
-
-    return response.json();
-  };
-
-  const generateMetadata = async (videoUrl: string): Promise<VideoMetadata> => {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_LLM_FREE_TIER_URL}/generate/generate-all`,
-      {
-        method: "POST",
-        headers: {
-          Accept: "*/*",
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${process.env.NEXT_PUBLIC_LLM_TOKEN}`,
-        },
-        body: JSON.stringify({
-          url: videoUrl,
-          type: "mux",
-          languagecode: "en",
-        }),
-      },
-    );
-
-    if (!response.ok) {
-      throw new Error("Failed to generate content");
-    }
-
-    return response.json();
-  };
+  // if (loadingViralClipTimestamps) {
+  //   return (
+  //     <div className="flex h-64 items-center justify-center">
+  //       <Loader2 className="h-6 w-6 animate-spin" />
+  //       <span className="ml-2">Generating clips...</span>
+  //     </div>
+  //   );
+  // }
 
   const handleCopyTranscript = async (transcript: string) => {
     try {
@@ -223,55 +89,61 @@ const VideoVerseClipsTabRefactored = () => {
     }
   };
 
-  if (
-    isLoadingClipsFromDB ||
-    videoLoading ||
-    loadingViralClipTimestamps ||
-    creatingClips
-  ) {
+  const handleGenerateClips = async () => {
+    setCreatingClips(true);
+    // const result = await generateViralClipsTrigger(
+    //   viralClipTimestamps,
+    //   video,
+    //   videoId,
+    //   workspace?.id as string,
+    // );
+
+    setCreatingClips(false);
+  };
+
+  // if (video?.duration && video.duration < MIN_VIDEO_DURATION) {
+  //   return (
+  //     <div className="p-8 text-center">
+  //       <h2 className="mb-2 text-xl font-semibold">Video Too Short</h2>
+  //       <p className="text-xw-muted">
+  //         Please upload a video longer than 60 seconds to generate clips.
+  //       </p>
+  //     </div>
+  //   );
+  // }
+
+  if (creatingClips) {
     return (
-      <div className="flex h-64 items-center justify-center">
+      <div className="flex h-64 flex-col items-center justify-center">
         <Loader2 className="h-6 w-6 animate-spin" />
-        <span className="ml-2">
-          {loadingViralClipTimestamps
-            ? "Finding viral clips..."
-            : videoLoading
-              ? "Loading video details..."
-              : creatingClips
-                ? "Creating clips for you..."
-                : "Loading clips..."}
+        <span className="ml-2 mt-2">
+          You might wanna grab a cup of coffee, this might take a while...
         </span>
-      </div>
-    );
-  }
-
-  if (clipsError || videoError || viralClipError) {
-    return (
-      <div className="p-4 text-red-500">
-        Error loading content. Please try again later.
-      </div>
-    );
-  }
-
-  if (video?.duration && video.duration < MIN_VIDEO_DURATION) {
-    return (
-      <div className="p-8 text-center">
-        <h2 className="mb-2 text-xl font-semibold">Video Too Short</h2>
-        <p className="text-xw-muted">
-          Please upload a video longer than 60 seconds to generate clips.
-        </p>
       </div>
     );
   }
 
   if (!viralClips?.length) {
     return (
-      <div className="p-8 text-center">
-        <h2 className="mb-2 text-xl font-semibold">No Clips Found</h2>
+      <div className="flex flex-col justify-center p-8 text-center">
+        <h2 className="mb-2 text-xl font-semibold">No Clips created yet</h2>
+        <div className="mx-auto mt-4">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="mx-auto w-fit text-sm"
+            onClick={() => {
+              handleGenerateClips();
+            }}
+          >
+            Generate viral short clips using AI?
+          </motion.div>
+        </div>
         <p className="text-xw-muted">
-          {loadingViralClipTimestamps
+          {/* {loadingViralClipTimestamps
             ? "Generating clips..."
-            : "No viral clips have been generated yet."}
+            : "No viral clips have been generated yet."} */}
         </p>
       </div>
     );
