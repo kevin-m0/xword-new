@@ -16,10 +16,10 @@ const XWSlider = React.forwardRef<
     )}
     {...props}
   >
-    <SliderPrimitive.Track className="bg-xw-secondary relative h-2 w-full grow overflow-hidden rounded-full">
+    <SliderPrimitive.Track className="bg-xw-secondary relative h-[5px] w-full grow overflow-hidden rounded-full">
       <SliderPrimitive.Range className="bg-xw-primary absolute h-full" />
     </SliderPrimitive.Track>
-    <SliderPrimitive.Thumb className="block h-5 w-5 rounded-full border-2 border-primary bg-white ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50" />
+    <SliderPrimitive.Thumb className="block h-[13px] w-[13px] rounded-full border-2 border-primary bg-white ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50" />
   </SliderPrimitive.Root>
 ));
 XWSlider.displayName = SliderPrimitive.Root.displayName;

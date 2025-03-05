@@ -5,28 +5,28 @@ import { CopyToClipboardIcon } from "~/icons";
 import { Messages } from "~/types";
 
 interface SingleMessageProps {
-  dropToKeyboard: (contents: string) => void;
-  msg: Messages;
+    dropToKeyboard: (contents: string) => void;
+    msg: Messages;
 }
 
 const SingleMessage: React.FC<SingleMessageProps> = ({
-  dropToKeyboard,
-  msg,
+    dropToKeyboard,
+    msg,
 }) => {
-  useEffect(() => {
-    setContent(msg.content);
-  }, [msg]);
+    useEffect(() => {
+        setContent(msg.content);
+    }, [msg]);
 
-  const [content, setContent] = useState("");
-  const copyTextToClipboard = (contents: string) => {
-    navigator.clipboard.writeText(contents);
-  };
-  const onDragStart = (
-    event: React.DragEvent<HTMLDivElement>,
-    content: string,
-  ) => {
-    event.dataTransfer?.setData("text/plain", content);
-  };
+    const [content, setContent] = useState("");
+    const copyTextToClipboard = (contents: string) => {
+        navigator.clipboard.writeText(contents);
+    };
+    const onDragStart = (
+        event: React.DragEvent<HTMLDivElement>,
+        content: string,
+    ) => {
+        event.dataTransfer?.setData("text/plain", content);
+    };
 
   return (
     <>

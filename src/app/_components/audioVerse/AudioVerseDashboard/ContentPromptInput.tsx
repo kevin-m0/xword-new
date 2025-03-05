@@ -11,11 +11,10 @@ import {
 } from "~/atoms";
 import { useAtom } from "jotai";
 import { trpc } from "~/trpc/react";
-import { useGetActiveSpace } from "~/hooks/workspace/useGetActiveSpace";
 import { ErrorToast } from "../../custom-toast";
 import { Button } from "~/components/ui/button";
 import { useUpdateChat } from "./useUpdateChat";
-import { useUser } from "@clerk/nextjs";
+import { useOrganization, useUser } from "@clerk/nextjs";
 import { useDocumentId } from "~/hooks/editor/useDocumentId";
 
 interface MessageInputProps {
@@ -35,8 +34,9 @@ const ContentPromptInput = ({ context, messages }: MessageInputProps) => {
   const [_, setRefetchTokenUsage] = useAtom(refetchTrigger);
   const { mutate: updateChat } = useUpdateChat();
   const documentId = useDocumentId();
-  const { data: activeWorkspace, isLoading: isWorkspaceFetching } =
-    useGetActiveSpace();
+  // const { data: activeWorkspace, isLoading: isWorkspaceFetching } =
+  //   useGetActiveSpace();
+  const { organization : activeWorkspace} = useOrganization();
   const [, setPromptLoading] = useAtom(promptLoadingAtom);
   const [, setContentResponse] = useAtom(contentResponseAtom);
   const [, setContentInput] = useAtom(contentInputAtom);
@@ -47,7 +47,7 @@ const ContentPromptInput = ({ context, messages }: MessageInputProps) => {
       messages: ContentInput[];
       context: string;
     }) => {
-      if (isWorkspaceFetching) return;
+      
 
       setContentInput("");
       setContentResponse("");

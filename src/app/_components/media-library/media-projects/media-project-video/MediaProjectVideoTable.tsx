@@ -22,14 +22,16 @@ import { Button } from "~/components/ui/button";
 import { useAtom } from "jotai";
 import { useXWAlert, XWAlert } from "~/components/reusable/xw-alert";
 import { trpc } from "~/trpc/react";
-import { useGetActiveSpace } from "~/hooks/workspace/useGetActiveSpace";
+// import { useGetActiveSpace } from "~/hooks/workspace/useGetActiveSpace";
 import { timeFilterAtom } from "~/atoms/mediaAtoms";
 import { MediaProjectVideoDocs } from "~/types/media.types";
 import TableLoader from "~/components/loaders/TableLoader";
-import EmptyScreen from "~/components/reusable/EmptyScreen";
+// import EmptyScreen from "~/components/reusable/EmptyScreen";
 import OnTableSelectActions from "~/components/reusable/OnTableSelectActions";
+import { useOrganization } from "@clerk/nextjs";
 
 export default function MediaProjectDocsTable() {
+  const { organization : defaultSpace} = useOrganization();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const { showToast } = useXWAlert();
@@ -38,8 +40,8 @@ export default function MediaProjectDocsTable() {
     {},
   );
 
-  const { data: defaultSpace, isLoading: isWorkspaceFetching } =
-    useGetActiveSpace();
+  // const { data: defaultSpace, isLoading: isWorkspaceFetching } =
+  //   useGetActiveSpace();
 
   const {
     data: assets,

@@ -3,15 +3,15 @@
 import React, { useCallback, useState } from "react";
 import { uploadFile } from "~/services/aws-file-upload";
 import XWDropBox from "~/components/reusable/XWDropBox";
-import { useGetActiveSpace } from "~/hooks/workspace/useGetActiveSpace";
 import { trpc } from "~/trpc/react";
 import { useXWAlert } from "~/components/reusable/xw-alert";
+import { useOrganization } from "@clerk/nextjs";
 
 const DropAssetsBox = () => {
   const [localFile, setLocalFile] = useState<File | null>(null); // Single file state
   const { showToast } = useXWAlert();
   const utils = trpc.useUtils();
-  const { data: defaultSpace } = useGetActiveSpace();
+  const { organization: defaultSpace } = useOrganization();
 
   const { mutate: addAudioAsset } = trpc.assets.addMediaAudioAsset.useMutation({
     onSuccess: () => {

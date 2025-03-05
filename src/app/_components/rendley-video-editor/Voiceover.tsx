@@ -69,9 +69,10 @@ const Voiceover: FC<VoiceoverProps> = ({ recording, rendley }: any) => {
   const generateVoiceover = async (userText: string, voiceId: string) => {
     const payload = {
       userId: user?.id as string,
-      transcript: userText,
-      voiceId: voiceId,
+      transcript: userText as string,
+      voiceId: voiceId as string,
       speed: SpeedOptions.normal,
+      language: 'en',
     };
 
     const fileKey = await generateVoice(payload);

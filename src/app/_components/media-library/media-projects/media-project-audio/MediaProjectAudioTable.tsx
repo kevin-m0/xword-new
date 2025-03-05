@@ -24,13 +24,15 @@ import { useAtom } from "jotai";
 import { useXWAlert, XWAlert } from "~/components/reusable/xw-alert";
 import { timeFilterAtom } from "~/atoms/mediaAtoms";
 import { trpc } from "~/trpc/react";
-import { useGetActiveSpace } from "~/hooks/workspace/useGetActiveSpace";
+// import { useGetActiveSpace } from "~/hooks/workspace/useGetActiveSpace";
 import { MediaProjectAudioDocs } from "~/types/media.types";
 import TableLoader from "~/components/loaders/TableLoader";
-import EmptyScreen from "~/components/reusable/EmptyScreen";
+// import EmptyScreen from "~/components/reusable/EmptyScreen";
 import OnTableSelectActions from "~/components/reusable/OnTableSelectActions";
+import { useOrganization } from "@clerk/nextjs";
 
 export default function MediaProjectAudioTable() {
+  const { organization : defaultSpace} = useOrganization();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const { showToast } = useXWAlert();
@@ -40,8 +42,7 @@ export default function MediaProjectAudioTable() {
   );
   const [timeFilter] = useAtom(timeFilterAtom);
 
-  const { data: defaultSpace, isLoading: isWorkspaceFetching } =
-    useGetActiveSpace();
+
 
   const {
     data: assets,

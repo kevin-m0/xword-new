@@ -17,8 +17,9 @@ import { MESSAGES_LIMIT_CHAT } from "~/lib/constant/chatsonic.constants";
 import useMeasure from "~/hooks/misc/useMeasure";
 import useChatExist from "~/hooks/chatsonic/useChatExist";
 import MessagesLoader from "~/components/loaders/MessagesLoader";
-import SingleMessage from "../../writerx/flow/chat-tab/SingleMessage";
+
 import NoChatMessage from "./NoChatMessage";
+import SingleMessage from "../../Editor/Sidebar/RightSidebar/AiContainer/ai-chat/SingleMessage";
 
 function ChatBox() {
   const documentId = useDocumentId();
