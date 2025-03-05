@@ -1,10 +1,8 @@
-import React from 'react'
-import SoundVerseComponent from '~/app/_components/soundVerse/SoundVerseComponent'
+import React from "react";
+import SoundVerseComponent from "~/app/_components/soundverse/SoundVerseComponent";
 
 const Page: React.FC = () => {
-    return (
-        <SoundVerseComponent />
-    )
-}
+  return <SoundVerseComponent />;
+};
 
-export default Page
+export default Page;
