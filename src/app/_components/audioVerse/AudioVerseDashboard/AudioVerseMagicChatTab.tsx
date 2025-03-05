@@ -121,18 +121,16 @@ const DefaultView = () => (
   <div className="flex flex-col items-center justify-center gap-6 pb-32 pt-12">
     <Image src="/icons/chatmagic.svg" height={30} width={30} alt="chat" />
     <div className="text-center">
-      <h1 className="text-4xl font-medium">
-        Hello, <span className="text-xw-primary">Kevin Roy</span>
-      </h1>
-      <p className="text-xw-muted-foreground mt-2">How can I help you today?</p>
+      <h1 className="text-4xl font-medium">Welcome to Magic Chat</h1>
+      <p className="mt-2 text-xw-muted-foreground">How can I help you today?</p>
     </div>
-    <SuggestedPrompts />
+    {/* <SuggestedPrompts /> */}
   </div>
 );
 
 const SuggestedPrompts = () => (
   <div className="text-center">
-    <h2 className="text-xw-muted mb-4 text-sm">Ask About:</h2>
+    <h2 className="mb-4 text-sm text-xw-muted">Ask About:</h2>
     <div className="flex w-full max-w-lg flex-wrap justify-center gap-2">
       {[
         "Summarize this recording",
@@ -170,7 +168,7 @@ const MessageBubble = ({ message }: { message: ChatMessage }) => (
     <div className="flex flex-col gap-2">
       <div className="flex items-center gap-2">
         <h3>{message.sender === "user" ? "You" : "Assistant"}</h3>
-        <span className="text-xw-muted text-xs">{message.timestamp}</span>
+        <span className="text-xs text-xw-muted">{message.timestamp}</span>
       </div>
       <p className="text-xw-muted-foreground">{message.text}</p>
       {message.sender === "assistant" && (

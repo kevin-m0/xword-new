@@ -1,7 +1,7 @@
 "use client";
 
 import { StoryboardFrame, StoryboardStyle } from "~/types";
-import { PenTool } from "lucide-react";
+import { PenTool, Sparkles } from "lucide-react";
 import { FC, useState } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
@@ -84,13 +84,14 @@ const Storyboard: FC<StoryboardProps> = ({}) => {
   return (
     <div>
       <div className="min-w-6xl flex min-h-[90vh] items-center">
-        <div className="mx-auto w-[50vw] space-y-10 p-8">
+        <div className="w-min-[50vw] mx-auto space-y-10 p-8">
           <header className="animate-fade-in space-y-4 text-center">
-            <h1 className="bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-5xl font-extrabold text-transparent">
-              Storyboard Generator
+            <h1 className="animate-gradient mb-4 bg-gradient-to-r from-purple-600 via-pink-500 to-orange-600 bg-[length:200%_100%] bg-clip-text text-6xl font-bold tracking-tight text-transparent md:text-6xl">
+              Transform Your Ideas Into Visual Stories
             </h1>
-            <p className="text-lg font-medium text-gray-600">
-              Transform your story concepts into visual narratives
+            <p className="mx-auto max-w-2xl text-xl text-muted-foreground">
+              Generate stunning storyboards from text prompts in seconds.
+              Perfect for filmmakers, writers, and creative professionals.
             </p>
           </header>
 
@@ -104,7 +105,7 @@ const Storyboard: FC<StoryboardProps> = ({}) => {
             <section className="space-y-6 rounded-2xl bg-black p-8 shadow-lg transition-all duration-300 hover:shadow-xl">
               <h2 className="flex items-center gap-3 text-3xl font-bold text-indigo-700">
                 <PenTool className="h-8 w-8" />
-                Story Concept
+                Describe your story
               </h2>
               <TextInput
                 value={concept}
@@ -115,12 +116,15 @@ const Storyboard: FC<StoryboardProps> = ({}) => {
               <button
                 onClick={handleGenerateScript}
                 disabled={isGeneratingScript || concept.length < 50}
-                className="w-full transform rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 px-8 py-3 font-semibold text-white shadow-md transition-all duration-300 hover:scale-105 hover:from-indigo-700 hover:to-purple-700 active:scale-95 disabled:cursor-not-allowed disabled:from-gray-400 disabled:to-gray-500 md:w-auto"
+                className="flex w-full transform items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 px-8 py-3 font-semibold text-white shadow-md transition-all duration-300 hover:scale-105 hover:from-indigo-700 hover:to-purple-700 active:scale-95 disabled:cursor-not-allowed disabled:from-gray-400 disabled:to-gray-500 md:w-auto"
               >
                 {isGeneratingScript ? (
                   <LoadingSpinner text="Generating script..." />
                 ) : (
-                  "Generate Script"
+                  <>
+                    <Sparkles className="mr-2 h-4 w-4" />
+                    Generate Storyboard
+                  </>
                 )}
               </button>
             </section>

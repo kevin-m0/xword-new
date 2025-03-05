@@ -1,6 +1,6 @@
 import { Toaster } from "sonner";
 import type { Metadata, Viewport } from "next";
-import { Inter, Noto_Sans } from "next/font/google";
+import { Geist, Noto_Sans } from "next/font/google";
 import "~/styles/globals.css";
 import "~/styles/gradient.css";
 import { cn } from "~/utils/utils";
@@ -12,9 +12,31 @@ import { ShortCutProvider } from "~/lib/providers/ShortCutProvider";
 import { KeyBordProvider } from "~/lib/providers/KeyBoardProvider";
 import { Provider } from "jotai";
 import { XWAlertProvider } from "~/components/reusable/xw-alert";
+import { NextFont, NextFontWithVariable } from "next/dist/compiled/@next/font";
 
-const font1 = Noto_Sans({ subsets: ["latin"], variable: "--font-sans" });
-const font2 = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const font1 = Noto_Sans({
+  subsets: ["latin"],
+  weight: "variable",
+  display: "swap",
+  variable: "--font-sans",
+});
+
+const font2: NextFontWithVariable & NextFont = {
+  className: "font-pp-editorial",
+  style: {
+    fontFamily: "PPEditorialNew-UltralightItalic",
+    fontWeight: 200,
+    fontStyle: "italic",
+  },
+  variable: "--font-pp-editorial",
+};
+
+const font3 = Geist({
+  subsets: ["latin"],
+  weight: "variable",
+  display: "swap",
+  variable: "--font-geist",
+});
 
 export const metadata: Metadata = {
   manifest: "/manifest.json",
@@ -30,7 +52,15 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" suppressHydrationWarning className="dark">
-      <body className={cn(font1.variable, font2.variable)}>
+      {/* remove on PROD react-scan testing */}
+      {/* <head>
+        <script
+          crossOrigin="anonymous"
+          src="//unpkg.com/react-scan/dist/auto.global.js"
+        />
+      </head> */}
+      {/* remove on PROD react-scan testing */}
+      <body className={cn(font3.className)}>
         <ViewProvider>
           <TRPCReactProvider>
             <ClerkProvider

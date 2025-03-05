@@ -19,7 +19,7 @@ interface XWTabsProps {
 
 const XWTabs = ({ tabs, activeTab, onChange, className }: XWTabsProps) => {
   return (
-    <div className={cn("bg-xw-card flex gap-1 rounded-xl p-1", className)}>
+    <div className={cn("flex gap-1 rounded-xl bg-transparent p-1", className)}>
       {tabs.map((tab) => (
         <Button
           key={tab.id}

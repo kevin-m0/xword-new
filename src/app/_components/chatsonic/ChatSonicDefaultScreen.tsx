@@ -20,7 +20,7 @@ const ChatSonicDefaultScreen = ({
     .join(" ");
 
   return (
-    <div className="my-auto flex flex-col items-center justify-center gap-2 text-center">
+    <div className="mt-60 flex flex-col items-center justify-center gap-2 text-center">
       <Image
         src="/icons/chatmagic.svg"
         height={30}
@@ -30,11 +30,7 @@ const ChatSonicDefaultScreen = ({
       />
       {mode === "Normal" || mode === "Docs" ? (
         <h1 className="text-4xl font-semibold text-primary">
-          Hello,{" "}
-          <span className="xw-chatsonic-default-text">
-            {name?.split(" ")[0]}
-          </span>
-          !
+          Your personal content creator
         </h1>
       ) : (
         <h1 className="text-4xl font-semibold text-primary">
@@ -58,7 +54,7 @@ const ChatSonicDefaultScreen = ({
             : "Search about:"}
         </h1>
 
-        <div className="mt-5 flex max-w-lg flex-wrap justify-center gap-2">
+        <div className="mb-3 mt-5 flex max-w-lg flex-wrap justify-center gap-2">
           {(mode === "Web" ? WEB_DEFAULT_PROMPTS : NORMAL_DEFAULT_PROMPTS).map(
             (prompt) => (
               <XWSecondaryButton

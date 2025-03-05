@@ -13,11 +13,11 @@ const config = {
                 search: "",
             },
             {
-                protocol: "https",
-                hostname: "xword.s3.ap-south-1.amazonaws.com",
-                port: "",
-                pathname: "/**", // Allows all paths under this domain
-                search: "",
+                protocol: 'https',
+                hostname: 'res.cloudinary.com',
+                port: '',
+                pathname: '/**',
+                search: '',
             },
             {
                 protocol: "https",
@@ -32,7 +32,7 @@ const config = {
         serverActions: {
             bodySizeLimit: "50mb",
         },
-    },
+    }
 };
 
 export default config;

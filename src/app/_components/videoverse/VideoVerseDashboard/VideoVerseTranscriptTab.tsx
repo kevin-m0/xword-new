@@ -11,6 +11,7 @@ import { CheckCheckIcon, Info } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import Link from "next/link";
 import { trpc } from "~/trpc/react";
+import { XWTextarea } from "~/components/reusable/XWTextarea";
 
 const VideoVerseTranscriptTab = ({ videoProject }: any) => {
   const [chapters, setChapters] = useState([]);
@@ -51,7 +52,6 @@ const VideoVerseTranscriptTab = ({ videoProject }: any) => {
   const copyToClipboard = async (text: string) => {
     try {
       await navigator.clipboard.writeText(text);
-      console.log("Text copied to clipboard:", text);
     } catch (error) {
       console.error("Failed to copy text to clipboard:", error);
     }
@@ -171,8 +171,8 @@ const VideoVerseTranscriptTab = ({ videoProject }: any) => {
           </TooltipProvider>
         </div>
 
-        <div className="xw-premium-div flex h-fit rounded-lg border border-xw-muted-foreground p-2">
-          <textarea
+        <div className="flex h-fit rounded-lg border p-2 shadow-md shadow-white">
+          <XWTextarea
             rows={4}
             placeholder="Enter title here..."
             className="h-full w-full flex-1 resize-none border-none bg-transparent outline-none focus:ring-0"
@@ -239,8 +239,8 @@ const VideoVerseTranscriptTab = ({ videoProject }: any) => {
           </div>
         </div>
 
-        <div className="xw-premium-div flex h-fit rounded-lg border border-xw-muted-foreground p-2">
-          <textarea
+        <div className="flex h-fit rounded-lg border p-2 shadow-md shadow-white">
+          <XWTextarea
             rows={4}
             placeholder="Enter description here..."
             className="h-full w-full flex-1 resize-none border-none bg-transparent outline-none focus:ring-0"
@@ -308,8 +308,8 @@ const VideoVerseTranscriptTab = ({ videoProject }: any) => {
           </div>
         </div>
 
-        <div className="xw-premium-div flex h-fit rounded-lg border border-xw-muted-foreground p-2">
-          <textarea
+        <div className="flex h-fit rounded-lg border p-2 shadow-md shadow-white">
+          <XWTextarea
             rows={8}
             placeholder="Enter chapters here..."
             className="h-full w-full flex-1 resize-none border-none bg-transparent outline-none focus:ring-0"
@@ -359,8 +359,8 @@ const VideoVerseTranscriptTab = ({ videoProject }: any) => {
           )}
         </div>
       </div>
-      <div className="xw-premium-div flex h-fit rounded-lg border border-xw-muted-foreground p-2">
-        <textarea
+      <div className="flex h-fit rounded-lg border p-2 shadow-md shadow-white">
+        <XWTextarea
           rows={20}
           placeholder="Enter chapters here..."
           className="h-full w-full flex-1 resize-none border-none bg-transparent outline-none focus:ring-0"

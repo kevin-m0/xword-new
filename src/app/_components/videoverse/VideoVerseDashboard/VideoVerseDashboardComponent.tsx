@@ -23,6 +23,7 @@ import { DialogDescription } from "~/components/ui/dialog";
 import XWGradSeparator from "~/components/reusable/XWGradSeparator";
 import { toast } from "sonner";
 import { trpc } from "~/trpc/react";
+import LoadingScreen from "~/components/loaders/loading-screen";
 
 const VideoVerseDashboardComponent = () => {
   const [activeTab, setActiveTab] = useState("transcript");
@@ -71,9 +72,13 @@ const VideoVerseDashboardComponent = () => {
     }
   };
 
+  if (isLoading) {
+    return <LoadingScreen />;
+  }
+
   return (
     <div className="flex min-h-dvh flex-col gap-10">
-      <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-5 p-5">
+      <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-5 p-10">
         {/* VideoVerse Dashboard Header */}
         <div className="flex items-center justify-between gap-5">
           <div className="flex items-center gap-4">
@@ -99,12 +104,12 @@ const VideoVerseDashboardComponent = () => {
                 </XWSecondaryButton>
               </DialogTrigger>
 
-              <DialogContent className="bg-xw-sidebar flex w-full max-w-md flex-col gap-5">
+              <DialogContent className="flex w-full max-w-md flex-col gap-5 bg-xw-sidebar">
                 <DialogHeader>
                   <DialogTitle className="text-2xl">
                     Delete Video Project
                   </DialogTitle>
-                  <DialogDescription className="text-xw-muted text-sm">
+                  <DialogDescription className="text-sm text-xw-muted">
                     This action cannot be undone. Are you sure you want to
                     delete this video project?
                   </DialogDescription>
@@ -140,7 +145,7 @@ const VideoVerseDashboardComponent = () => {
             <Button
               variant={"default"}
               size={"sm"}
-              className="flex items-center gap-2"
+              className="animate-gradient flex items-center gap-2 bg-gradient-to-r from-blue-500 via-pink-500 to-orange-600 bg-[length:200%_100%] text-white"
               onClick={() => {
                 window.location.href = `/videoverse/${params["video-id"]}/editor`;
               }}

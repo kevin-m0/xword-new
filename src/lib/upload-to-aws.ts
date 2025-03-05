@@ -13,5 +13,4 @@ export const uploadAudioFile = async (audioFile: File, signedUrl: string) => {
     console.error("Error uploading audio file:", response.statusText);
     throw new Error("Failed to upload audio file.");
   }
-  console.log("Audio file uploaded successfully!");
 };

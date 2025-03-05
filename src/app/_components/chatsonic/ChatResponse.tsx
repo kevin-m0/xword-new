@@ -1,7 +1,7 @@
 import { toast } from "sonner";
 import { motion } from "framer-motion";
-import { useRef } from "react";
-import { Copy } from "lucide-react";
+import { useCallback, useRef, useState } from "react";
+import { Check, Copy, CopyCheck } from "lucide-react";
 import { Card, CardHeader, CardTitle } from "~/components/ui/card";
 import useCopyToClipboard from "~/hooks/chatsonic/useCopyToClipBoard";
 import { useUser } from "@clerk/nextjs";
@@ -10,6 +10,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
 import { RenderMarkdown } from "~/components/render-markdown/render-markdown";
 import { Message } from "~/types/chatsonic.types";
+import { useAtom } from "jotai";
+import { isGeneratingResponseAtom } from "~/atoms";
 
 type ChatResponseProp = {
   message: Message;
@@ -53,7 +55,7 @@ const SourcesList = ({
                     href={source.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-xw-primary hover:text-xw-primary-hover flex items-center gap-2 text-lg transition-colors"
+                    className="flex items-center gap-2 text-lg text-xw-primary transition-colors hover:text-xw-primary-hover"
                   >
                     {/* <ExternalLink className="h-6 w-6" /> */}
                     {source.url.length > 30
@@ -83,17 +85,16 @@ function ChatResponse({
   const imageRef = useRef<HTMLImageElement>(null);
   const [_, copy] = useCopyToClipboard();
   const { user } = useUser();
+  const [isCopied, setIsCopied] = useState(false);
 
-  const handleCopyToClipBoard = async () => {
-    // if (message.fileIds.some((id) => id.startsWith("image_"))) {
-    //   copyImage(imageRef);
-    //   return;
-    // }
+  const [isGeneratingResponse, setIsGeneratingResponse] = useAtom(
+    isGeneratingResponseAtom,
+  );
+
+  const handleCopyToClipBoard = useCallback(async () => {
     try {
+      setIsCopied(true);
       await copy(message.query);
-      toast.custom((t) => (
-        <SuccessToast t={t} title="" description="Copied to clipboard" />
-      ));
     } catch {
       if (!message.query)
         toast.custom((t) => (
@@ -108,14 +109,15 @@ function ChatResponse({
           />
         ));
     }
-  };
+    setTimeout(() => setIsCopied(false), 3000);
+  }, []);
 
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.6, ease: "easeInOut" }}
-      className="relative mb-3 flex gap-4 py-4"
+      className="relative mb-3 flex justify-start gap-4 py-4"
     >
       <div className="relative top-2">
         <div className="ml-1 flex h-9 w-9 items-center justify-center rounded-full">
@@ -142,7 +144,10 @@ function ChatResponse({
         </div> */}
         <RenderMarkdown content={message.query} />
 
-        <SourcesList sources={message.sources} mode={message.mode || ""} />
+        <SourcesList
+          sources={message.sources as string}
+          mode={message.mode || ""}
+        />
 
         {/* {message.fileIds && message.fileIds.length > 0 && (
           <div className="flex gap-4">
@@ -168,8 +173,17 @@ function ChatResponse({
               <RefreshCcw className="h-3 w-3" />
             </Button>
           )} */}
-          <Button size={"sm"} variant={"ghost"} onClick={handleCopyToClipBoard}>
-            <Copy className="h-3 w-3" />
+          <Button
+            size={"sm"}
+            variant={"ghost"}
+            className="hover:bg-transparent"
+            onClick={handleCopyToClipBoard}
+          >
+            {isCopied ? (
+              <Check className="h-4 w-4" />
+            ) : (
+              <Copy className="h-4 w-4" />
+            )}
           </Button>
         </div>
       </div>

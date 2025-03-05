@@ -12,7 +12,7 @@ import { trpc } from "~/trpc/react";
 import { useDocumentId } from "~/hooks/editor/useDocumentId";
 import { ErrorToast } from "../../custom-toast";
 import { useUpdateChat } from "./useUpdateChat";
-import { useOrganization } from "@clerk/nextjs";
+import { useOrganization, useUser } from "@clerk/nextjs";
 interface MessageInputProps {
   // scrollIntoView: () => void;
   context: string;
@@ -28,7 +28,7 @@ const MessageInput = ({
   const [_, setRefetchTokenUsage] = useAtom(refetchTrigger);
   const documentId = useDocumentId();
   const { mutate: updateChat } = useUpdateChat();
-  const { data: user } = trpc.user.getCurrentLoggedInUser.useQuery();
+  const { user } = useUser();
 
   const { organization: activeWorkspace, isLoaded: isWorkspaceFetching } =
     useOrganization();
@@ -38,24 +38,30 @@ const MessageInput = ({
       context: string;
     }) => {
       if (!isWorkspaceFetching) return;
+      setInput(""); // Clear the input after sending the message given that the response was successful
 
       const paymentId = `${activeWorkspace?.id}:${user?.id}`;
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_LLM_PAID_TIER_URL}/generate/chat`,
+        `${process.env.NEXT_PUBLIC_LLM_FREE_TIER_URL}/generate/chatbot/xmail-chatbot`,
         {
           method: "post",
           headers: {
-            Accept: "application/json, text/plain, */*",
+            Authorization: `Bearer ${process.env.NEXT_PUBLIC_LLM_TOKEN}`,
             "Content-Type": "application/json",
-            Authorization: "Bearer " + process.env.NEXT_PUBLIC_LLM_TOKEN,
           },
           body: JSON.stringify({
             userId: paymentId,
+            sessionId: documentId,
+            avatarId: "wizard",
+            mode: "Normal",
+            query: payload?.messages[0]?.content as string,
             messages: payload.messages,
-            context: payload.context,
+            role: "user",
+            mailContext: { body: payload.context },
           }),
         },
       );
+      console.log(res.body, "sent materials");
       if (!res.ok) {
         throw Error(`Error in Generating Response`);
       }
@@ -63,13 +69,7 @@ const MessageInput = ({
     },
     onSuccess: async (stream) => {
       if (!stream || stream === null) {
-        toast.custom((t) => (
-          <ErrorToast
-            t={t}
-            title=""
-            description="Error generating the response"
-          />
-        ));
+        toast.error("Error generating the response");
       } else {
         const reader = stream.getReader();
         const decoder = new TextDecoder();
@@ -94,9 +94,7 @@ const MessageInput = ({
           };
           scrollCount += 1;
         }
-        // scrollIntoView();
 
-        setInput(""); // Clear the input after sending the message given that the response was successful
         updateChat({
           chat: {
             content: ans,
@@ -110,23 +108,8 @@ const MessageInput = ({
       setRefetchTokenUsage((prev) => !prev);
     },
     onError: () => {
-      toast.custom((t) => (
-        <ErrorToast
-          t={t}
-          title=""
-          description="Error generating the response"
-        />
-      ));
-      // scrollIntoView();
-      // setInput(""); // Not clearing Input because of error in generating response
-      updateChat({
-        chat: {
-          content: "Error generating the response",
-          role: "ai",
-          recId: documentId as string,
-        },
-      });
-      return; // Return early since we don't want to scroll the view after an error occurs
+      toast.error("Error generating the response");
+      return;
     },
   });
 

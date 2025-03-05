@@ -13,7 +13,7 @@
     --xw-card-hover: rgba(20, 20, 29, 1);
     --xw-input: rgba(25, 8, 40, 1);
     --xw-border: rgba(110, 94, 132, 0.35);
-    --xw-background: rgb(0, 0, 0);
+    --xw-background: #121212;
     --xw-text: rgba(225, 225, 225);
     --xw-danger: rgba(232, 54, 44, 1);
     --xw-danger-hover: rgba(232, 54, 44, 0.6);
@@ -59,7 +59,7 @@
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%}
   .dark {
-    --background: 240 10% 3.9%;
+    --background: 0 0% 0%;
     --foreground: 0 0% 98%;
     --card: 240 10% 3.9%;
     --card-foreground: 0 0% 98%;
@@ -99,8 +99,22 @@
   }
   body {
     @apply bg-background text-foreground;
-    font-family: var(--font-inter), sans-serif;
+    font-family: var(--font-geist), sans-serif;
+    /* font-family: var(--font-ppEditorial), italic; */
   }
+}
+
+.snap-x::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 }
 
 
@@ -120,4 +134,52 @@
 
 ::-webkit-scrollbar-thumb:hover {
   background: #555; /* Thumb color when hovered */
+}
+
+@keyframes indeterminate {
+  0% {
+    transform: translateX(-100%);
+  }
+  50% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+
+@layer utilities {
+  .animate-indeterminate {
+    animation: indeterminate 2s infinite;
+    width: 50%;
+  }
+}
+
+@keyframes gradient-animation {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-gradient {
+  animation: gradient-animation 5s ease infinite;
+}
+
+
+
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
 }

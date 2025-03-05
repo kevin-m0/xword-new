@@ -14,21 +14,18 @@ import {
   MessageSquare,
   Network,
   Search,
-  PanelLeft,
 } from "lucide-react";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Input } from "~/components/ui/input";
 import moment from "moment";
 import { CATEGORIES, PUBLISH_DATES } from "./constants";
 import { useRouter } from "next/navigation";
 import DomainTypeahead from "./DomainTypeahead";
 import Image from "next/image";
-// import ChatSonicSidebarLoader from '../loaders/ChatSonicSidebarLoader'
-import { trpc } from "~/trpc/react";
-import { useSessionId } from "~/hooks/chatsonic/useSessionId";
 import useNewChat from "~/hooks/chatsonic/useNewChat";
 import { OpenSections } from "~/types/chatsonic.types";
 import ChatSonicSidebarLoader from "~/components/loaders/ChatSonicSidebarLoader";
+import { SonicChat } from "@prisma/client";
 
 interface ChatSonicSidebarProps {
   openSections: OpenSections;
@@ -40,6 +37,8 @@ interface ChatSonicSidebarProps {
   setSelectedPublishDate: (date: string) => void;
   includeDomains: string[];
   setIncludeDomains: (domains: string[]) => void;
+  sessionId: string;
+  chats: SonicChat[];
 }
 
 const ChatSonicSidebar = ({
@@ -52,12 +51,14 @@ const ChatSonicSidebar = ({
   setSelectedPublishDate,
   includeDomains,
   setIncludeDomains,
+  sessionId,
+  chats: initialChats,
 }: ChatSonicSidebarProps) => {
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [chats, setChats] = useState(initialChats);
 
-  const sessionId = useSessionId();
   const handleNewChat = useNewChat();
-  const { data: chats, isLoading } = trpc.chatsonic.fetchAllChats.useQuery();
+
   const router = useRouter();
 
   const toggleSection = (section: keyof OpenSections) => {
@@ -97,12 +98,12 @@ const ChatSonicSidebar = ({
     });
   };
 
-  const handleChatSelect = (chatId: string) => {
+  const handleChatSelect = useCallback((chatId: string) => {
     router.push(`/chatsonic/${chatId}`);
-  };
+  }, []);
 
   return (
-    <div className="flex h-full w-full flex-col gap-5 rounded-br-lg rounded-tr-lg p-5">
+    <div className="flex w-full flex-col gap-5 rounded-br-lg rounded-tr-lg p-5">
       <Button variant="default" onClick={handleNewChat}>
         New Chat
       </Button>
@@ -140,61 +141,60 @@ const ChatSonicSidebar = ({
           </Button>
         </CollapsibleTrigger>
         <CollapsibleContent>
-          {isLoading ? (
-            <ChatSonicSidebarLoader />
-          ) : (
-            <>
-              {getFilteredChats("today").length > 0 && (
-                <div className="mt-2 flex flex-col gap-2">
-                  <h2 className="text-xs text-muted-foreground">TODAY</h2>
-                  {getFilteredChats("today").map((chat: any) => (
-                    <Button
-                      key={chat.id}
-                      className="w-full justify-start text-sm"
-                      variant={chat.id === sessionId ? "secondary" : "ghost"}
-                      onClick={() => handleChatSelect(chat.id)}
-                    >
-                      {chat.title}
-                    </Button>
-                  ))}
-                </div>
-              )}
+          <>
+            {chats.length === 0 && (
+              <div className="mt-5 text-center text-muted-foreground">
+                No chats found
+              </div>
+            )}
+            {getFilteredChats("today").length > 0 && (
+              <div className="mt-2 flex flex-col gap-2">
+                <h2 className="text-xs text-muted-foreground">TODAY</h2>
+                {getFilteredChats("today").map((chat: any) => (
+                  <Button
+                    key={chat.id}
+                    className="w-full justify-start text-ellipsis text-sm"
+                    variant={chat.id === sessionId ? "secondary" : "ghost"}
+                    onClick={() => handleChatSelect(chat.id)}
+                  >
+                    {chat.title}
+                  </Button>
+                ))}
+              </div>
+            )}
 
-              {getFilteredChats("yesterday").length > 0 && (
-                <div className="mt-4 flex flex-col gap-2">
-                  <h2 className="text-xs text-muted-foreground">YESTERDAY</h2>
-                  {getFilteredChats("yesterday").map((chat: any) => (
-                    <Button
-                      key={chat.id}
-                      className="w-full justify-start text-sm"
-                      variant={chat.id === sessionId ? "secondary" : "ghost"}
-                      onClick={() => handleChatSelect(chat.id)}
-                    >
-                      {chat.title}
-                    </Button>
-                  ))}
-                </div>
-              )}
+            {getFilteredChats("yesterday").length > 0 && (
+              <div className="mt-4 flex flex-col gap-2">
+                <h2 className="text-xs text-muted-foreground">YESTERDAY</h2>
+                {getFilteredChats("yesterday").map((chat: any) => (
+                  <Button
+                    key={chat.id}
+                    className="w-full justify-start text-sm"
+                    variant={chat.id === sessionId ? "secondary" : "ghost"}
+                    onClick={() => handleChatSelect(chat.id)}
+                  >
+                    {chat.title}
+                  </Button>
+                ))}
+              </div>
+            )}
 
-              {getFilteredChats("last30days").length > 0 && (
-                <div className="mt-4 flex flex-col gap-2">
-                  <h2 className="text-xs text-muted-foreground">
-                    LAST 30 DAYS
-                  </h2>
-                  {getFilteredChats("last30days").map((chat: any) => (
-                    <Button
-                      key={chat.id}
-                      className="w-full justify-start text-sm"
-                      variant={chat.id === sessionId ? "secondary" : "ghost"}
-                      onClick={() => handleChatSelect(chat.id)}
-                    >
-                      {chat.title}
-                    </Button>
-                  ))}
-                </div>
-              )}
-            </>
-          )}
+            {getFilteredChats("last30days").length > 0 && (
+              <div className="mt-4 flex flex-col gap-2">
+                <h2 className="text-xs text-muted-foreground">LAST 30 DAYS</h2>
+                {getFilteredChats("last30days").map((chat: any) => (
+                  <Button
+                    key={chat.id}
+                    className="w-full justify-start text-sm"
+                    variant={chat.id === sessionId ? "secondary" : "ghost"}
+                    onClick={() => handleChatSelect(chat.id)}
+                  >
+                    {chat.title}
+                  </Button>
+                ))}
+              </div>
+            )}
+          </>
         </CollapsibleContent>
       </Collapsible>
 
@@ -209,7 +209,7 @@ const ChatSonicSidebar = ({
             <CollapsibleTrigger asChild>
               <Button
                 variant="ghost"
-                className="hover:bg-xw-sidebar w-full justify-between px-0 focus:ring-0"
+                className="w-full justify-between px-0 hover:bg-xw-sidebar focus:ring-0"
               >
                 <span className="flex items-center gap-2 uppercase">
                   <Network className="h-4 w-4" />
@@ -226,7 +226,7 @@ const ChatSonicSidebar = ({
               {CATEGORIES.map((category) => (
                 <Button
                   key={category}
-                  className="hover:bg-xw-secondary w-full justify-start gap-2 text-sm"
+                  className="w-10 max-w-10 justify-start gap-2 text-sm hover:bg-xw-secondary"
                   variant={
                     category === selectedCategory ? "secondary" : "ghost"
                   }
@@ -251,7 +251,7 @@ const ChatSonicSidebar = ({
             <CollapsibleTrigger asChild>
               <Button
                 variant="ghost"
-                className="hover:bg-xw-sidebar w-full justify-between px-0 focus:ring-0"
+                className="w-full justify-between px-0 hover:bg-xw-sidebar focus:ring-0"
               >
                 <span className="flex items-center gap-2 uppercase">
                   <Calendar className="h-4 w-4" />

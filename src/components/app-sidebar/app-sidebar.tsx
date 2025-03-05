@@ -13,6 +13,7 @@ import {
   Library,
   LifeBuoy,
   Map,
+  MessageCircle,
   Pen,
   PenIcon,
   PieChart,
@@ -94,8 +95,8 @@ const data = {
   projects: [
     {
       name: "ChatSonic",
-      url: "/chatsonic/aa",
-      icon: Frame,
+      url: "/chatsonic",
+      icon: MessageCircle,
     },
     {
       name: "SoundVerse",
@@ -111,11 +112,6 @@ const data = {
       name: "WriterX",
       url: "/writerx",
       icon: PenIcon,
-    },
-    {
-      name: "ContentVerse",
-      url: "/contentverse",
-      icon: Map,
     },
     {
       name: "AudioVerse",
@@ -136,7 +132,7 @@ export default function AppSidebar({
   const { user } = useUser();
 
   return (
-    <Sidebar className="pt-5" collapsible="icon" variant="floating" {...props}>
+    <Sidebar collapsible="icon" variant="sidebar" {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>

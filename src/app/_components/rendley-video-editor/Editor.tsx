@@ -45,7 +45,6 @@ const RendleyEditor: FC<RendleyEditorProps> = ({ recording }) => {
   const loadInitVideo = async () => {
     const engineInstance = await rendleyRef.current.getEngine();
     const engine = engineInstance.getInstance();
-    console.log("Loading default video...");
     const ffmpeg = engine.getFFmpeg();
     if (ffmpeg.loaded === false) return;
     const mediaId = await engine.getLibrary().addMedia(`${recording.videoUrl}`);
@@ -188,9 +187,9 @@ const RendleyEditor: FC<RendleyEditorProps> = ({ recording }) => {
             </div>
           </div>
           <div className="flex gap-2">
-            <Button variant={"outline"} onClick={saveProject}>
+            {/* <Button variant={"outline"} onClick={saveProject}>
               Save Project
-            </Button>
+            </Button> */}
             <Button variant={"outline"} onClick={exportVideo}>
               Export Video as MP4
             </Button>

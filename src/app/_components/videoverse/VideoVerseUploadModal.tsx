@@ -5,104 +5,48 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Switch } from "~/components/ui/switch";
 import CloudinaryUpload from "./Cloudinary/CloudinaryUpload";
 import YoutubeUpload from "./YoutubeUpload";
+import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog";
+import { Button } from "~/components/ui/button";
+import { UploadCloud } from "lucide-react";
+import { DialogTitle } from "@radix-ui/react-dialog";
 
-interface VideoVerseUploadModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
+interface VideoVerseUploadModalProps {}
 
-export function VideoVerseUploadModal({
-  isOpen,
-  onClose,
-}: VideoVerseUploadModalProps) {
-  const [currentScreen, setCurrentScreen] = useState<"first" | "second">(
-    "first",
-  );
+export function VideoVerseUploadModal({}: VideoVerseUploadModalProps) {
+  const [isOpen, setIsOpen] = useState(false);
 
-  const slideVariants = {
-    enter: (direction: number) => ({
-      x: direction > 0 ? "100%" : "-100%",
-      opacity: 0,
-    }),
-    center: {
-      x: 0,
-      opacity: 1,
-    },
-    exit: (direction: number) => ({
-      x: direction < 0 ? "100%" : "-100%",
-      opacity: 0,
-    }),
-  };
+  const closeDialog = () => setIsOpen(false);
 
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"
-          onClick={onClose}
-        >
-          <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.8, opacity: 0 }}
-            className="w-full max-w-md overflow-hidden rounded-lg bg-white shadow-lg"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-center justify-between border-b p-4">
-              <h2 className="text-xl font-semibold text-black">Create New</h2>
-              <div className="flex items-center space-x-2">
-                {currentScreen === "first" ? (
-                  <span className="text-sm text-black">Upload Video</span>
-                ) : (
-                  <span className="text-sm text-black">Import URL</span>
-                )}
-                <Switch
-                  checked={currentScreen === "second"}
-                  onCheckedChange={() =>
-                    setCurrentScreen(
-                      currentScreen === "first" ? "second" : "first",
-                    )
-                  }
-                />
-              </div>
-            </div>
-            <div className="relative h-64">
-              <AnimatePresence
-                initial={false}
-                custom={currentScreen === "first" ? -1 : 1}
-              >
-                <motion.div
-                  key={currentScreen}
-                  custom={currentScreen === "first" ? -1 : 1}
-                  variants={slideVariants}
-                  initial="enter"
-                  animate="center"
-                  exit="exit"
-                  transition={{ type: "tween", duration: 0.3 }}
-                  className="absolute inset-0 p-6"
-                >
-                  {currentScreen === "first" ? (
-                    <FirstScreen />
-                  ) : (
-                    <SecondScreen />
-                  )}
-                </motion.div>
-              </AnimatePresence>
-            </div>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>
+        <Button variant={"default"} size={"sm"} onClick={() => setIsOpen(true)}>
+          New Project <UploadCloud className="h-4 w-4" />
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="bg-xw-sidebar">
+        <DialogTitle>
+          <div className="flex flex-col items-center justify-center gap-3 border-b p-4">
+            <h2 className="text-xl font-semibold text-white">
+              Import your Recording
+            </h2>
+            <h4 className="max-w-80 text-center text-sm text-muted-foreground">
+              For best results, video uploads should be at least 1080p (1920 x
+              1080 pixels) in MP4 format
+            </h4>
+          </div>
+        </DialogTitle>
+        <FirstScreen onUploadClick={closeDialog} />
+        <SecondScreen />
+      </DialogContent>
+    </Dialog>
   );
 }
 
-function FirstScreen() {
+function FirstScreen({ onUploadClick }: { onUploadClick: () => void }) {
   return (
     <div className="flex h-full flex-col items-center justify-center">
-      <CloudinaryUpload />
+      <CloudinaryUpload onClick={onUploadClick} />
     </div>
   );
 }

@@ -12,7 +12,6 @@ import { CgSpinner } from "react-icons/cg";
 import { useXWAlert } from "~/components/reusable/xw-alert";
 import { trpc } from "~/trpc/react";
 import { useOrganization, useUser } from "@clerk/nextjs";
-import { uploadFile } from "~/services/aws-file-upload";
 import { Dialog } from "@radix-ui/react-dialog";
 import { DialogHeader } from "~/components/reusable/xw-dialog";
 import XWDropBox from "~/components/reusable/XWDropBox";
@@ -22,12 +21,12 @@ import { toast } from "sonner";
 import { getAwsUrl } from "~/lib/get-aws-url";
 import { uploadAudioFile } from "~/lib/upload-to-aws";
 import { useRouter } from "next/navigation";
+import { uploadToS3 } from "~/lib/upload-to-s3";
 
 const AudioVerseUploadAudio = () => {
   const [localFile, setLocalFile] = useState<File | null>(null); // Single file state
   const [youtubeURL, setYoutubeURL] = useState<string>("");
   const { showToast } = useXWAlert();
-  const utils = trpc.useUtils();
   const { organization: defaultSpace } = useOrganization();
   const router = useRouter();
 
@@ -39,8 +38,6 @@ const AudioVerseUploadAudio = () => {
   const { mutateAsync: createAudioProject, isPending: creatingAudioProject } =
     trpc.audioProject.createAudioProject.useMutation();
 
-  const { mutateAsync: getAWSUploadUrl } = trpc.aws.getUploadUrl.useMutation();
-
   const handleFileChange = useCallback(
     async (file: File | null) => {
       if (!file) return;
@@ -48,19 +45,8 @@ const AudioVerseUploadAudio = () => {
       setLocalFile(file);
 
       try {
-        const fileKey = crypto.randomUUID();
-
         if (file.type.startsWith("audio/")) {
-          const { uploadUrl } = await getAWSUploadUrl({
-            key: fileKey,
-            contentType: file.type,
-          });
-
-          const fileUrl = getAwsUrl(fileKey);
-
-          await uploadAudioFile(file, uploadUrl);
-
-          console.log(fileUrl);
+          const { fileUrl, fileKey } = await uploadToS3(file);
 
           const metadata = await getAudioMetadata({
             url: fileUrl as string,
@@ -68,7 +54,7 @@ const AudioVerseUploadAudio = () => {
             languagecode: "en",
           });
 
-          await createAudioProject({
+          const response = await createAudioProject({
             title: metadata.title,
             transcript: metadata.transcript,
             subtitles: metadata.subtitles,
@@ -79,6 +65,8 @@ const AudioVerseUploadAudio = () => {
             storageKey: fileKey,
             workspaceId: defaultSpace?.id as string,
           });
+
+          router.push(`/audioverse/${response.id}`);
         } else {
           throw new Error("Unsupported file type");
         }
@@ -167,7 +155,7 @@ const AudioVerseUploadAudio = () => {
             </DialogClose>
             {fetchingMetadata || creatingAudioProject ? (
               <Button variant={"default"} size="sm" disabled>
-                <CgSpinner className="animate-spin" />
+                Creating Project <CgSpinner className="animate-spin" />
               </Button>
             ) : (
               <Button variant={"default"} size="sm" onClick={handleYTSubmit}>

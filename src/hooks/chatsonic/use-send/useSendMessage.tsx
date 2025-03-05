@@ -4,9 +4,9 @@ import { useAtom, useSetAtom } from "jotai";
 import axios from "axios";
 import { toast } from "sonner";
 import useSendMessageDb from "./useSendMessageDb";
-import { useUser } from "../../misc/useUser";
 import { brandVoiceAtom, isGeneratingResponseAtom } from "~/atoms";
 import { UseSend } from "~/types/chatsonic.types";
+import { useUser } from "@clerk/nextjs";
 
 export const useSendMessage = ({
   fileIds,
@@ -23,7 +23,7 @@ export const useSendMessage = ({
   includeDomains,
 }: UseSend) => {
   const utils = trpc.useUtils();
-  const { data: user } = useUser();
+  const { user } = useUser();
   const setIsGeneratingResponse = useSetAtom(isGeneratingResponseAtom);
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
@@ -85,6 +85,12 @@ export const useSendMessage = ({
   }, [sessionId, utils.chatsonic.fetchAllMessages]);
 
   const handleSend = async () => {
+    if (!sessionId) {
+      toast.error("No valid session found. Please try again.");
+      console.error("Attempted to send message without valid sessionId");
+      return;
+    }
+
     setIsGeneratingResponse(true);
     setIsLoading(true);
     setIsError(false);

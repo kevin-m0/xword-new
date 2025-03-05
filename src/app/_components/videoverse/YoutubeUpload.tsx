@@ -8,6 +8,7 @@ import { isValidYoutubeUrl } from "~/utils/utils";
 import { useRouter } from "next/navigation";
 import { useOrganization, useUser } from "@clerk/nextjs";
 import { trpc } from "~/trpc/react";
+import { ArrowRight, LoaderCircle } from "lucide-react";
 
 interface YoutubeUploadProps {}
 
@@ -28,6 +29,7 @@ const YoutubeUpload: FC<YoutubeUploadProps> = ({}) => {
   const { user } = useUser();
 
   const processingVideo = async () => {
+    setProcessing(true);
     if (youtubeUrl.length > 0) {
       if (isValidYoutubeUrl(youtubeUrl)) {
         setVideoUrl(youtubeUrl);
@@ -45,6 +47,7 @@ const YoutubeUpload: FC<YoutubeUploadProps> = ({}) => {
         toast.error("Enter a valid Youtube URL");
       }
     }
+    setProcessing(false);
   };
 
   const getYoutubeVideoMetadata = async () => {
@@ -86,7 +89,7 @@ const YoutubeUpload: FC<YoutubeUploadProps> = ({}) => {
       toast.error(
         "An error occurred while fetching the audio. Please try again.",
       );
-      throw error; // Propagate the error
+      throw error;
     }
   };
 
@@ -116,19 +119,22 @@ const YoutubeUpload: FC<YoutubeUploadProps> = ({}) => {
 
   return (
     <div className="flex flex-col gap-2">
-      <label htmlFor="">Import Url</label>
       <XWInput
         className="w-full"
         placeholder="Copy URL here from youtube"
         onChange={(e) => setYoutubeUrl(e.target.value)}
       />
-      <Button variant={"default"} onClick={processingVideo}>
+      <Button
+        variant={"default"}
+        className="mx-auto w-1/2"
+        onClick={processingVideo}
+      >
         Process Video
-        {/* {processing ? (
-          <LoaderCircle className="animate-spin h-4 w-4" />
+        {processing ? (
+          <LoaderCircle className="h-4 w-4 animate-spin" />
         ) : (
           <ArrowRight className="h-4 w-4" />
-        )} */}
+        )}
       </Button>
     </div>
   );

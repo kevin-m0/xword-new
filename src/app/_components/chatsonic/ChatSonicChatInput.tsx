@@ -5,6 +5,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { useRouter } from "next/navigation";
 import AddFileDropdown from "./AddFileDropdown";
 import ChatSonicSelectCharacter from "./ChatSonicSelectCharacter";
 import { Button } from "~/components/ui/button";
@@ -16,9 +17,13 @@ import { trpc } from "~/trpc/react";
 import { useSessionId } from "~/hooks/chatsonic/useSessionId";
 import useChatExist from "~/hooks/chatsonic/useChatExist";
 import AddDoc from "~/icons/AddDoc";
-import { OpenSections, UploadedFile } from "~/types/chatsonic.types";
+import { Message, OpenSections, UploadedFile } from "~/types/chatsonic.types";
 import { useUser } from "@clerk/nextjs";
 import { useXWAlert } from "~/components/reusable/xw-alert";
+import { useDocumentId } from "~/hooks/editor/useDocumentId";
+import { useAtomValue } from "jotai";
+import { isGeneratingResponseAtom } from "~/atoms";
+import { SonicChat } from "@prisma/client";
 
 function updateTextAreaSize(textArea?: HTMLTextAreaElement) {
   if (textArea == null) return;
@@ -32,7 +37,6 @@ interface ChatSonicChatInputProps {
   setOpenSections: React.Dispatch<React.SetStateAction<OpenSections>>;
   setMode: React.Dispatch<React.SetStateAction<"Normal" | "Docs" | "Web">>;
   handleSend: () => void;
-  isGeneratingResponse: boolean;
   urls: string[];
   setUrls: React.Dispatch<React.SetStateAction<string[]>>;
   fileIds: { id: string; filename: string }[];
@@ -50,13 +54,13 @@ interface ChatSonicChatInputProps {
   selectedCharacter: string;
   setSelectedCharacter: React.Dispatch<React.SetStateAction<string>>;
   mode: "Normal" | "Docs" | "Web";
+  sessionId: string;
 }
 
 const ChatSonicChatInput = ({
   setOpenSections,
   setMode,
   handleSend,
-  isGeneratingResponse,
   urls,
   setUrls,
   mode,
@@ -70,12 +74,14 @@ const ChatSonicChatInput = ({
   setChatInput,
   selectedCharacter,
   setSelectedCharacter,
+  sessionId,
 }: ChatSonicChatInputProps) => {
   const [isDisabled, setIsDisabled] = useState(true);
   const textAreaRef = useRef<HTMLTextAreaElement>();
   const hasTriedCreatingChat = useRef(false);
   const utils = trpc.useUtils();
   const { user } = useUser();
+  const isGeneratingResponse = useAtomValue(isGeneratingResponseAtom);
 
   const { mutate: updateLastPromptMutation } =
     trpc.chatsonic.updateLastPrompt.useMutation();
@@ -88,7 +94,6 @@ const ChatSonicChatInput = ({
   const updateUrls = (newUrls: string[]) => {
     setUrls(newUrls);
   };
-  const sessionId = useSessionId();
   const { showToast } = useXWAlert();
 
   useLayoutEffect(() => {
@@ -145,48 +150,6 @@ const ChatSonicChatInput = ({
     },
   });
 
-  useEffect(() => {
-    const checkAndCreateChat = async () => {
-      if (
-        !hasTriedCreatingChat.current &&
-        !isChatExist &&
-        !isChatExistLoading &&
-        !chatExistError &&
-        !sessionId
-      ) {
-        hasTriedCreatingChat.current = true;
-        const newSessionId = crypto.randomUUID();
-        try {
-          const existingChat = await utils.chatsonic.isChatActive.fetch({
-            sessionId: newSessionId,
-          });
-
-          if (!existingChat) {
-            await createChatMutation.mutateAsync({
-              id: newSessionId,
-              title: "New Chat",
-              userId: user?.id as string,
-              lastPromptPayload: JSON.stringify({ mode: "Normal" }),
-            });
-          }
-        } catch (error) {
-          console.error("Error creating chat:", error);
-          hasTriedCreatingChat.current = false;
-        }
-      }
-    };
-
-    checkAndCreateChat();
-  }, [
-    sessionId,
-    isChatExist,
-    isChatExistLoading,
-    chatExistError,
-    user?.id,
-    createChatMutation,
-    utils.chatsonic.isChatActive,
-  ]);
-
   const handleChatInput = useCallback(
     (value: string) => {
       setChatInput(value);
@@ -195,11 +158,61 @@ const ChatSonicChatInput = ({
     [isDisabled, setChatInput],
   );
 
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === "Enter" && !e.shiftKey) {
+  const router = useRouter();
+
+  const handleKeyPress = async (
+    e:
+      | React.KeyboardEvent<HTMLTextAreaElement>
+      | React.MouseEvent<HTMLButtonElement>,
+  ) => {
+    // Prevent default behavior if Enter key is pressed (without Shift)
+    if ("key" in e && e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
+    }
+
+    // Determine if we should proceed
+    const isEnterPress = "key" in e && e.key === "Enter" && !e.shiftKey;
+    const isButtonClick = "button" in e; // Mouse event means button click
+
+    if (!isEnterPress && !isButtonClick) return;
+
+    console.log(isChatExist, sessionId); // Ignore other key presses
+
+    // Handle different chat scenarios
+    if (!isChatExist && sessionId) {
+      router.push(`/chatsonic/${sessionId}`);
+
+      console.log("home page or new chat");
+      try {
+        await createChatMutation.mutateAsync({
+          id: sessionId,
+          title: chatInput?.trim(),
+          userId: user?.id as string,
+          lastPromptPayload: JSON.stringify({ mode: "Normal" }),
+        });
+
+        // Wait briefly for navigation to complete, then send the message
+        setTimeout(() => {
+          handleSend();
+        }, 100);
+      } catch (error) {
+        showToast({
+          title: "Error",
+          message: "Failed to create new chat. Please try again.",
+        });
+        console.error("Error creating chat:", error);
+      }
+    } else if (isChatExist && sessionId) {
+      console.log("existing chat");
       handleSend();
     }
+    // } else if (!isChatExist && sessionId) {
+    //   console.log("new chat page");
+    //   router.push(`/chatsonic/${sessionId}`);
+    //   setTimeout(() => {
+    //     handleSend();
+    //   }, 100);
+    // }
   };
 
   const handleFileSelect = useCallback(
@@ -278,7 +291,7 @@ const ChatSonicChatInput = ({
   };
 
   return (
-    <div className="border-xw-border bg-xw-card rounded-lg border p-5">
+    <div className="rounded-lg border border-xw-border bg-xw-card p-5">
       <textarea
         ref={inputRef}
         value={chatInput}
@@ -296,7 +309,7 @@ const ChatSonicChatInput = ({
           {selectedFiles.map((file) => (
             <div
               key={file.id}
-              className="bg-xw-secondary flex items-center rounded-lg p-1"
+              className="flex items-center rounded-lg bg-xw-secondary p-1"
             >
               <span className="max-w-xs truncate pl-1 text-xs text-white">
                 {getFileIcon(file.type)}
@@ -334,7 +347,7 @@ const ChatSonicChatInput = ({
         </div>
 
         <div className="flex items-center gap-4">
-          <div className="border-xw-border bg-xw-background flex items-center gap-1 rounded-lg border p-[2px]">
+          <div className="flex items-center gap-1 rounded-lg border border-xw-border bg-xw-background p-[2px]">
             {/* <Button
                             size={"xs"}
                             variant={"xw_ghost"}
@@ -383,8 +396,9 @@ const ChatSonicChatInput = ({
           <Button
             size={"sm"}
             variant={"ghost"}
-            onClick={handleSend}
+            onClick={handleKeyPress}
             disabled={isGeneratingResponse || chatInput === ""}
+            className="rounded-full bg-purple-700 p-4"
           >
             {isGeneratingResponse ? (
               <Loader2 className="h-4 w-4 animate-spin" />

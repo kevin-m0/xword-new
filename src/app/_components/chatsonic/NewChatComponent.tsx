@@ -3,21 +3,35 @@
 import { ScrollArea, ScrollBar } from "~/components/ui/scroll-area";
 import ChatSonicSidebar from "./ChatSonicSidebar";
 import ChatSonicChatbox from "./ChatSonicChatbox";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import ChatSonicChatInput from "./ChatSonicChatInput";
 import { useSend } from "~/hooks/chatsonic/use-send";
 import ChatSonicMobileSidebar from "./ChatSonicMobileSidebar";
-import { useSessionId } from "~/hooks/chatsonic/useSessionId";
 import { useSessionWatcher } from "~/hooks/chatsonic/use-send/useSessionWatcher";
-import { UploadedFile } from "~/types/chatsonic.types";
+import { Message, UploadedFile } from "~/types/chatsonic.types";
+import { trpc } from "~/trpc/react";
+import { SonicChat } from "@prisma/client";
 
-const ChatSonicComponent = () => {
+const NewChatComponent = ({
+  sessionId,
+  messages: initialMessages,
+  chat,
+  chats: initialChats,
+}: {
+  sessionId: string;
+  messages: Message[];
+  chat: any[];
+  chats: SonicChat[];
+}) => {
   const [mode, setMode] = useState<"Normal" | "Docs" | "Web">("Normal");
   const [selectedCharacter, setSelectedCharacter] = useState<string>("wizard");
   const [selectedCategory, setSelectedCategory] = useState<string>("None");
   const [selectedPublishDate, setSelectedPublishDate] =
     useState<string>("None");
   const [includeDomains, setIncludeDomains] = useState<string[]>([]);
+
+  const [chats, setChats] = useState<SonicChat[]>(initialChats);
+  const [messages, setMessages] = useState<any[]>(initialMessages);
 
   // Separate state for fileIds and otherFiles
   const [fileIds, setFileIds] = useState<{ id: string; filename: string }[]>(
@@ -27,10 +41,8 @@ const ChatSonicComponent = () => {
     { id: string; mimeType: string }[]
   >([]); // For images/audio
   const [urls, setUrls] = useState<string[]>([]);
-  const sessionId = useSessionId();
   useSessionWatcher(sessionId);
 
-  // New state to track selected files
   const [selectedFiles, setSelectedFiles] = useState<UploadedFile[]>([]);
 
   const [openSections, setOpenSections] = useState({
@@ -39,6 +51,7 @@ const ChatSonicComponent = () => {
     categories: false,
     domains: false,
   });
+
   const [chatInput, setChatInput] = useState<string>("");
 
   const clearInput = useCallback(() => {
@@ -49,26 +62,48 @@ const ChatSonicComponent = () => {
     setUrls([]);
   }, []);
 
-  const { handleSend, isGeneratingResponse } = useSend({
-    isChatExist: true,
-    chatInput,
-    fileIds,
-    otherFiles: { files: otherFiles },
-    sessionId,
-    clearInput,
-    urls,
-    mode,
-    category: selectedCategory,
-    publishDate: selectedPublishDate,
-    includeDomains: includeDomains,
-    avatarId: selectedCharacter,
-  });
+  const { handleSend } = useSend(
+    useMemo(
+      () => ({
+        isChatExist: true,
+        chatInput,
+        fileIds,
+        otherFiles: { files: otherFiles },
+        sessionId,
+        clearInput,
+        urls,
+        mode,
+        category: selectedCategory,
+        publishDate: selectedPublishDate,
+        includeDomains,
+        avatarId: selectedCharacter,
+        messages,
+        setMessages,
+        setChats,
+      }),
+      [
+        chatInput,
+        fileIds,
+        otherFiles,
+        sessionId,
+        urls,
+        mode,
+        selectedCategory,
+        selectedPublishDate,
+        includeDomains,
+        selectedCharacter,
+        messages,
+        chats,
+      ],
+    ),
+  );
 
   return (
-    <div className="flex h-dvh w-full overflow-hidden">
-      <div className="hidden w-full max-w-xs bg-xw-sidebar md:flex">
-        <ScrollArea className="w-full">
+    <div className="flex h-[calc(100dvh-1rem)] overflow-hidden">
+      <div className="hidden bg-xw-sidebar md:flex">
+        <ScrollArea>
           <ChatSonicSidebar
+            key={sessionId}
             openSections={openSections}
             setOpenSections={setOpenSections}
             mode={mode}
@@ -78,6 +113,8 @@ const ChatSonicComponent = () => {
             setSelectedPublishDate={setSelectedPublishDate}
             includeDomains={includeDomains}
             setIncludeDomains={setIncludeDomains}
+            sessionId={sessionId}
+            chats={chats}
           />
           <ScrollBar />
         </ScrollArea>
@@ -87,6 +124,7 @@ const ChatSonicComponent = () => {
         <ChatSonicMobileSidebar
           sidebar={
             <ChatSonicSidebar
+              key={sessionId}
               openSections={openSections}
               setOpenSections={setOpenSections}
               mode={mode}
@@ -96,19 +134,25 @@ const ChatSonicComponent = () => {
               setSelectedPublishDate={setSelectedPublishDate}
               includeDomains={includeDomains}
               setIncludeDomains={setIncludeDomains}
+              sessionId={sessionId}
+              chats={chats as any[]}
             />
           }
         />
         <div className="scrollbar-track-transparent scrollbar-thumb-xw-secondary scrollbar-thin mx-auto flex w-full flex-1 flex-col overflow-y-auto px-5 py-5">
-          <ChatSonicChatbox mode={mode} setChatInput={setChatInput} />
+          <ChatSonicChatbox
+            mode={mode}
+            messages={messages}
+            setChatInput={setChatInput}
+          />
         </div>
 
-        <div className="mx-auto w-full max-w-3xl px-5 pb-5 pt-2">
+        <div className="mx-auto w-full max-w-3xl">
           <ChatSonicChatInput
             setOpenSections={setOpenSections}
             setMode={setMode}
             handleSend={handleSend}
-            isGeneratingResponse={isGeneratingResponse}
+            sessionId={sessionId}
             urls={urls}
             setUrls={setUrls}
             mode={mode}
@@ -129,4 +173,4 @@ const ChatSonicComponent = () => {
   );
 };
 
-export default ChatSonicComponent;
+export default NewChatComponent;

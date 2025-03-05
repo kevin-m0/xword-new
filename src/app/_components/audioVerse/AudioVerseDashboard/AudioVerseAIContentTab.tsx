@@ -46,7 +46,7 @@ const AudioVerseAIContentTab = ({ audioProject }: any) => {
               </AccordionTrigger>
             </div>
 
-            <div className="flex items-center gap-2">
+            {/* <div className="flex items-center gap-2">
               <XWSecondaryButton className2="text-sm">
                 <Image
                   src={"/icons/collapse.svg"}
@@ -66,17 +66,7 @@ const AudioVerseAIContentTab = ({ audioProject }: any) => {
                 />
                 Expand
               </XWSecondaryButton>
-
-              <XWSecondaryButton className2="text-sm">
-                <Image
-                  src={"/icons/jump-curve.svg"}
-                  alt="jump-curve"
-                  width={16}
-                  height={16}
-                />
-                Jump
-              </XWSecondaryButton>
-            </div>
+            </div> */}
           </div>
 
           <Separator />
@@ -147,7 +137,7 @@ const AudioVerseAIContentTab = ({ audioProject }: any) => {
         </div>
       </div> */}
 
-      <div className="bg-xw-sidebar border-xw-secondary flex gap-4 rounded-lg border p-5">
+      <div className="flex gap-4 rounded-lg border border-xw-secondary bg-xw-sidebar p-5">
         <div>
           <Image
             src={"/icons/info-fill.svg"}
@@ -162,7 +152,7 @@ const AudioVerseAIContentTab = ({ audioProject }: any) => {
             You can now create and manage Custom Prompts
           </h1>
 
-          <p className="text-xw-muted text-sm">
+          <p className="text-sm text-xw-muted">
             Use Magic Chat to discover new prompt, when you save a chat it will
             generate for all of your recordings. Change the order of your
             prompts anytime, or edit the prompt to get it exactly right for your

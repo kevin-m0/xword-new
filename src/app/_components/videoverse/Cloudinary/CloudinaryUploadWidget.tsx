@@ -119,9 +119,10 @@ const CloudinaryUploadWidget = ({ uwConfig, setPublicId }: any) => {
       size={"sm"}
       ref={uploadButtonRef}
       id="upload_widget"
+      className="z-50"
       // className="cloudinary-button"
     >
-      Upload Video <UploadCloud className="ml-2 h-4 w-4" />
+      Secure Upload with Cloudindary <UploadCloud className="ml-2 h-4 w-4" />
     </Button>
   );
 };

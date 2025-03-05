@@ -9,7 +9,6 @@ interface ScriptEditorProps {
 
 const ScriptEditor: FC<ScriptEditorProps> = ({ goForward }) => {
   const [script] = useAtom<string>(storyBoardScriptAtom);
-  console.log(script);
   return (
     <div className="flex flex-col gap-2">
       <h1 className="text-3xl">Generated Script</h1>

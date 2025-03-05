@@ -12,74 +12,65 @@ import {
 } from "~/atoms";
 import { toast } from "sonner";
 import { Button } from "~/components/ui/button";
+import { Card, CardContent } from "~/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
+import Image from "next/image";
 
 interface StoryboardPreviewProps {
-  frames: StoryboardFrame[];
   isGenerating: boolean;
   totalFrames?: number;
+  frames: StoryboardFrame[];
 }
 
 export function StoryboardFramePreview({
   isGenerating,
   totalFrames = 10,
 }: StoryboardPreviewProps) {
-  const [script, setScript] = useAtom(storyBoardScriptAtom);
-  const [style, setStyle] = useAtom(storyboardStyleAtom);
-  const isGeneratingStoryboard = useRef("");
+  const [script] = useAtom(storyBoardScriptAtom);
+  const [style] = useAtom(storyboardStyleAtom);
   const [frames, setFrames] = useState<StoryboardFrame[]>([]);
+  const [isCreatingVideo, setIsCreatingVideo] = useState(false);
+  const [videoUrl, setVideoUrl] = useAtom(finalStoryboardVideoAtom);
+  const isGeneratingStoryboard = useRef(false);
+
   useEffect(() => {
-    const handleCreateStoryboard = async () => {
+    const createStoryboard = async () => {
       if (!script) {
         toast.error("Please generate a script first");
         return;
       }
 
-      isGeneratingStoryboard.current = "yes";
+      isGeneratingStoryboard.current = true;
       setFrames([]);
 
       try {
-        console.log("inside try");
         const response = await generateStoryboard(script, style, (newFrame) => {
-          setFrames((currentFrames) => [...currentFrames, newFrame]);
+          setFrames((prevFrames) => [...prevFrames, newFrame]);
         });
 
         if (!response.success) {
           toast.error(response.error || "Failed to generate storyboard");
         }
-      } catch (err) {
+      } catch (error) {
         toast.error(
-          err instanceof Error ? err.message : "An unexpected error occurred",
+          error instanceof Error
+            ? error.message
+            : "An unexpected error occurred",
         );
       } finally {
-        isGeneratingStoryboard.current = "no";
+        isGeneratingStoryboard.current = false;
       }
     };
 
-    // Prevent multiple calls if the storyboard is already being generated
-    if (
-      isGeneratingStoryboard.current === "" ||
-      isGeneratingStoryboard.current === "no"
-    ) {
-      handleCreateStoryboard();
+    if (!isGeneratingStoryboard.current) {
+      createStoryboard();
     }
   }, [script, style]);
 
-  const [isCreatingVideo, setIsCreatingVideo] = useState(false);
-  const [videoUrl, setVideoUrl] = useAtom(finalStoryboardVideoAtom);
-
   const handleCreateVideo = async () => {
     if (isCreatingVideo || frames.length === 0) return;
-
     setIsCreatingVideo(true);
-    // try {
-    //   const videoBlob = await createVideoFromFramesServer(frames);
-    //   // const url = URL.createObjectURL(videoBlob);
-    //   // setVideoUrl(url);
-    // } catch (error) {
-    //   console.error("Failed to create video:", error);
-    // } finally {
-    //   setIsCreatingVideo(false);
-    // }
+
     try {
       const response = await fetch("/api/storyboard", {
         method: "POST",
@@ -87,15 +78,10 @@ export function StoryboardFramePreview({
         body: JSON.stringify({ frames }),
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to create video");
-      }
+      if (!response.ok) throw new Error("Failed to create video");
 
-      const videoUrl = await response.json();
-
-      console.log(videoUrl, "all the urls");
-
-      setVideoUrl(videoUrl.finalUrl.secure_url);
+      const videoData = await response.json();
+      setVideoUrl(videoData.finalUrl.secure_url);
     } catch (error) {
       console.error(error);
     } finally {
@@ -103,58 +89,78 @@ export function StoryboardFramePreview({
     }
   };
 
-  const renderPlaceholder = (index: number) => (
-    <div key={`placeholder-${index}`} className="space-y-3">
-      <div className="relative flex aspect-video animate-pulse items-center justify-center rounded-lg bg-gray-100">
-        <Loader2 className="h-12 w-12 animate-spin text-gray-400" />
-      </div>
-      <div className="h-12 animate-pulse rounded bg-gray-100" />
-    </div>
-  );
-
   return (
     <div className="space-y-6">
       {videoUrl && (
         <video src={videoUrl} controls className="mx-auto h-[500px] w-3/4" />
       )}
+
       <div className="flex items-center justify-between px-8 pt-4">
         <h3 className="text-xl font-semibold">Storyboard Preview</h3>
-        {isGeneratingStoryboard.current === "no" && frames.length > 0 && (
-          <button
-            onClick={handleCreateVideo}
-            disabled={isCreatingVideo}
-            className="flex items-center gap-2 rounded-lg bg-purple-600 px-4 py-2 text-white transition-colors hover:bg-purple-700 disabled:cursor-not-allowed disabled:bg-gray-400"
-          >
-            <Video className="h-5 w-5" />
+        {frames.length > 0 && !isGeneratingStoryboard.current && (
+          <Button onClick={handleCreateVideo} disabled={isCreatingVideo}>
+            <Video className="h-5 w-5" />{" "}
             {isCreatingVideo ? "Creating Video..." : "Create Video"}
-          </button>
+          </Button>
         )}
       </div>
 
-      <div className="grid w-full grid-cols-5 gap-6 p-6 md:grid-cols-2 lg:grid-cols-3">
-        {frames.map((frame, index) => (
-          <div key={index} className="space-y-3">
-            <div className="relative aspect-video">
-              <img
-                src={frame.imageUrl}
-                alt={`Frame ${index + 1}`}
-                className="object-fit w-full rounded-lg p-2 shadow-md"
-              />
-              <div className="rounded-b-lg bg-black bg-opacity-60 p-3">
-                <p className="text-base text-white">{frame.subtitle}</p>
+      <Card className="border-2">
+        <CardContent className="p-4">
+          <Tabs defaultValue="grid">
+            <div className="mb-4 flex items-center justify-between">
+              <TabsList>
+                <TabsTrigger value="grid">Grid View</TabsTrigger>
+                <TabsTrigger value="slideshow">Slideshow</TabsTrigger>
+              </TabsList>
+              <div className="text-sm text-muted-foreground">
+                {style} style • 16:9
               </div>
             </div>
-            <audio controls className="h-12 w-full rounded-lg">
-              <source src={frame.audioUrl} type="audio/mpeg" />
-            </audio>
-            <Button className="px-4 py-2">Regenerate Frame</Button>
-          </div>
-        ))}
-        {isGenerating &&
-          Array.from({ length: totalFrames - frames.length }).map((_, i) =>
-            renderPlaceholder(i + frames.length),
-          )}
-      </div>
+
+            <TabsContent value="grid">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+                {frames.map((frame, index) => (
+                  <div key={index} className="space-y-2">
+                    <div className="relative aspect-video overflow-hidden rounded-md border bg-muted">
+                      <Image
+                        src={frame.imageUrl || "/placeholder.svg"}
+                        alt={`Frame ${index + 1}`}
+                        fill
+                        className="object-cover"
+                      />
+                      <div className="absolute left-2 top-2 rounded bg-background/80 px-2 py-1 text-xs font-medium text-foreground">
+                        {index + 1}
+                      </div>
+                    </div>
+                    <p className="line-clamp-2 text-xs text-muted-foreground">
+                      {frame.subtitle}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {frame.audioUrl}
+                      {frame.timestamp}
+                    </p>
+                  </div>
+                ))}
+                {isGenerating &&
+                  Array.from({ length: totalFrames - frames.length }).map(
+                    (_, i) => (
+                      <div
+                        key={`placeholder-${i}`}
+                        className="animate-pulse space-y-3"
+                      >
+                        <div className="relative flex aspect-video items-center justify-center rounded-lg bg-gray-100">
+                          <Loader2 className="h-12 w-12 animate-spin text-gray-400" />
+                        </div>
+                        <div className="h-12 rounded bg-gray-100" />
+                      </div>
+                    ),
+                  )}
+              </div>
+            </TabsContent>
+          </Tabs>
+        </CardContent>
+      </Card>
     </div>
   );
 }

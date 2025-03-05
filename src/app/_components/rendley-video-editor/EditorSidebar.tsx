@@ -133,7 +133,7 @@ export function EditorSidebar({
 
   return (
     <div className="flex">
-      <div className="flex w-[72px] flex-col items-center gap-1 border-r border-white/10 p-2">
+      <div className="flex w-[72px] flex-col items-center gap-1 border-r border-white/10 bg-transparent p-2">
         {items.map((item, index) => {
           const isActive = activePanel === index;
           return (
@@ -141,7 +141,7 @@ export function EditorSidebar({
               key={item.label}
               size="icon"
               className={cn(
-                "h-[72px] w-full flex-col items-center justify-center gap-1 rounded-lg p-0",
+                "mx-3 h-[72px] w-full flex-col items-center justify-center gap-1 rounded-lg bg-transparent p-0 text-white",
                 isActive && "bg-white/10",
               )}
               onClick={() => setActivePanel(isActive ? null : index)}

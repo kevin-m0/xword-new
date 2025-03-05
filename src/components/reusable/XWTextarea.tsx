@@ -10,7 +10,7 @@ const XWTextarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
     return (
       <textarea
         className={cn(
-          "border-xw-border foucus:outline-none bg-xw-input focus:ring-xw-primary placeholder:text-xw-muted flex min-h-[80px] w-full resize-none rounded-lg border px-3 py-2 outline-none focus:ring-1 focus:ring-offset-transparent disabled:cursor-not-allowed disabled:bg-black/80",
+          "foucus:outline-none flex min-h-[80px] w-full resize-none rounded-lg border-none bg-xw-input px-3 py-2 outline-none placeholder:text-xw-muted focus:ring-1 focus:ring-xw-primary focus:ring-offset-transparent disabled:cursor-not-allowed disabled:bg-black/80",
           className,
         )}
         ref={ref}

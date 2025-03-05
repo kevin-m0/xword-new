@@ -161,9 +161,9 @@ const VideoVerseDocs = () => {
 
   const filteredAndSortedDocs = filterAndSortDocs();
 
-  if (filteredAndSortedDocs.length === 0 || isLoadingRecordings) {
-    return <div>No videos found</div>;
-  }
+  // if (filteredAndSortedDocs.length === 0 || isLoadingRecordings) {
+  //   return <div>No videos found</div>;
+  // }
 
   return (
     <div>
@@ -238,21 +238,15 @@ const VideoVerseDocs = () => {
 
           {/* <CloudinaryUpload /> */}
 
-          <Button onClick={() => setIsModalOpen(true)} variant="default">
-            New Video Project
-          </Button>
-          <VideoVerseUploadModal
-            isOpen={isModalOpen}
-            onClose={() => setIsModalOpen(false)}
-          />
+          <VideoVerseUploadModal />
         </div>
       </div>
 
       {viewMode === "grid" ? (
-        <div className="tb:grid-cols-3 tb:gap-10 grid grid-cols-1 gap-5">
+        <div className="tb:grid-cols-3 tb:gap-10 grid grid-cols-4 gap-5">
           {filteredAndSortedDocs.map((doc, index) => (
             <Link key={index} href={`/videoverse/${doc.id}`}>
-              <XWGradDiv className="flex flex-col items-center overflow-hidden">
+              <XWGradDiv className="flex flex-col items-center overflow-hidden bg-sidebar-accent">
                 <div className="flex w-full items-center justify-between gap-2 p-5">
                   <div className="flex-1">
                     <h1>{doc.title}</h1>
@@ -274,7 +268,7 @@ const VideoVerseDocs = () => {
 
                     <div className="absolute left-1 top-1">
                       <span className="rounded-sm bg-xw-sidebar px-2 py-1 text-xs text-white">
-                        {`${doc.duration} mins`}
+                        {`${Math.floor(doc.duration / 60)} mins`}
                       </span>
                     </div>
                   </div>
