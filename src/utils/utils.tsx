@@ -383,7 +383,7 @@ export async function handleApiResponse<T>(response: Response): Promise<T> {
 
 export const pollRequest = async (
   url: string,
-  maxRetries: number = 1,
+  maxRetries: number = 3,
   delay: number = 60000,
 ): Promise<Response> => {
   let attempt = 0;

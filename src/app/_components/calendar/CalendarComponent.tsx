@@ -33,7 +33,7 @@ const CalendarComponent = () => {
   const calendarEvents = formatPostsForCalendar(posts as CalendarEvent[]);
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex flex-col gap-5 p-5">
       <div className="tb:p-10 flex flex-1 flex-col gap-5 p-5">
         <CalendarHeader />
 

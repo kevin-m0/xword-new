@@ -142,7 +142,7 @@ const PostScheduleForm = () => {
         {selectedAccount === "youtube" && (
           <div className="flex flex-1 flex-col gap-2">
             <label className="text-sm font-medium text-white">
-              Enter Post Description
+              Enter Video Description
             </label>
             <div className="flex flex-1 flex-col overflow-hidden rounded-lg border border-xw-secondary bg-xw-background focus-within:border-xw-primary">
               <textarea
@@ -150,7 +150,7 @@ const PostScheduleForm = () => {
                 onChange={(e) => {
                   setPostDescription(e.target.value);
                 }}
-                placeholder="Enter Post Description"
+                placeholder="Enter Video Description"
                 className="h-full flex-1 resize-none border-none bg-transparent p-2 focus:border-none focus:outline-none focus:ring-0"
               ></textarea>
               <div className="flex items-center gap-2 p-2">

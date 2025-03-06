@@ -71,6 +71,7 @@ const CalendarSchedulePostModel = ({
   const [isDialogOpen, setDialogOpen] = useState<boolean>(false); // Manage dialog state
   const trpcUtils = trpc.useContext();
   const { organization: defaultSpace } = useOrganization();
+  const [isPosting, setIsPosting] = useState<boolean>(false);
 
   useEffect(() => {
     if (!!post && isDialogOpen) {
@@ -161,6 +162,9 @@ const CalendarSchedulePostModel = ({
       secretKey: process.env.NEXT_PUBLIC_TRIGGER_SECRET_KEY,
     });
 
+    setIsPosting(true);
+
+    // video and shorts
     if (selectedAccount === "youtube") {
       //validation checks for media type and only a single video can be uploaded at a time.
 
@@ -169,7 +173,7 @@ const CalendarSchedulePostModel = ({
         "5s", // timestamp for scheduling
         postText,
         postDescription,
-        "https://static.videezy.com/system/resources/previews/000/049/922/original/Passengers_and_Ship_TL.mp4", //replace with
+        "https://static.videezy.com/system/resources/previews/000/049/922/original/Passengers_and_Ship_TL.mp4", //replace with your video url
         selectedOption as string,
       );
 
@@ -182,6 +186,8 @@ const CalendarSchedulePostModel = ({
       }
     }
 
+    // story, post, reel
+    // photo and video
     if (selectedAccount === "instagram") {
       if (selectedOption === "Post") {
         if (postMedia.length === 1) {
@@ -219,6 +225,8 @@ const CalendarSchedulePostModel = ({
       }
     }
 
+    // text post, image post, video post.
+    // story with photo or video
     if (selectedAccount === "facebook") {
       // how to find out if the post is image or video
       if (selectedOption === "Post" && postMedia.length > 1) {
@@ -253,6 +261,7 @@ const CalendarSchedulePostModel = ({
       }
     }
 
+    // text post, image post, video post.
     if (selectedAccount === "linkedin") {
       if (selectedOption === "Post" && postMedia.length === 0) {
         // const responseId = await postLinkedInTextPostTrigger(
@@ -284,6 +293,7 @@ const CalendarSchedulePostModel = ({
       }
     }
 
+    //tweet, tweet with media, thread
     if (selectedAccount === "twitter") {
       if (selectedOption === "Tweet") {
         if (postMedia.length === 0) {
@@ -315,6 +325,16 @@ const CalendarSchedulePostModel = ({
       }
     }
 
+    // subscribing to run. check if it is completed.
+    // for await (const run of runs.subscribeToRun(responseId)) {
+    //   if (run.status === "COMPLETED") {
+
+    //   }
+    // }
+
+    // if completed, check if the result is success.
+    // then create the post in the database.
+
     // if (result.isSuccess) {
     //   console.log(result.output);
     // }
@@ -339,6 +359,8 @@ const CalendarSchedulePostModel = ({
     //   // };
     //   // await createPostMutation.mutateAsync(body);
     // }
+
+    setIsPosting(false);
   };
 
   const handleUpdate = async (status: string) => {
@@ -430,7 +452,7 @@ const CalendarSchedulePostModel = ({
                   }}
                   className="ml-auto"
                 >
-                  Post
+                  {isPosting ? "Posting..." : "Post"}
                 </Button>
               )}
             </div>

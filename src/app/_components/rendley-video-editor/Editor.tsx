@@ -13,6 +13,7 @@ import { trpc } from "~/trpc/react";
 import LoadingModal from "~/app/_components/videoverse/Editor/LoadingModal";
 import XWSecondaryButton from "~/components/reusable/XWSecondaryButton";
 import { Button } from "~/components/ui/button";
+import { uploadToS3 } from "~/lib/upload-to-s3";
 
 interface RendleyEditorProps {
   recording: any;
@@ -82,13 +83,9 @@ const RendleyEditor: FC<RendleyEditorProps> = ({ recording }) => {
       const blob = await fetch(mediaData.blobUrl).then((res) => res.blob());
       const file = new File([blob], mediaData.filename, { type: blob.type });
 
-      await uploadFile(file, mediaDataId);
+      const { fileUrl, fileKey } = await uploadToS3(file);
 
-      const url = process.env.NEXT_PUBLIC_AWS_IMAGE_BASE_URL + mediaDataId;
-
-      console.log(url, "aws URL");
-
-      mediaData.setPermanentUrl(url);
+      mediaData.setPermanentUrl(fileUrl);
 
       console.log(mediaData, "media data");
     } catch (error) {

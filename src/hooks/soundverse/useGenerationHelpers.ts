@@ -15,20 +15,21 @@ export const useGenerationHelpers = () => {
         },
       };
 
+      console.log(payload, "payload");
+
       const apiUrl = `${process.env.NEXT_PUBLIC_LLM_FREE_TIER_URL}/generate/audio/generate-audio`;
       const { data } = await axios.post(apiUrl, payload, config);
 
       setRefetchTokenUsage((prev) => !prev);
 
       return data.file;
-
     } catch (e) {
       console.log(e);
       // <ErrorToast
-//   t={t}
-//   title="Audio Generation Error"
-//   description="Something went wrong. Please try again later."
-// />
+      //   t={t}
+      //   title="Audio Generation Error"
+      //   description="Something went wrong. Please try again later."
+      // />
     }
   };
 

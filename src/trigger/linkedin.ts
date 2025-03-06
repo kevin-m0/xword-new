@@ -1,7 +1,6 @@
 import { logger, schemaTask } from "@trigger.dev/sdk/v3";
 import { z } from "zod";
 import axios from "axios";
-import { videoUrlToBase64 } from "./youtube";
 import { getAwsUrl } from "~/lib/get-aws-url";
 
 export const payloadSchema = z.object({
@@ -350,13 +349,13 @@ export const postLinkedInCarouselPost = schemaTask({
 
 async function processVideoFile(url: string): Promise<string[]> {
   // Step 1: Convert video file URL to base64
-  const base64Data = await videoUrlToBase64(url);
+  // const base64Data = await videoUrlToBase64(url); // TODO: implement this
 
   // Step 2: Split base64 data into chunks if necessary
-  const chunks = splitBase64(base64Data);
+  // const chunks = splitBase64(base64Data);
 
   // Return chunks
-  return chunks;
+  return await Promise.resolve(["chunks"]);
 }
 
 export function splitBase64(

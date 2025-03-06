@@ -18,7 +18,8 @@ import { generateViralClipsTrigger } from "~/app/api/actions/generating-viral-cl
 import { useAtom } from "jotai";
 import { creatingClipsAtom } from "~/atoms/videoverseAtoms";
 import { motion } from "framer-motion";
-
+import { runs } from "@trigger.dev/sdk/v3";
+import { toast } from "sonner";
 const VideoVerseClipsTabRefactored = () => {
   const params = useParams();
   const [creatingClips, setCreatingClips] = useAtom(creatingClipsAtom);
@@ -26,12 +27,11 @@ const VideoVerseClipsTabRefactored = () => {
 
   const { organization: workspace } = useOrganization();
 
-  const stopRef = useRef(false);
-
   const {
     data: viralClips,
     isFetching: isLoadingClipsFromDB,
     error: clipsError,
+    refetch: refetchViralClips,
   } = trpc.videoProject.getViralClips.useQuery<ViralClips[]>(
     { id: videoId },
     {
@@ -39,15 +39,6 @@ const VideoVerseClipsTabRefactored = () => {
       refetchOnWindowFocus: false,
     },
   );
-
-  if (isLoadingClipsFromDB) {
-    return (
-      <div className="flex h-64 items-center justify-center">
-        <Loader2 className="h-6 w-6 animate-spin" />
-        <span className="ml-2">Fetching your clips...</span>
-      </div>
-    );
-  }
 
   const { data: video } = trpc.videoProject.getVideoProjectById.useQuery(
     { id: videoId },
@@ -71,15 +62,6 @@ const VideoVerseClipsTabRefactored = () => {
     },
   );
 
-  // if (loadingViralClipTimestamps) {
-  //   return (
-  //     <div className="flex h-64 items-center justify-center">
-  //       <Loader2 className="h-6 w-6 animate-spin" />
-  //       <span className="ml-2">Generating clips...</span>
-  //     </div>
-  //   );
-  // }
-
   const handleCopyTranscript = async (transcript: string) => {
     try {
       await navigator.clipboard.writeText(transcript);
@@ -91,26 +73,35 @@ const VideoVerseClipsTabRefactored = () => {
 
   const handleGenerateClips = async () => {
     setCreatingClips(true);
-    // const result = await generateViralClipsTrigger(
-    //   viralClipTimestamps,
-    //   video,
-    //   videoId,
-    //   workspace?.id as string,
-    // );
 
-    setCreatingClips(false);
+    if (video && viralClipTimestamps) {
+      const result = await generateViralClipsTrigger(
+        viralClipTimestamps,
+        video,
+        videoId,
+        workspace?.id as string,
+      );
+
+      for await (const run of runs.subscribeToRun(result)) {
+        if (run.status === "COMPLETED") {
+          refetchViralClips();
+          setCreatingClips(false);
+          toast.success("Clips generated successfully");
+        }
+      }
+    }
   };
 
-  // if (video?.duration && video.duration < MIN_VIDEO_DURATION) {
-  //   return (
-  //     <div className="p-8 text-center">
-  //       <h2 className="mb-2 text-xl font-semibold">Video Too Short</h2>
-  //       <p className="text-xw-muted">
-  //         Please upload a video longer than 60 seconds to generate clips.
-  //       </p>
-  //     </div>
-  //   );
-  // }
+  if (video?.duration && video.duration < MIN_VIDEO_DURATION) {
+    return (
+      <div className="p-8 text-center">
+        <h2 className="mb-2 text-xl font-semibold">Video Too Short</h2>
+        <p className="text-xw-muted">
+          Please upload a video longer than 60 seconds to generate clips.
+        </p>
+      </div>
+    );
+  }
 
   if (creatingClips) {
     return (
@@ -123,7 +114,16 @@ const VideoVerseClipsTabRefactored = () => {
     );
   }
 
-  if (!viralClips?.length) {
+  if (isLoadingClipsFromDB) {
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <Loader2 className="h-6 w-6 animate-spin" />
+        <span className="ml-2">Fetching your clips...</span>
+      </div>
+    );
+  }
+
+  if (viralClips && viralClips?.length === 0) {
     return (
       <div className="flex flex-col justify-center p-8 text-center">
         <h2 className="mb-2 text-xl font-semibold">No Clips created yet</h2>
@@ -132,26 +132,25 @@ const VideoVerseClipsTabRefactored = () => {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="mx-auto w-fit text-sm"
+            className={`mx-auto w-fit cursor-pointer rounded-xl bg-white px-4 py-2 text-sm text-black hover:bg-opacity-70 ${viralClipTimestamps && viralClipTimestamps.length > 0 ? "" : "disabled:cursor-not-allowed disabled:opacity-50"}`}
             onClick={() => {
-              handleGenerateClips();
+              if (viralClipTimestamps && viralClipTimestamps.length > 0) {
+                handleGenerateClips();
+              }
             }}
           >
-            Generate viral short clips using AI?
+            {viralClipTimestamps && viralClipTimestamps.length > 0
+              ? "Generate viral short clips using AI?"
+              : "Processing video..."}
           </motion.div>
         </div>
-        <p className="text-xw-muted">
-          {/* {loadingViralClipTimestamps
-            ? "Generating clips..."
-            : "No viral clips have been generated yet."} */}
-        </p>
       </div>
     );
   }
 
   return (
     <div className="flex flex-col gap-10">
-      {viralClips.map((clip, index) => (
+      {viralClips?.map((clip, index) => (
         <div key={clip.id} className="flex flex-col gap-5">
           <h2 className="text-2xl font-semibold">
             <span className="text-xw-muted">#{index + 1}</span> - {clip.title}
@@ -218,7 +217,7 @@ const VideoVerseClipsTabRefactored = () => {
               {clip.transcript ? (
                 <>
                   <span className="mb-2 text-xs text-xw-muted">
-                    {clip.duration} secs
+                    {Math.floor(clip.duration / 60)} mins
                   </span>
                   <p className="text-sm text-xw-muted-foreground">
                     {clip.transcript}

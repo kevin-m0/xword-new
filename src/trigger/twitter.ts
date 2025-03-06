@@ -54,6 +54,8 @@ export const postTweet = schemaTask({
         },
       };
 
+      console.log(url, body, { params });
+
       // Make a GET request to the Pathfix API
       const res = await axios.post(url, body, { params });
 
@@ -103,24 +105,33 @@ export const postThread = schemaTask({
   run: async (payload) => {
     try {
       const { appUserId, tweets } = payload;
+
       const url = `https://labs.pathfix.com/oauth/method/twitteroauth2/call`;
 
-      // Request parameters for authentication
+      // Prepare the request parameters
       const params = {
         user_id: appUserId,
         public_key: "5CBC16AE-FC0D-4694-9914-76C21BADCB6D",
         private_key: "4D5D34B4-176F-47FB-9D2B-EE1407499A02",
       };
 
-      const body: any = {
+      const body = {
         url: "https://api.twitter.com/2/tweets",
         method: "POST",
         payload: {
           text: tweets[0],
         },
+        headers: {
+          "Content-Type": "application/json",
+        },
       };
 
+      console.log(url, body, { params });
+
+      // Make a GET request to the Pathfix API
       const res = await axios.post(url, body, { params });
+
+      console.log(res.data.rows[0].internalError, "data of tweet");
 
       let previousTweetId = res.data.rows[0];
 
@@ -139,6 +150,9 @@ export const postThread = schemaTask({
             reply: {
               in_reply_to_tweet_id: previousTweetId,
             },
+          },
+          headers: {
+            "Content-Type": "application/json",
           },
         };
 

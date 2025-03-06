@@ -195,8 +195,10 @@ const DisplayCalendarComponent: React.FC<DisplayCalendarComponentProps> =
           components={components}
           className={cn(
             calendarStyles.base,
-            "[&_.rbc-day-bg]:group-hover/cell:bg-blue-500",
-            "[&_.rbc-date-cell]:relative",
+            "[&_.rbc-today]:bg-pink-500 [&_.rbc-today]:text-white",
+            "[&_.rbc-off-range-bg]:bg-xw-sidebar",
+            "[&_.rbc-day-bg]:group-hover/cell:bg-white [&_.rbc-day-bg]:group-hover/cell:text-black",
+            "[&_.rbc-date-cell]:relative [&_.rbc-date-cell]:text-white",
           )}
           onSelectSlot={(event) => {
             setSelectedDate(event.start);
