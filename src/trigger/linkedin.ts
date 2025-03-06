@@ -3,6 +3,24 @@ import { z } from "zod";
 import axios from "axios";
 import { getAwsUrl } from "~/lib/get-aws-url";
 
+// Define type interfaces
+interface UserParams {
+  user_id: string;
+  public_key: string;
+  private_key: string;
+}
+
+interface UploadResult {
+  uploadURL: string;
+  assetId: string;
+}
+
+interface ImageData {
+  base64: string;
+  contentType: string;
+}
+
+// Payload schemas
 export const payloadSchema = z.object({
   appUserId: z.string(),
   text: z.string(),
@@ -20,18 +38,30 @@ export const payloadSchemaWithMediaMultiple = z.object({
   photos: z.array(z.string()),
 });
 
-export const fetchUserURN: any = async (url: string, params: any) => {
-  let body = {
-    url: "https://api.linkedin.com/v2/userinfo",
-    method: "GET",
-    headers: {
-      "X-Restli-Protocol-Version": "2.0.0",
-    },
-  };
+export const fetchUserURN = async (
+  url: string,
+  params: UserParams,
+): Promise<string> => {
+  try {
+    const body = {
+      url: "https://api.linkedin.com/v2/userinfo",
+      method: "GET",
+      headers: {
+        "X-Restli-Protocol-Version": "2.0.0",
+      },
+    };
 
-  const res = await axios.post(url, body, { params });
+    const res = await axios.post(url, body, { params });
 
-  return res.data.rows[0].data.sub;
+    if (!res.data.rows || res.data.rows.length === 0) {
+      throw new Error("User URN not found in response");
+    }
+
+    return res.data.rows[0].data.sub;
+  } catch (error: any) {
+    logger.error("Error fetching user URN", { error: error.message });
+    throw new Error(`Failed to fetch LinkedIn user URN: ${error.message}`);
+  }
 };
 
 export const postLinkedInTextPost = schemaTask({
@@ -41,14 +71,30 @@ export const postLinkedInTextPost = schemaTask({
     try {
       const { appUserId, text } = payload;
 
+      // Basic validation
+      if (!text || text.trim() === "") {
+        throw new Error("Post text cannot be empty");
+      }
+
+      if (!appUserId) {
+        throw new Error("User ID is required");
+      }
+
+      logger.info("Posting text content to LinkedIn", { userId: appUserId });
+
       const url = `https://labs.pathfix.com/oauth/method/linkedin/call`;
 
-      // Prepare the request parameters
-      const params = {
+      // Prepare the request parameters with environment variables
+      const params: UserParams = {
         user_id: appUserId,
-        public_key: "5CBC16AE-FC0D-4694-9914-76C21BADCB6D",
-        private_key: "4D5D34B4-176F-47FB-9D2B-EE1407499A02",
+        public_key: process.env.NEXT_PUBLIC_PATHFIX_PUBLIC_KEY || "",
+        private_key: process.env.NEXT_PUBLIC_PATHFIX_PRIVATE_KEY || "",
       };
+
+      // Validate API keys
+      if (!params.public_key || !params.private_key) {
+        throw new Error("LinkedIn API keys are not configured");
+      }
 
       const userURN = await fetchUserURN(url, params);
 
@@ -73,63 +119,102 @@ export const postLinkedInTextPost = schemaTask({
       };
 
       const res = await axios.post(url, body, { params });
+      logger.info("Successfully posted to LinkedIn", {
+        userId: appUserId,
+        postId: res.data?.id,
+      });
       return res.data;
     } catch (error: any) {
-      console.log(error);
+      logger.error("LinkedIn API Error", {
+        error: error.message,
+        stack: error.stack,
+      });
+      throw new Error(`Failed to post to LinkedIn: ${error.message}`);
     }
   },
 });
 
-async function registerLinkedInUpload(url: string, params: any, URN: string) {
-  let body = {
-    url: "https://api.linkedin.com/v2/assets?action=registerUpload",
-    method: "POST",
-    payload: {
-      registerUploadRequest: {
-        owner: `urn:li:person:${URN}`,
-        recipes: ["urn:li:digitalmediaRecipe:feedshare-image"],
-        serviceRelationships: [
-          {
-            identifier: "urn:li:userGeneratedContent",
-            relationshipType: "OWNER",
-          },
-        ],
-        supportedUploadMechanism: ["SYNCHRONOUS_UPLOAD"],
+async function registerLinkedInUpload(
+  url: string,
+  params: UserParams,
+  URN: string,
+): Promise<UploadResult> {
+  try {
+    let body = {
+      url: "https://api.linkedin.com/v2/assets?action=registerUpload",
+      method: "POST",
+      payload: {
+        registerUploadRequest: {
+          owner: `urn:li:person:${URN}`,
+          recipes: ["urn:li:digitalmediaRecipe:feedshare-image"],
+          serviceRelationships: [
+            {
+              identifier: "urn:li:userGeneratedContent",
+              relationshipType: "OWNER",
+            },
+          ],
+        },
       },
-    },
-  };
+    };
 
-  const res = await axios.post(url, body, { params });
+    const res = await axios.post(url, body, { params });
 
-  return {
-    uploadURL:
-      res.data.rows[0].data.value.uploadMechanism[
-        "com.linkedin.digitalmedia.uploading.MediaUploadHttpRequest"
-      ].uploadUrl,
-    assetId: res.data.rows[0].data.value.asset,
-  };
+    if (
+      !res.data.rows ||
+      res.data.rows.length === 0 ||
+      !res.data.rows[0].data?.value
+    ) {
+      throw new Error(
+        "Invalid response from LinkedIn register upload endpoint",
+      );
+    }
+
+    return {
+      uploadURL:
+        res.data.rows[0].data.value.uploadMechanism[
+          "com.linkedin.digitalmedia.uploading.MediaUploadHttpRequest"
+        ].uploadUrl,
+      assetId: res.data.rows[0].data.value.asset,
+    };
+  } catch (error: any) {
+    logger.error("Error registering LinkedIn upload", { error: error.message });
+    throw new Error(`Failed to register LinkedIn upload: ${error.message}`);
+  }
 }
 
-export async function imageUrlToBase64(
-  url: string,
-): Promise<{ base64: string; contentType: string }> {
-  const response = await fetch(url);
-  const arrayBuffer = await response.arrayBuffer();
-  const base64 = Buffer.from(arrayBuffer).toString("base64");
-  const contentType = response.headers.get("content-type") || "image/png";
+export async function imageUrlToBase64(url: string): Promise<ImageData> {
+  try {
+    const response = await fetch(url);
 
-  return {
-    base64: `${base64}`,
-    contentType,
-  };
+    if (!response.ok) {
+      throw new Error(
+        `Failed to fetch image: ${response.status} ${response.statusText}`,
+      );
+    }
+
+    const arrayBuffer = await response.arrayBuffer();
+    const base64 = Buffer.from(arrayBuffer).toString("base64");
+    const contentType = response.headers.get("content-type") || "image/png";
+
+    return {
+      base64: `${base64}`,
+      contentType,
+    };
+  } catch (error: any) {
+    logger.error("Error converting image to base64", {
+      error: error.message,
+      url,
+    });
+    throw new Error(`Failed to convert image to base64: ${error.message}`);
+  }
 }
 
 async function uploadImageFileLinkedin(
   url: string,
-  params: any,
+  params: UserParams,
   uploadURL: string,
   photoURL: string,
-) {
+): Promise<string> {
   try {
     const { base64, contentType } = await imageUrlToBase64(photoURL);
     const body = {
@@ -138,69 +223,56 @@ async function uploadImageFileLinkedin(
       payload: {
         files: [
           {
-            content:
-              "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",
+            content: base64,
             type: contentType,
           },
         ],
       },
     };
+
+    console.log(body.payload.files);
+
     const res = await axios.post(url, body, { params });
-    console.log(res.data);
+    console.log(res.data, "did the image upload to linkedin");
+
+    logger.info("Successfully uploaded image to LinkedIn", { contentType });
     return res.data;
-  } catch (error) {
-    console.error("Error uploading image:", error);
-    throw error;
+  } catch (error: any) {
+    logger.error("Error uploading image to LinkedIn", { error: error.message });
+    throw new Error(`Failed to upload image to LinkedIn: ${error.message}`);
   }
 }
 
-async function registerLinkedInVideoUpload(
+async function checkUploadStatus(
   url: string,
-  params: any,
-  URN: string,
+  params: UserParams,
+  assetId: string,
 ) {
-  const body = {
-    url: "https://api.linkedin.com/rest/videos?action=initializeUpload",
-    method: "POST",
-    headers: {
-      "LinkedIn-Version": "202501",
-      "X-RestLi-Protocol-Version": "2.0.0",
-      "Content-Type": "application/json",
-    },
-    payload: {
-      initializeUploadRequest: {
-        owner: `urn:li:person:${URN}`,
-        fileSizeBytes: 1055736, //find the size of the video
+  try {
+    const cleanAssetId = assetId.replace("urn:li:digitalmediaAsset:", "");
+    const body = {
+      url: `https://api.linkedin.com/v2/assets/${cleanAssetId}`,
+      method: "GET",
+      headers: {
+        "X-Restli-Protocol-Version": "2.0.0",
+        "x-pinc-response-data-at": "rows.0.data",
       },
-    },
-  };
+    };
 
-  const res = await axios.post(url, body, { params });
+    console.log(body, "body");
+    console.log(url, "url");
 
-  console.log(res.data);
-  console.log(res.data.rows[0].internalError);
-
-  return {
-    uploadURL: res.data.rows[0].data.value.uploadInstructions[0].uploadUrl,
-    assetId: res.data.rows[0].data.value.video,
-  };
-}
-
-async function checkUploadStatus(url: string, params: any, assetId: string) {
-  assetId = assetId.replace("urn:li:digitalmediaAsset:", "");
-  const body = {
-    url: `https://api.linkedin.com/v2/assets/${assetId}`,
-    method: "GET",
-    headers: {
-      "X-Restli-Protocol-Version": "2.0.0",
-      "x-pinc-response-data-at": "rows.0.data",
-    },
-  };
-
-  console.log(body.url);
-
-  const res = await axios.post(url, body, { params });
-  return res.data;
+    logger.info("Checking upload status", { assetId: cleanAssetId });
+    const res = await axios.post(url, body, { params });
+    console.log(res.data);
+    return res.data;
+  } catch (error: any) {
+    logger.error("Error checking upload status", {
+      error: error.message,
+      assetId,
+    });
+    throw new Error(`Failed to check upload status: ${error.message}`);
+  }
 }
 
 export const postLinkedInImagePost = schemaTask({
@@ -210,14 +282,32 @@ export const postLinkedInImagePost = schemaTask({
     try {
       const { appUserId, text, photo } = payload;
 
+      // Basic validation
+      if (!text || text.trim() === "") {
+        throw new Error("Post text cannot be empty");
+      }
+
+      if (!appUserId) {
+        throw new Error("User ID is required");
+      }
+
+      if (!photo) {
+        throw new Error("Photo URL is required");
+      }
+
       const url = `https://labs.pathfix.com/oauth/method/linkedin/call`;
 
-      // Prepare the request parameters
-      const params = {
+      // Prepare the request parameters with environment variables
+      const params: UserParams = {
         user_id: appUserId,
-        public_key: "5CBC16AE-FC0D-4694-9914-76C21BADCB6D",
-        private_key: "4D5D34B4-176F-47FB-9D2B-EE1407499A02",
+        public_key: process.env.NEXT_PUBLIC_PATHFIX_PUBLIC_KEY || "",
+        private_key: process.env.NEXT_PUBLIC_PATHFIX_PRIVATE_KEY || "",
       };
+
+      // Validate API keys
+      if (!params.public_key || !params.private_key) {
+        throw new Error("LinkedIn API keys are not configured");
+      }
 
       const userURN = await fetchUserURN(url, params);
 
@@ -227,16 +317,36 @@ export const postLinkedInImagePost = schemaTask({
         userURN,
       );
 
-      const photoUrl = getAwsUrl(photo);
+      const photoUrl = photo;
+
+      if (!photoUrl) {
+        throw new Error("Failed to get valid photo URL");
+      }
 
       await uploadImageFileLinkedin(url, params, uploadURL, photoUrl as string);
 
-      const status = checkUploadStatus(url, params, assetId);
+      // Wait for the asset to be processed
+      // let status;
+      // let attempts = 0;
+      // const maxAttempts = 5;
 
-      //@ts-ignore
-      if (status.status === "AVAILABLE") {
-        console.log("ready to be posted");
-      }
+      // do {
+      //   status = await checkUploadStatus(url, params, assetId);
+      //   if (status.status !== "AVAILABLE") {
+      //     await new Promise((resolve) => setTimeout(resolve, 2000)); // Wait 2 seconds
+      //     logger.info("Waiting for image processing", {
+      //       attempt: attempts + 1,
+      //       status: status.status,
+      //     });
+      //   }
+      //   attempts++;
+      // } while (status.status !== "AVAILABLE" && attempts < maxAttempts);
+
+      // if (status.status !== "AVAILABLE") {
+      //   throw new Error("Media upload processing timeout");
+      // }
+
+      // logger.info("Image ready for posting", { assetId });
 
       const body = {
         url: "https://api.linkedin.com/v2/ugcPosts",
@@ -264,12 +374,18 @@ export const postLinkedInImagePost = schemaTask({
         },
       };
 
-      console.log(assetId);
-
       const res = await axios.post(url, body, { params });
-      return status;
+      logger.info("Successfully posted image to LinkedIn", {
+        userId: appUserId,
+        postId: res.data?.id,
+      });
+      return res.data;
     } catch (error: any) {
-      console.log(error);
+      logger.error("LinkedIn API Error", {
+        error: error.message,
+        stack: error.stack,
+      });
+      throw new Error(`Failed to post image to LinkedIn: ${error.message}`);
     }
   },
 });
@@ -281,154 +397,404 @@ export const postLinkedInCarouselPost = schemaTask({
     try {
       const { appUserId, text, photos } = payload;
 
+      // Basic validation
+      if (!text || text.trim() === "") {
+        throw new Error("Post text cannot be empty");
+      }
+
+      if (!appUserId) {
+        throw new Error("User ID is required");
+      }
+
+      if (!photos || photos.length === 0) {
+        throw new Error("At least one photo is required");
+      }
+
+      if (photos.length > 10) {
+        throw new Error("LinkedIn allows a maximum of 10 images in a carousel");
+      }
+
+      logger.info("Posting carousel content to LinkedIn", {
+        userId: appUserId,
+        photoCount: photos.length,
+      });
+
       const url = `https://labs.pathfix.com/oauth/method/linkedin/call`;
 
-      // Prepare the request parameters
-      const params = {
+      // Prepare the request parameters with environment variables
+      const params: UserParams = {
         user_id: appUserId,
-        public_key: "5CBC16AE-FC0D-4694-9914-76C21BADCB6D",
-        private_key: "4D5D34B4-176F-47FB-9D2B-EE1407499A02",
+        public_key: process.env.LINKEDIN_PUBLIC_KEY || "",
+        private_key: process.env.LINKEDIN_PRIVATE_KEY || "",
       };
 
+      // Validate API keys
+      if (!params.public_key || !params.private_key) {
+        throw new Error("LinkedIn API keys are not configured");
+      }
+
       const userURN = await fetchUserURN(url, params);
+      const mediaItems = [];
 
-      const { uploadURL, assetId } = await registerLinkedInUpload(
-        url,
-        params,
-        userURN,
-      );
-
-      const mediaIds: string[] = [];
-
+      // Process each photo
       for (const photo of photos) {
-        const photoUrl = getAwsUrl(photo);
-        const image_bin = await uploadImageFileLinkedin(
+        const { uploadURL, assetId } = await registerLinkedInUpload(
+          url,
+          params,
+          userURN,
+        );
+
+        const photoUrl = photo;
+
+        if (!photoUrl) {
+          throw new Error(`Failed to get valid photo URL for ${photo}`);
+        }
+
+        await uploadImageFileLinkedin(
           url,
           params,
           uploadURL,
           photoUrl as string,
         );
-        mediaIds.push(image_bin);
+
+        // Wait for the asset to be processed
+        // let status;
+        // let attempts = 0;
+        // const maxAttempts = 5;
+
+        // do {
+        //   status = await checkUploadStatus(url, params, assetId);
+        //   if (status.status !== "AVAILABLE") {
+        //     await new Promise((resolve) => setTimeout(resolve, 2000)); // Wait 2 seconds
+        //     logger.info("Waiting for image processing", {
+        //       attempt: attempts + 1,
+        //       status: status.status,
+        //     });
+        //   }
+        //   attempts++;
+        // } while (status.status !== "AVAILABLE" && attempts < maxAttempts);
+
+        // if (status.status !== "AVAILABLE") {
+        //   throw new Error(
+        //     `Media upload processing timeout for image: ${photo}`,
+        //   );
+        // }
+
+        mediaItems.push({
+          media: assetId,
+          status: "READY",
+        });
       }
 
-      console.log(mediaIds);
+      logger.info("All images ready for carousel posting", {
+        count: mediaItems.length,
+      });
 
-      // const body = {
-      //   url: "https://api.linkedin.com/v2/ugcPosts",
-      //   method: "POST",
-      //   payload: {
-      //     author: `urn:li:person:${userURN}`,
-      //     lifecycleState: "PUBLISHED",
-      //     specificContent: {
-      //       "com.linkedin.ugc.ShareContent": {
-      //         shareCommentary: {
-      //           text: text,
-      //         },
-      //         shareMediaCategory: "IMAGE",
-      //         media: [
-      //           {
-      //             media: mediaIds,
-      //             status: "READY",
-      //           },
-      //         ],
-      //       },
-      //     },
-      //     visibility: {
-      //       "com.linkedin.ugc.MemberNetworkVisibility": "PUBLIC",
-      //     },
-      //   },
-      // };
+      const body = {
+        url: "https://api.linkedin.com/v2/ugcPosts",
+        method: "POST",
+        payload: {
+          author: `urn:li:person:${userURN}`,
+          lifecycleState: "PUBLISHED",
+          specificContent: {
+            "com.linkedin.ugc.ShareContent": {
+              shareCommentary: {
+                text: text,
+              },
+              shareMediaCategory: "CAROUSEL",
+              media: mediaItems,
+            },
+          },
+          visibility: {
+            "com.linkedin.ugc.MemberNetworkVisibility": "PUBLIC",
+          },
+        },
+      };
 
-      // const res = await axios.post(url, body, { params });
-      return mediaIds;
+      const res = await axios.post(url, body, { params });
+      logger.info("Successfully posted carousel to LinkedIn", {
+        userId: appUserId,
+        postId: res.data?.id,
+      });
+      return res.data;
     } catch (error: any) {
-      console.log(error);
+      logger.error("LinkedIn API Error", {
+        error: error.message,
+        stack: error.stack,
+      });
+      throw new Error(`Failed to post carousel to LinkedIn: ${error.message}`);
     }
   },
 });
 
-async function processVideoFile(url: string): Promise<string[]> {
-  // Step 1: Convert video file URL to base64
-  // const base64Data = await videoUrlToBase64(url); // TODO: implement this
+async function registerLinkedInVideoUpload(
+  url: string,
+  params: UserParams,
+  URN: string,
+  videoFileSize: number,
+): Promise<UploadResult> {
+  try {
+    const body = {
+      url: "https://api.linkedin.com/rest/videos?action=initializeUpload",
+      method: "POST",
+      headers: {
+        "LinkedIn-Version": "202501",
+        "X-RestLi-Protocol-Version": "2.0.0",
+        "Content-Type": "application/json",
+      },
+      payload: {
+        initializeUploadRequest: {
+          owner: `urn:li:person:${URN}`,
+          fileSizeBytes: videoFileSize, // This needs to be the actual file size
+        },
+      },
+    };
 
-  // Step 2: Split base64 data into chunks if necessary
-  // const chunks = splitBase64(base64Data);
+    const res = await axios.post(url, body, { params });
 
-  // Return chunks
-  return await Promise.resolve(["chunks"]);
+    if (res.data.rows?.[0]?.internalError) {
+      throw new Error(
+        `LinkedIn API error: ${JSON.stringify(res.data.rows[0].internalError)}`,
+      );
+    }
+
+    if (!res.data.rows || !res.data.rows[0]?.data?.value) {
+      throw new Error(
+        "Invalid response from LinkedIn video upload initialization",
+      );
+    }
+
+    return {
+      uploadURL: res.data.rows[0].data.value.uploadInstructions[0].uploadUrl,
+      assetId: res.data.rows[0].data.value.video,
+    };
+  } catch (error: any) {
+    logger.error("Error registering LinkedIn video upload", {
+      error: error.message,
+    });
+    throw new Error(
+      `Failed to register LinkedIn video upload: ${error.message}`,
+    );
+  }
 }
 
-export function splitBase64(
-  base64String: string,
-  chunkSize: number = 4 * 1024 * 1024,
-): string[] {
-  const chunks = [];
-  let startIndex = 0;
-  while (startIndex < base64String.length) {
-    const chunk = base64String.slice(startIndex, startIndex + chunkSize);
-    chunks.push(chunk);
-    startIndex += chunkSize;
+async function getVideoFileSize(url: string): Promise<number> {
+  try {
+    const response = await fetch(url, { method: "HEAD" });
+
+    if (!response.ok) {
+      throw new Error(
+        `Failed to get video file size: ${response.status} ${response.statusText}`,
+      );
+    }
+
+    const contentLength = response.headers.get("content-length");
+
+    if (!contentLength) {
+      throw new Error("Content-Length header not found");
+    }
+
+    return parseInt(contentLength, 10);
+  } catch (error: any) {
+    logger.error("Error getting video file size", { error: error.message });
+    throw new Error(`Failed to get video file size: ${error.message}`);
   }
+}
+
+async function videoUrlToArrayBuffer(url: string): Promise<ArrayBuffer> {
+  try {
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      throw new Error(
+        `Failed to fetch video: ${response.status} ${response.statusText}`,
+      );
+    }
+
+    return await response.arrayBuffer();
+  } catch (error: any) {
+    logger.error("Error converting video to array buffer", {
+      error: error.message,
+    });
+    throw new Error(
+      `Failed to convert video to array buffer: ${error.message}`,
+    );
+  }
+}
+
+export function splitArrayBuffer(
+  buffer: ArrayBuffer,
+  chunkSize: number = 4 * 1024 * 1024,
+): ArrayBuffer[] {
+  const chunks: ArrayBuffer[] = [];
+  let offset = 0;
+
+  while (offset < buffer.byteLength) {
+    const size = Math.min(chunkSize, buffer.byteLength - offset);
+    chunks.push(buffer.slice(offset, offset + size));
+    offset += size;
+  }
+
   return chunks;
 }
 
-export const postVideoChunks = async (
+async function uploadVideoChunk(
+  url: string,
+  params: UserParams,
   uploadURL: string,
-  chunk: string,
-  params: any,
-) => {
-  const body = {
-    url: uploadURL,
-    method: "PUT",
-    payload: {
-      files: [
-        {
-          content: chunk,
-          type: "video/mp4",
-        },
-      ],
-    },
-    headers: {
-      "X-Restli-Protocol-Version": "2.0.0",
-      "x-payload-type": "file",
-    },
-  };
-  await axios.post(uploadURL, body, { params });
-};
+  chunk: ArrayBuffer,
+  contentType: string,
+): Promise<void> {
+  try {
+    // Convert to base64 for transport
+    const base64 = Buffer.from(chunk).toString("base64");
+
+    const body = {
+      url: uploadURL,
+      method: "PUT",
+      payload: {
+        files: [
+          {
+            content: base64,
+            type: contentType,
+          },
+        ],
+      },
+      headers: {
+        "X-Restli-Protocol-Version": "2.0.0",
+      },
+    };
+
+    const res = await axios.post(url, body, { params });
+    logger.info("Successfully uploaded video chunk", {
+      size: chunk.byteLength,
+    });
+  } catch (error: any) {
+    logger.error("Error uploading video chunk", { error: error.message });
+    throw new Error(`Failed to upload video chunk: ${error.message}`);
+  }
+}
+
+async function processVideoFile(
+  url: string,
+  videoUrl: string,
+): Promise<{ chunks: ArrayBuffer[]; contentType: string }> {
+  try {
+    // Get content type
+    const headResponse = await fetch(videoUrl, { method: "HEAD" });
+    const contentType = headResponse.headers.get("content-type") || "video/mp4";
+
+    // Download video
+    const arrayBuffer = await videoUrlToArrayBuffer(videoUrl);
+
+    // Split into chunks
+    const chunks = splitArrayBuffer(arrayBuffer);
+
+    return { chunks, contentType };
+  } catch (error: any) {
+    logger.error("Error processing video file", { error: error.message });
+    throw new Error(`Failed to process video file: ${error.message}`);
+  }
+}
 
 export const postLinkedInVideoPost = schemaTask({
   id: "post-linkedin-video-with-caption",
   schema: payloadSchemaWithMedia,
   run: async (payload) => {
     try {
-      const { appUserId, text, photo } = payload;
+      const { appUserId, text, photo: videoUrl } = payload;
+
+      // Basic validation
+      if (!text || text.trim() === "") {
+        throw new Error("Post text cannot be empty");
+      }
+
+      if (!appUserId) {
+        throw new Error("User ID is required");
+      }
+
+      if (!videoUrl) {
+        throw new Error("Video URL is required");
+      }
+
+      logger.info("Posting video content to LinkedIn", { userId: appUserId });
 
       const url = `https://labs.pathfix.com/oauth/method/linkedin/call`;
 
-      // Prepare the request parameters
-      const params = {
+      // Prepare the request parameters with environment variables
+      const params: UserParams = {
         user_id: appUserId,
-        public_key: "5CBC16AE-FC0D-4694-9914-76C21BADCB6D",
-        private_key: "4D5D34B4-176F-47FB-9D2B-EE1407499A02",
+        public_key: process.env.NEXT_PUBLIC_PATHFIX_PUBLIC_KEY || "",
+        private_key: process.env.NEXT_PUBLIC_PATHFIX_PRIVATE_KEY || "",
       };
+
+      // Validate API keys
+      if (!params.public_key || !params.private_key) {
+        throw new Error("LinkedIn API keys are not configured");
+      }
 
       const userURN = await fetchUserURN(url, params);
 
+      // Get video URL from AWS or use directly
+      const videoFullUrl = videoUrl;
+
+      if (!videoFullUrl) {
+        throw new Error("Failed to get valid video URL");
+      }
+
+      // Get video file size for the API request
+      const fileSize = await getVideoFileSize(videoFullUrl);
+
+      // Register the upload with LinkedIn
       const { uploadURL, assetId } = await registerLinkedInVideoUpload(
         url,
         params,
         userURN,
+        fileSize,
       );
-      console.log(photo, "videourl");
 
-      const chunks = await processVideoFile(photo);
+      // Process and upload the video
+      const { chunks, contentType } = await processVideoFile(url, videoFullUrl);
 
-      for (const chunk of chunks) {
-        await postVideoChunks(uploadURL, chunk, params);
+      // Upload each chunk
+      for (let i = 0; i < chunks.length; i++) {
+        logger.info(`Uploading video chunk ${i + 1} of ${chunks.length}`);
+        await uploadVideoChunk(
+          url,
+          params,
+          uploadURL,
+          chunks[i] as ArrayBuffer,
+          contentType,
+        );
       }
 
+      // Wait for processing to complete
+      // let status;
+      // let attempts = 0;
+      // const maxAttempts = 10; // Video might take longer to process
+
+      // do {
+      //   status = await checkUploadStatus(url, params, assetId);
+      //   if (status.status !== "AVAILABLE") {
+      //     // Wait longer for video
+      //     await new Promise((resolve) => setTimeout(resolve, 5000));
+      //     logger.info("Waiting for video processing", {
+      //       attempt: attempts + 1,
+      //       status: status.status,
+      //     });
+      //   }
+      //   attempts++;
+      // } while (status.status !== "AVAILABLE" && attempts < maxAttempts);
+
+      // if (status.status !== "AVAILABLE") {
+      //   throw new Error("Video upload processing timeout");
+      // }
+
+      // logger.info("Video ready for posting", { assetId });
+
+      // Post with video
       const body = {
-        url: "https://api.linkedin.com/rest/posts",
+        url: "https://api.linkedin.com/rest/videos?action=finalizeUpload",
         method: "POST",
         headers: {
           "X-Restli-Protocol-Version": "2.0.0",
@@ -436,30 +802,30 @@ export const postLinkedInVideoPost = schemaTask({
           "Content-Type": "application/json",
         },
         payload: {
-          author: userURN,
-          commentary: text,
-          visibility: "PUBLIC",
-          distribution: {
-            feedDistribution: "MAIN_FEED",
-            targetEntities: [],
-            thirdPartyDistributionChannels: [],
+          finalizeUploadRequest: {
+            video: `urn:li:video:${assetId}`,
+            uploadToken: "",
+            uploadedPartIds: [
+              //etags of the video chunks
+            ],
           },
-          media: {
-            title: "title of the video",
-            id:
-              "urn:li:video:" +
-              assetId.replace("urn:li:digitalmediaAsset:", ""),
-          },
-          lifecycleState: "PUBLISHED",
-          isReshareDisabledByAuthor: false,
         },
       };
 
       const res = await axios.post(url, body, { params });
-
+      console.log(res.data.rows[0].internalError);
+      console.log(res.data, "done dona done");
+      logger.info("Successfully posted video to LinkedIn", {
+        userId: appUserId,
+        postId: res.data?.id,
+      });
       return res.data;
     } catch (error: any) {
-      console.log(error);
+      logger.error("LinkedIn API Error", {
+        error: error.message,
+        stack: error.stack,
+      });
+      throw new Error(`Failed to post video to LinkedIn: ${error.message}`);
     }
   },
 });

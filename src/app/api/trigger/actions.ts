@@ -12,7 +12,6 @@ import {
   postFacebookImageStory,
   postFacebookMultipleImagePost,
   postFacebookTextPost,
-  // postFacebookVideoStory,
 } from "~/trigger/facebook";
 import {
   postLinkedInCarouselPost,
@@ -130,19 +129,11 @@ export async function postFacebookStoryPostTrigger(
   time: string,
   media: string,
 ) {
-  if (true) {
-    const handle = await postFacebookImageStory.trigger(
-      { appUserId: userId, text: text, photo: media },
-      { delay: time },
-    );
-    return handle.id;
-  } else {
-    // const handle = await postFacebookVideoStory.trigger(
-    //   { appUserId: userId, text: text, photo: media },
-    //   { delay: time },
-    // );
-    // return handle.id;
-  }
+  const handle = await postFacebookImageStory.trigger(
+    { appUserId: userId, text: text, photo: media },
+    { delay: time },
+  );
+  return handle.id;
 }
 
 // LINKEDIN

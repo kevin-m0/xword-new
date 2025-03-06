@@ -49,8 +49,8 @@ export const postFacebookTextPost = schemaTask({
       // Prepare the request parameters
       const params = {
         user_id: appUserId,
-        public_key: "5CBC16AE-FC0D-4694-9914-76C21BADCB6D",
-        private_key: "4D5D34B4-176F-47FB-9D2B-EE1407499A02",
+        public_key: process.env.NEXT_PUBLIC_PATHFIX_PUBLIC_KEY,
+        private_key: process.env.NEXT_PUBLIC_PATHFIX_PRIVATE_KEY,
       };
 
       const { accessToken, pageId } =
@@ -88,11 +88,11 @@ export const postFacebookImagePost = schemaTask({
       // Prepare the request parameters
       const params = {
         user_id: appUserId,
-        public_key: "5CBC16AE-FC0D-4694-9914-76C21BADCB6D",
-        private_key: "4D5D34B4-176F-47FB-9D2B-EE1407499A02",
+        public_key: process.env.NEXT_PUBLIC_PATHFIX_PUBLIC_KEY,
+        private_key: process.env.NEXT_PUBLIC_PATHFIX_PRIVATE_KEY,
       };
 
-      const photoUrl = getAwsUrl(photo);
+      const photoUrl = photo;
 
       const { accessToken, pageId } =
         await fetchFacebookPageAccessTokenAndPageId(url, params);
@@ -170,18 +170,16 @@ export const postFacebookImageStory = schemaTask({
   schema: payloadSchemaWithMedia,
   run: async (payload) => {
     try {
-      const { appUserId, text, photo } = payload;
+      const { appUserId, photo } = payload;
 
       const url = `https://labs.pathfix.com/oauth/method/facebook/call`;
 
       // Prepare the request parameters
       const params = {
         user_id: appUserId,
-        public_key: "5CBC16AE-FC0D-4694-9914-76C21BADCB6D",
-        private_key: "4D5D34B4-176F-47FB-9D2B-EE1407499A02",
+        public_key: process.env.NEXT_PUBLIC_PATHFIX_PUBLIC_KEY,
+        private_key: process.env.NEXT_PUBLIC_PATHFIX_PRIVATE_KEY,
       };
-
-      const photoUrl = getAwsUrl(photo);
 
       const { accessToken, pageId } =
         await fetchFacebookPageAccessTokenAndPageId(url, params);
@@ -195,7 +193,7 @@ export const postFacebookImageStory = schemaTask({
       );
 
       const body = {
-        url: "https://graph.facebook.com/v22.0/446092645264511/photo_stories",
+        url: `https://graph.facebook.com/v22.0/${pageId}/photo_stories`,
         method: "POST",
         payload: {
           access_token: accessToken,
@@ -211,44 +209,6 @@ export const postFacebookImageStory = schemaTask({
   },
 });
 
-// export const postFacebookVideoStory = schemaTask({
-//   id: "post-facebook-video-story",
-//   schema: payloadSchemaWithMedia,
-//   run: async (payload) => {
-//     try {
-//       const { appUserId, text, photo } = payload;
-
-//       const url = `https://labs.pathfix.com/oauth/method/facebook/call`;
-
-//       // Prepare the request parameters
-//       const params = {
-//         user_id: appUserId,
-//         public_key: "5CBC16AE-FC0D-4694-9914-76C21BADCB6D",
-//         private_key: "4D5D34B4-176F-47FB-9D2B-EE1407499A02",
-//       };
-
-//       const { accessToken, pageId } =
-//         await fetchFacebookPageAccessTokenAndPageId(url, params);
-
-//       const videoId = await uploadVideoForStoryToFacebook();
-
-//       const body = {
-//         url: "https://graph.facebook.com/v22.0/446092645264511/video_stories",
-//         method: "POST",
-//         payload: {
-//           access_token: accessToken,
-//           video_id: videoId,
-//         },
-//       };
-
-//       const res = await axios.post(url, body, { params });
-//       return res.data;
-//     } catch (error: any) {
-//       console.log(error);
-//     }
-//   },
-// });
-
 export const postFacebookMultipleImagePost = schemaTask({
   id: "post-facebook-image-multiple",
   schema: payloadSchemaWithMediaMultiple,
@@ -261,8 +221,8 @@ export const postFacebookMultipleImagePost = schemaTask({
       // Prepare the request parameters
       const params = {
         user_id: appUserId,
-        public_key: "5CBC16AE-FC0D-4694-9914-76C21BADCB6D",
-        private_key: "4D5D34B4-176F-47FB-9D2B-EE1407499A02",
+        public_key: process.env.NEXT_PUBLIC_PATHFIX_PUBLIC_KEY,
+        private_key: process.env.NEXT_PUBLIC_PATHFIX_PRIVATE_KEY,
       };
 
       const { accessToken, pageId } =

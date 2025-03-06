@@ -213,7 +213,8 @@ const CalendarSchedulePostModel = ({
           user?.emailAddresses[0]?.emailAddress as string,
           "5s",
           postText,
-          postMedia[0]?.content as string,
+          "https://static.videezy.com/system/resources/previews/000/049/922/original/Passengers_and_Ship_TL.mp4",
+          // postMedia[0]?.content as string,
         );
       } else if (selectedOption === "Story") {
         const responseId = await postInstagramStoryTrigger(
@@ -230,12 +231,21 @@ const CalendarSchedulePostModel = ({
     if (selectedAccount === "facebook") {
       // how to find out if the post is image or video
       if (selectedOption === "Post" && postMedia.length > 1) {
-        const responseId = await postFacebookMultipleImagePostTrigger(
-          user?.emailAddresses[0]?.emailAddress as string,
-          postText,
-          selectedDate.toISOString(),
-          postMedia.map((media) => media.content as string),
-        );
+        let mediaUrl =
+          "https://static.videezy.com/system/resources/previews/000/049/922/original/Passengers_and_Ship_TL.mp4";
+
+        let res = await fetch(mediaUrl);
+
+        const mtype = res.headers.get("content-type");
+
+        if (mtype?.includes("video")) {
+          const responseId = await postFacebookMultipleImagePostTrigger(
+            user?.emailAddresses[0]?.emailAddress as string,
+            postText,
+            selectedDate.toISOString(),
+            postMedia.map((media) => media.content as string),
+          );
+        }
       } else if (postMedia.length === 0) {
         const responseId = await postFacebookTextPostTrigger(
           user?.emailAddresses[0]?.emailAddress as string,
@@ -256,32 +266,45 @@ const CalendarSchedulePostModel = ({
           user?.emailAddresses[0]?.emailAddress as string,
           postText,
           selectedDate.toISOString(),
-          postMedia[0]?.content as string,
+          "https://images.unsplash.com/photo-1740231614760-8037a7896030?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHw1fHx8ZW58MHx8fHx8",
+          // postMedia[0]?.content as string,
         );
       }
     }
 
     // text post, image post, video post.
     if (selectedAccount === "linkedin") {
+      // if (selectedOption === "Post" && postMedia.length === 0) {
+      //   const responseId = await postLinkedInTextPostTrigger(
+      //     "kevin@m0.ventures",
+      //     postText,
+      //     selectedDate.toISOString(),
+      //   );
+      // } else
       if (selectedOption === "Post" && postMedia.length === 0) {
-        // const responseId = await postLinkedInTextPostTrigger(
-        //   "kevin@m0.ventures",
-        //   postText,
-        //   selectedDate.toISOString(),
-        // );
-        const responseId = await postLinkedInVideoPostTrigger(
-          user?.emailAddresses[0]?.emailAddress as string,
-          postText,
-          selectedDate.toISOString(),
-          "https://static.videezy.com/system/resources/previews/000/049/922/original/Passengers_and_Ship_TL.mp4",
-        );
-      } else if (selectedOption === "Post" && postMedia.length === 1) {
-        const responseId = await postLinkedInImagePostTrigger(
-          user?.emailAddresses[0]?.emailAddress as string,
-          postText,
-          selectedDate.toISOString(),
-          postMedia[0]?.content as string,
-        );
+        let mediaUrl =
+          "https://static.videezy.com/system/resources/previews/000/049/922/original/Passengers_and_Ship_TL.mp4";
+
+        let res = await fetch(mediaUrl);
+
+        const mtype = res.headers.get("content-type");
+
+        if (mtype?.includes("video")) {
+          const responseId = await postLinkedInVideoPostTrigger(
+            user?.emailAddresses[0]?.emailAddress as string,
+            postText,
+            selectedDate.toISOString(),
+            "https://static.videezy.com/system/resources/previews/000/049/922/original/Passengers_and_Ship_TL.mp4",
+          );
+        } else if (mtype?.includes("image")) {
+          const responseId = await postLinkedInImagePostTrigger(
+            user?.emailAddresses[0]?.emailAddress as string,
+            postText,
+            selectedDate.toISOString(),
+            "https://images.unsplash.com/photo-1740231614760-8037a7896030?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHw1fHx8ZW58MHx8fHx8",
+            // postMedia[0]?.content as string,
+          );
+        }
       } else if (selectedOption === "Post" && postMedia.length > 1) {
         const medias = postMedia.map((media) => media.content as string);
         const responseId = await postLinkedInCarouselPostTrigger(
