@@ -2,12 +2,12 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Input } from "~/components/ui/input";
 import { Textarea } from "~/components/ui/textarea";
-import { useUploadAudioFile } from "~/hooks/misc/useUploadAudioFile";
 import { ErrorToast } from "../custom-toast";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle } from "~/components/reusable/xw-dialog";
-import { PlusIcon } from "lucide-react";
+import { Loader2, PlusIcon } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import { useCreateUserVoice } from "~/hooks/soundverse/useUserVoices";
+import { uploadToS3 } from "~/lib/upload-to-s3";
 
 
 export const CreateUserVoice = () => {
@@ -15,11 +15,14 @@ export const CreateUserVoice = () => {
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
     const [audioFile, setAudioFile] = useState<File | null>(null);
-    const { uploadAudioFile, uploading } = useUploadAudioFile();
+    const [loading, setLoading] = useState<boolean>(false);
+
     const { mutateAsync: createUserVoice, isLoading } = useCreateUserVoice();
 
     const handleSubmit = async () => {
+        setLoading(true);
         if (!audioFile) {
+            setLoading(false);
             toast.custom((t) => (
                 <ErrorToast
                     t={t}
@@ -30,18 +33,20 @@ export const CreateUserVoice = () => {
             return;
         }
         try {
-            const audioFileKey = await uploadAudioFile(audioFile);
+            const { fileKey } = await uploadToS3(audioFile);
             await createUserVoice({
                 name,
                 description,
-                audioFileKey,
+                audioFileKey : fileKey,
                 voiceId: `voice_${crypto.randomUUID()}`
             });
+            setLoading(false);
             setIsOpen(false);
             setName("");
             setDescription("");
             setAudioFile(null);
         } catch (error) {
+            setLoading(false);
             console.error("Error uploading file:", error);
             toast.custom((t) => (
                 <ErrorToast
@@ -89,7 +94,7 @@ export const CreateUserVoice = () => {
                         }}
                     />
                     <div className="flex justify-start items-center">
-                        <Button className="rounded-lg" onClick={handleSubmit} >Create Voice</Button>
+                        <Button className="rounded-lg" onClick={handleSubmit} >{loading ? <Loader2 className="animate-spin" /> : "Create Voice" }</Button>
                     </div>
                 </div>
             </DialogContent>

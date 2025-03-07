@@ -61,6 +61,10 @@ const SelectTemplateComponent = ({ usecase }: { usecase: 'Audio' | 'Video' | 'Co
     }, {});
 
     const onSelect = (promptId: string, type: FlowType, prevType: string) => {
+        console.log("promptId--------->", promptId);
+        console.log("type--------->", type);
+        console.log("prev type--------->", prevType);
+        
         setFlowPromptId(promptId);
         setStep(1);
         setType(type);

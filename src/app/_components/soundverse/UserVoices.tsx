@@ -1,12 +1,10 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { useAtom } from 'jotai';
-import { audioVoiceStyleIdAtom, audioVoiceStyleNameAtom } from '~/atoms';
 import { UserVoice } from '@prisma/client';
-// import { useDeleteUserVoice, useUserVoices } from '../../_hooks/soundve/rse/useUserVoices';
 import { Loader2, Search, Trash2 } from 'lucide-react';
 import { useDeleteUserVoice, useUserVoices } from '~/hooks/soundverse/useUserVoices';
 import { backgroundColors } from '~/lib/system-voices';
-// import { backgroundColors } from "../../_lib/system-voices";
+import { audioVoiceStyleIdAtom, audioVoiceStyleNameAtom } from '~/atoms/soundVerseAtom';
 
 interface SystemVoiceType {
     id: string;
@@ -24,6 +22,8 @@ const UserVoices: React.FC = React.memo(() => {
 
     // Memoized handler to prevent unnecessary re-renders
     const handleModelSelection = useCallback((voice: SystemVoiceType | UserVoice) => {
+        console.log("selected voice--->", voice );
+        
         setVoiceStyleId("voiceId" in voice ? voice.voiceId : voice.id);
         setVoiceStyleName(voice.name);
     }, [setVoiceStyleId, setVoiceStyleName]);

@@ -614,7 +614,7 @@ getProjectDocuments: privateProcedure
   .query(async ({ input, ctx }) => {
     const docs = await db.document.findMany({
       where: {
-        spaceId: input.workspaceId,
+        organizationId: input.workspaceId,
       },
       select: {
         id: true,
@@ -623,6 +623,7 @@ getProjectDocuments: privateProcedure
         access: true,
         createdAt: true,
         createdBy: true,
+        redirectType: true,
         viewCount: true,
       },
       orderBy: {

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import moment from "moment";
 import Link from "next/link";
 import React from "react";
-import { Loader2 } from "lucide-react";
+import { Calendar, Clock, EllipsisVertical, Loader2, Trash2 } from "lucide-react";
 import { useOrganization, useUser } from "@clerk/nextjs";
 import { trpc } from "~/trpc/react";
 
@@ -20,34 +20,30 @@ import {
 import { useXWAlert } from "~/components/reusable/xw-alert";
 import { Button } from "~/components/ui/button";
 import { XWInput } from "~/components/reusable/XWInput";
-import TopBarComponent from "../topbar/TopbarComponent";
 import WriterXBannerComponent from "./WriterXBannerComponent";
 import { Card, CardDescription, CardHeader, CardTitle } from "~/components/ui/card";
 import EmptyScreen from "../empty/EmptyScreen";
-
-
-
+import SearchBarComponent from "../topbar/SearchBarComponent";
+import { AlertDialog, AlertDialogContent, AlertDialogTrigger, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel } from "~/components/ui/alert-dialog";
 
 const WriterXMainComponent: React.FC = () => {
     const [title, setTitle] = useState<string>("");
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
     const { organization: defaultSpace } = useOrganization();
     const { showToast } = useXWAlert();
-    const {user} = useUser();
+    const { user } = useUser();
     const utils = trpc.useUtils();
     const router = useRouter();
+    const [search, setSearch] = useState("");
+    const [openAlert, setOpenAlert] = useState(false);
 
-    // console.log("user----------------------->", user);
-    
 
     const workspaceId = defaultSpace?.id || "";
     const { data: docs = [], isPending: isDocsLoading } = trpc.writerx.getAllDocs.useQuery(
-      { workspaceId },
-      { enabled: !!workspaceId } 
+        { workspaceId },
+        { enabled: !!workspaceId }
     );
 
-    console.log("docs--------------------------->", docs);
-    
     const { mutate: createDocument, isPending: isCreating } = trpc.writerx.createDocument.useMutation({
         onSuccess(newDoc) {
             utils.writerx.getAllDocs.invalidate();
@@ -66,6 +62,17 @@ const WriterXMainComponent: React.FC = () => {
             });
         },
     });
+
+    const { mutate: deleteDocument, isPending: isDeleting } = trpc.writerx.deleteDocument.useMutation({
+        onSuccess: () => {
+            setOpenAlert(false);
+            utils.writerx.getAllDocs.invalidate(); // Refetch the documents after deletion
+        },
+        onError: (error) => {
+            alert(error.message); // Show error message
+        },
+    });
+
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -88,93 +95,158 @@ const WriterXMainComponent: React.FC = () => {
         }
     };
 
+    // Filter documents based on search query
+    const filteredDocs = docs.filter((doc) =>
+        doc.title.toLowerCase().includes(search.toLowerCase())
+    );
+
+   
+
+    const handleDeleteDoc = async (docId: string) => {
+        deleteDocument({ id: docId });
+    };
+
+
     return (
-        <div className="flex flex-col gap-5 h-dvh w-full">
-            <TopBarComponent />
+        <div className="gap-4 flex flex-col h-dvh w-full">
 
             <div className="px-5">
                 <WriterXBannerComponent />
             </div>
 
             <div className="flex items-center gap-5 justify-between px-5">
-                <h1 className="text-2xl font-semibold">Documents</h1>
+                <div>
+                    <h1 className="text-2xl font-semibold">Documents</h1>
+                </div>
+                <div className="gap-4 flex">
+                    {/* SearchBarComponent now properly updates search state */}
+                    <SearchBarComponent handleSearch={(value: string) => setSearch(value)} />
 
-                <Dialog open={isModalOpen} onOpenChange={handleOpenChange}>
-                    <DialogTrigger asChild>
-                        <Button variant="default" disabled={isCreating}>
-                            {isCreating && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
-                            Create New
-                        </Button>
-                    </DialogTrigger>
+                    <Dialog open={isModalOpen} onOpenChange={handleOpenChange}>
+                        <DialogTrigger asChild>
+                            <Button className="h-10" variant="default" disabled={isCreating}>
+                                {isCreating && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+                                Create New
+                            </Button>
+                        </DialogTrigger>
 
-                    <DialogContent maxWidth="sm">
-                        <DialogHeader>
-                            <DialogTitle className="text-start mb-2">
-                                Create New Document
-                            </DialogTitle>
-                            <DialogDescription className="text-start mb-2">
-                                Please enter a title for your new document.
-                            </DialogDescription>
-                        </DialogHeader>
-                        <form onSubmit={handleSubmit} className="space-y-4 mt-4">
-                            <XWInput
-                                type="text"
-                                value={title}
-                                onChange={(e) => setTitle(e.target.value)}
-                                required
-                                placeholder="Enter document title"
-                            />
-                            <div className="flex justify-start space-x-2">
-                                <Button
-                                    type="reset"
-                                    variant="secondary"
-                                    onClick={() => {
-                                        setTitle("");
-                                        setIsModalOpen(false);
-                                    }}
-                                >
-                                    Cancel
-                                </Button>
-                                <Button type="submit" variant="default" disabled={isCreating}>
-                                    {isCreating ? (
-                                        <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                                    ) : (
-                                        "Create"
-                                    )}
-                                </Button>
-                            </div>
-                        </form>
-                    </DialogContent>
-                </Dialog>
+                        <DialogContent maxWidth="sm">
+                            <DialogHeader>
+                                <DialogTitle className="text-start mb-2">
+                                    Create New Document
+                                </DialogTitle>
+                                <DialogDescription className="text-start mb-2">
+                                    Please enter a title for your new document.
+                                </DialogDescription>
+                            </DialogHeader>
+                            <form onSubmit={handleSubmit} className="space-y-4 mt-4">
+                                <XWInput
+                                    type="text"
+                                    value={title}
+                                    onChange={(e) => setTitle(e.target.value)}
+                                    required
+                                    placeholder="Enter document title"
+                                />
+                                <div className="flex justify-start space-x-2">
+                                    <Button
+                                        type="reset"
+                                        variant="secondary"
+                                        onClick={() => {
+                                            setTitle("");
+                                            setIsModalOpen(false);
+                                        }}
+                                    >
+                                        Cancel
+                                    </Button>
+                                    <Button type="submit" variant="default" disabled={isCreating}>
+                                        {isCreating ? (
+                                            <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                                        ) : (
+                                            "Create"
+                                        )}
+                                    </Button>
+                                </div>
+                            </form>
+                        </DialogContent>
+                    </Dialog>
+                </div>
+
             </div>
 
+            {/* Display Filtered Docs */}
             <div className="grid grid-cols-3 gap-5 px-5">
-                {!isDocsLoading && docs.length > 0 ? (
-                    docs.map((doc) => (
-                        <Card key={doc.id}>
+                {!isDocsLoading && filteredDocs.length > 0 ? (
+                    filteredDocs.map((doc) => (
+                        <Card key={doc.id} className="p-2 border border-gray-200 shadow-sm transition hover:shadow-md rounded-xl">
                             <CardHeader>
                                 <CardTitle>
-                                    <Link
-                                        href={`/${doc.redirectType === "General" ? "writerx" : "social"}/${doc.id}`}
-                                        className="hover:underline"
-                                    >
-                                        {doc.title}
-                                    </Link>
+                                    <div className="flex justify-between items-center">
+                                        <Link
+                                            href={`/${doc.redirectType === "General" ? "writerx" : "social"}/${doc.id}`}
+                                            className="text-lg font-semibold hover:underline transition"
+                                        >
+                                            {doc.title}
+                                        </Link>
+                                        <AlertDialog open={openAlert} onOpenChange={setOpenAlert}>
+                                            <AlertDialogTrigger asChild>
+                                                <Button variant="ghost" size="icon" className="hover:border-2" onClick={() => setOpenAlert(true)}>
+                                                    <Trash2 className="h-6 w-6" />
+                                                </Button>
+                                            </AlertDialogTrigger>
+                                            <AlertDialogContent>
+                                                <AlertDialogHeader>
+                                                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                                    <AlertDialogDescription>
+                                                        This action cannot be undone. This will permanently delete your data from our servers.
+                                                    </AlertDialogDescription>
+                                                </AlertDialogHeader>
+                                                <AlertDialogFooter>
+                                                    <AlertDialogCancel onClick={() => setOpenAlert(false)}>Cancel</AlertDialogCancel>
+                                                    <Button
+                                                        onClick={() => handleDeleteDoc(doc.id)}
+                                                        disabled={isDeleting}
+                                                        variant="default"
+                                                        className="hover:border-2 hover:bg-red-700 bg-red-500 text-white"
+                                                    >
+                                                        {isDeleting ? <Loader2 className="animate-spin" /> : "Continue"}
+                                                    </Button>
+                                                </AlertDialogFooter>
+                                            </AlertDialogContent>
+                                        </AlertDialog>
+
+                                    </div>
                                 </CardTitle>
-                                <CardDescription>
-                                    {moment(doc.createdAt).format("DD-MM-YYYY")}
+
+                                <CardDescription className="mt-2">
+                                    <div className="mb-2">
+                                        <p className="text-sm">
+                                            <span className="font-medium">Type:</span> {doc.redirectType}
+                                        </p>
+                                    </div>
+
+                                    <div className="flex items-center gap-6 text-sm">
+                                        <div className="flex items-center gap-2">
+                                            <Calendar className="w-4 h-4" />
+                                            <span className="font-medium">{moment(doc.createdAt).format("DD MMMM YYYY")}</span>
+                                        </div>
+
+                                        <div className="flex items-center gap-2">
+                                            <Clock className="w-4 h-4" />
+                                            <span className="font-medium">{moment(doc.createdAt).format("hh:mm A")}</span>
+                                        </div>
+                                    </div>
                                 </CardDescription>
                             </CardHeader>
                         </Card>
                     ))
                 ) : isDocsLoading ? (
-                    <div className="flex items-center justify-center">
+                    <div className="flex items-center justify-center w-full col-span-3 h-40">
                         <Loader2 className="h-8 w-8 animate-spin text-primary" />
                     </div>
                 ) : null}
             </div>
 
-            {!isDocsLoading && docs.length === 0 && (
+            {!isDocsLoading && filteredDocs.length === 0 && (
                 <EmptyScreen
                     title="No documents found"
                     description="Create a new document to get started"
@@ -185,3 +257,5 @@ const WriterXMainComponent: React.FC = () => {
 };
 
 export default WriterXMainComponent;
+
+

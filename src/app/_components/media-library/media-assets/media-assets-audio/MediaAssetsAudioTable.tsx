@@ -84,6 +84,8 @@ export default function MediaAssetsAudioTable() {
     },
   });
 
+  // console.log("table---------------------->>", table);/
+
   const selectedRowIds = Object.keys(rowSelection)
     .filter((id) => rowSelection[id])
     .map(

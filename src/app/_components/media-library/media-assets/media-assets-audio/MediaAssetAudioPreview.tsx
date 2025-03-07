@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -12,50 +12,52 @@ import { Button } from "~/components/ui/button";
 import ReactAudioPlayer from "react-audio-player";
 import { trpc } from "~/trpc/react";
 import { MediaAssetsAudio } from "~/types/media.types";
+import { getAwsUrl } from "~/lib/get-aws-url";
 
 const MediaAssetAudioPreview = ({ audio }: { audio: MediaAssetsAudio }) => {
-  const {
-    data: fileUrl,
-    isLoading,
-    isError,
-  } = trpc.aws.getObjectURL.useQuery(
-    {
-      key: audio.audioKey as string,
-    },
-    {
-      enabled: !!audio.audioKey,
-    },
-  );
+  const [open, setOpen] = useState(false);
+  const fileUrl = getAwsUrl(audio.audioKey);
 
   console.log("Audio Key:", audio.audioKey);
-
   console.log("fileUrl", fileUrl);
 
   return (
     <div>
-      <Dialog>
+      <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          <Button size={"sm"} variant="ghost" className="w-full justify-start">
+          <Button
+            size={"sm"}
+            variant="ghost"
+            className="w-full justify-start"
+            onClick={() => setOpen(true)}
+          >
             Preview
           </Button>
         </DialogTrigger>
-        <DialogContent>
+        <DialogContent className="w-[800px] max-w-3xl">
           <DialogHeader>
-            <DialogTitle>{audio.text}</DialogTitle>
-            <p className="text-sm text-xw-muted">
-              Uploaded At: {new Date(audio.createdAt).toLocaleString()}
-            </p>
+            <DialogTitle>Audio Preview</DialogTitle>
           </DialogHeader>
-          <div className="mt-4">
-            {isLoading && (
-              <p className="text-center text-xw-muted">Loading audio...</p>
-            )}
-            {isError && (
-              <p className="text-center text-red-500">
-                Failed to load audio. Please try again.
+          <div className="gap-4 w-full mt-2">
+            <div className="mb-3">
+              {fileUrl && (
+                <ReactAudioPlayer className="w-full" src={fileUrl} controls />
+              )}
+            </div>
+            <div className="gap-4">
+              <p>
+                <span className="text-base font-bold text-orange-600">
+                  Transcription:{" "}
+                </span>
+                {audio.text}
               </p>
-            )}
-            {fileUrl && <ReactAudioPlayer src={fileUrl} autoPlay controls />}
+              <p className="text-sm text-xw-muted mt-2">
+                Uploaded At: {new Date(audio.createdAt).toLocaleString()}
+              </p>
+            </div>
+            <div className="flex justify-end w-full">
+              <Button onClick={() => setOpen(false)}>Close</Button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>

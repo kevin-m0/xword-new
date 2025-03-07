@@ -4,7 +4,7 @@ import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "~/components/ui/s
 import { Popover, PopoverContent, PopoverTrigger } from '~/components/ui/popover';
 import { Button } from '~/components/ui/button';
 import { Editor } from '@tiptap/core';
-import { ChevronRight, Share } from 'lucide-react';
+import { ChevronRight, Share, Sparkles } from 'lucide-react';
 import { useOrganization, useOrganizationList } from '@clerk/nextjs';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import { trpc } from '~/trpc/react';
@@ -113,8 +113,9 @@ const TiptapHeader = ({ title, id, editor }: { title: string, id: string, editor
     };
 
     return (
-        <div className="w-full flex items-center justify-between gap-2">
-            <div className=" flex items-center gap-5 flex-1">
+        <div className="w-full flex items-center justify-between px-2">
+            {/* Left Section */}
+            <div className="flex items-center gap-5 flex-1 justify-start">
                 {!isOpen && (
                     <div className="hidden tb:block">
                         <Button variant={"outline"} size="icon" onClick={handleOpen}>
@@ -126,24 +127,24 @@ const TiptapHeader = ({ title, id, editor }: { title: string, id: string, editor
                 <div className="tb:hidden">
                     <Sheet>
                         <SheetTrigger asChild>
-                            <Button variant={"outline"} size="icon" onClick={handleOpen}>
-                                <ChevronRight className="h-4 w-4" />
+                            <Button variant={"default"} onClick={handleOpen}>
+                                <Sparkles className="h-4 w-4" />
+                                Doc AI: Ask Anything
                             </Button>
                         </SheetTrigger>
                         <SheetContent side="left" className="p-0 bg-xw-sidebar px-0 pr-0">
                             <SheetTitle></SheetTitle>
-                            <WriterXSidebar
-                                id={id}
-                                content={editor?.getHTML()}
-                            />
-                            {/* <h2> hi sanjay</h2> */}
+                            <WriterXSidebar id={id} content={editor?.getHTML()} />
                         </SheetContent>
                     </Sheet>
                 </div>
+            </div>
 
-                <form className='flex-1' onSubmit={handleTitleSubmit}>
+            {/* Center Section */}
+            <div className="flex-1 flex justify-center">
+                <form className="w-full max-w-sm" onSubmit={handleTitleSubmit}>
                     <input
-                        className="border-none outline-none bg-transparent rounded-lg border-b border-xw-primary max-w-sm w-full focus:outline-none focus:outline-b-2  focus:ring-1 focus:ring-xw-primary "
+                        className="border-none outline-none bg-transparent rounded-lg border-b border-xw-primary w-full focus:ring-1 focus:ring-xw-primary"
                         type="text"
                         value={newTitle}
                         onChange={handleTitleChange}
@@ -152,37 +153,35 @@ const TiptapHeader = ({ title, id, editor }: { title: string, id: string, editor
                 </form>
             </div>
 
-            <Popover>
-                <PopoverTrigger asChild>
-                    <Button
-                        variant={"outline"}
-                    >
-                        Export <Share className="h-4 w-4 ml-2" />
-                    </Button>
-                </PopoverTrigger>
-                <PopoverContent className=' flex flex-col gap-1 border-none'>
-                    <Button variant="ghost" onClick={() => exportContent('pdf')}>
-                        Export to PDF
-                    </Button>
-                    <Button variant="ghost" onClick={() => exportContent('word')}>
-                        Export to Word
-                    </Button>
-                </PopoverContent>
-            </Popover>
+            {/* Right Section */}
+            <div className="flex items-center gap-4 flex-1 justify-end">
+                <Popover>
+                    <PopoverTrigger asChild>
+                        <Button variant={"outline"}>
+                            Export <Share className="h-4 w-4 ml-2" />
+                        </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="flex flex-col gap-1 border-none">
+                        <Button variant="ghost" onClick={() => exportContent('pdf')}>
+                            Export to PDF
+                        </Button>
+                        <Button variant="ghost" onClick={() => exportContent('word')}>
+                            Export to Word
+                        </Button>
+                    </PopoverContent>
+                </Popover>
 
-            <div className='flex items-center -space-x-2'>
-                {memberships?.data?.map((member) => (
-                    <Avatar key={member.publicUserData.userId} className='h-8 w-8 border border-xw-border'>
-                        <AvatarImage src={member.publicUserData.imageUrl} alt={member.publicUserData.userId} />
-                        <AvatarFallback>{member.publicUserData.firstName?.slice(0, 1) || "U"}</AvatarFallback>
-                    </Avatar>
-                ))}
-            </div>
-
-            <div className="flex items-center gap-2">
-                {/* <WriterXSocialPreviewMenu /> */}
+                <div className="flex items-center -space-x-2">
+                    {memberships?.data?.map((member) => (
+                        <Avatar key={member.publicUserData.userId} className="h-8 w-8 border border-xw-border">
+                            <AvatarImage src={member.publicUserData.imageUrl} alt={member.publicUserData.userId} />
+                            <AvatarFallback>{member.publicUserData.firstName?.slice(0, 1) || "U"}</AvatarFallback>
+                        </Avatar>
+                    ))}
+                </div>
             </div>
         </div>
+
     )
 }
 

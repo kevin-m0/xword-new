@@ -65,8 +65,12 @@ export const columns: ColumnDef<MediaAssetsAudio>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Name" />
     ),
-    cell: ({ row }) => <div>{row.getValue("text")}</div>,
-  },
+    cell: ({ row }) => {
+      const text = row.getValue("text") as string;
+      const truncatedText = text.length > 30 ? `${text.slice(0, 30)}...` : text; // Truncate after 20 characters
+      return <div title={text}>{truncatedText}</div>; // Show full text on hover
+    },
+  },  
   {
     accessorKey: "generatedType",
     header: ({ column }) => (

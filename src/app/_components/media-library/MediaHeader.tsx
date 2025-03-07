@@ -8,11 +8,11 @@ const MediaHeader = () => {
       <h1 className="text-3xl font-semibold">Media Library</h1>
 
       <div className="flex items-center gap-2">
-        <Button variant={"secondary"}>
+        {/* <Button variant={"secondary"}>
           <NewFolderIcon />
         </Button>
 
-        <Button variant={"default"}>Upload</Button>
+        <Button variant={"default"}>Upload</Button> */}
       </div>
     </div>
   );

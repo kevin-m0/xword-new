@@ -228,6 +228,10 @@ export default function SoundVerseForm({
   const handleTabChange = (tab: string) => setActiveTab(tab as TabType);
   const handleVoiceTabChange = (tab: string) => setActiveTabVoiceType(tab as VoiceTabType);
 
+  console.log("voice style id --->", voiceStyleId);
+  
+  console.log("state--------=------>", isProcessing, isUploading, (activeTab === "text" && (!paraText.trim() || !voiceStyleId)), (activeTab === "speech" && (!localFile || !transcript.trim() || !voiceStyleId)));
+  
 
   return (
     <div className="bg-xw-sidebar p-5 flex flex-col h-full w-full gap-5 overflow-hidden">

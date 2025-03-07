@@ -8,10 +8,7 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "~/components/ui/dialog"
-// import XWSecondaryButton from '../reusable/XWSecondaryButton';
 import { Mic } from 'lucide-react';
-// import XWGradSeparator from '../reusable/XWGradSeparator';
-import AudioBox from './AudioBox';
 import XWSecondaryButton from '~/components/reusable/XWSecondaryButton';
 import XWGradSeparator from '~/components/reusable/XWGradSeparator';
 

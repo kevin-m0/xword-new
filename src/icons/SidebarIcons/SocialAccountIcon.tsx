@@ -1,0 +1,22 @@
+import React from 'react'
+
+const SocialAccountIcon = () => {
+    return (
+        <div>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <g clip-path="url(#clip0_4002_54329)">
+                    <path d="M1.63967 10C1.43967 9.36667 1.33301 8.7 1.33301 8C1.33301 7.3 1.43967 6.63333 1.63967 6H14.3597C14.5597 6.63333 14.6663 7.3 14.6663 8C14.6663 8.7 14.5597 9.36667 14.3597 10H1.63967Z" stroke="white" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M7.99967 14.6693C11.6816 14.6693 14.6663 11.6845 14.6663 8.0026C14.6663 4.32071 11.6816 1.33594 7.99967 1.33594C4.31778 1.33594 1.33301 4.32071 1.33301 8.0026C1.33301 11.6845 4.31778 14.6693 7.99967 14.6693Z" stroke="white" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M7.99967 14.6693C9.47243 14.6693 10.6663 11.6845 10.6663 8.0026C10.6663 4.32071 9.47243 1.33594 7.99967 1.33594C6.52692 1.33594 5.33301 4.32071 5.33301 8.0026C5.33301 11.6845 6.52692 14.6693 7.99967 14.6693Z" stroke="white" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round" />
+                </g>
+                <defs>
+                    <clipPath id="clip0_4002_54329">
+                        <rect width="16" height="16" fill="white" />
+                    </clipPath>
+                </defs>
+            </svg>
+        </div>
+    )
+}
+
+export default SocialAccountIcon

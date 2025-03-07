@@ -4,10 +4,14 @@ import { Button } from "~/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import FlowDialog from "./flow/FlowDialog";
 import MultiCampaignDynamicDialog from "./multi-campaign/MultiCampaignDynamicDialog";
+import TopBarComponent from "../topbar/TopbarComponent";
 
 const WriterXBannerComponent = () => {
     return (
-        <div className="py-5 relative">
+        <div className="relative">
+            <div className="absolute top-4 right-4 z-10">
+                <TopBarComponent />
+            </div>
             <div
                 className="p-[1px] rounded-2xl relative"
                 style={{

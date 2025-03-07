@@ -33,10 +33,10 @@ const TiptapEditor = ({ editor, docId }: { editor: Editor, docId: string }) => {
     }, [editor]);
 
     return (
-        <div>
+        <div className='h-[83vh] overflow-y-auto border rounded-lg bg-gray-600'>
             <EditorContent
                 editor={editor}
-                className="tiptap-editor w-full p-3 border rounded-lg bg-gray-600 focus:outline-none"
+                className="tiptap-editor overflow-scroll w-full p-3 border rounded-lg bg-gray-600 focus:outline-none"
             />
         </div>
     )

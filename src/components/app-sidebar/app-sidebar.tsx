@@ -41,19 +41,30 @@ import {
 import { useUser } from "@clerk/nextjs";
 import WorkspaceSwitcher from "./workspace-switcher";
 import NavUser from "./nav-user";
+import { AudiosonicSidebarIcon, ChatsonicSidebarIcon, PhotosonicSidebarIcon } from "~/icons/Figma";
+import ChatSonicIcon from "~/icons/SidebarIcons/ChatSonicIcon";
+import SoundVerseIcon from "~/icons/SidebarIcons/SoundVerseIcon";
+import PhotoSonicIcon from "~/icons/SidebarIcons/PhotoSonicIcon";
+import WriterXIcon from "~/icons/SidebarIcons/WriterXIcon";
+import AudioVerseIcon from "~/icons/SidebarIcons/AudioVerseIcon";
+import VideoVerseIcon from "~/icons/SidebarIcons/VideoVerseIcon";
+import HomeIcon from "~/icons/SidebarIcons/HomeIcon";
+import MediaLibraryIcon from "~/icons/SidebarIcons/MediaLibraryIcon";
+import CalendarIcon from "~/icons/SidebarIcons/CalendarIcon";
+import SocialAccountIcon from "~/icons/SidebarIcons/SocialAccountIcon";
 
 const data = {
   navMain: [
     {
       title: "Home",
       url: "/dashboard",
-      icon: Home,
+      icon: HomeIcon,
       isActive: true,
     },
     {
       title: "Media Library",
       url: "/media-library",
-      icon: Library,
+      icon: MediaLibraryIcon,
       // items: [
       //   {
       //     title: "Genesis",
@@ -72,12 +83,12 @@ const data = {
     {
       title: "Content Calendar",
       url: "/content-calendar",
-      icon: Calendar,
+      icon: CalendarIcon,
     },
     {
       title: "Social Accounts",
       url: "/social-accounts",
-      icon: Cable,
+      icon: SocialAccountIcon,
     },
   ],
   navSecondary: [
@@ -96,32 +107,32 @@ const data = {
     {
       name: "ChatSonic",
       url: "/chatsonic",
-      icon: MessageCircle,
+      icon: ChatSonicIcon,
     },
     {
       name: "SoundVerse",
       url: "/soundverse",
-      icon: Speaker,
+      icon: SoundVerseIcon,
     },
     {
       name: "PhotoSonic",
       url: "/photosonic",
-      icon: Image,
+      icon: PhotoSonicIcon,
     },
     {
       name: "WriterX",
       url: "/writerx",
-      icon: PenIcon,
+      icon: WriterXIcon,
     },
     {
       name: "AudioVerse",
       url: "/audioverse",
-      icon: Map,
+      icon: AudioVerseIcon,
     },
     {
       name: "VideoVerse",
       url: "/videoverse",
-      icon: Map,
+      icon: VideoVerseIcon,
     },
   ],
 };
@@ -132,7 +143,7 @@ export default function AppSidebar({
   const { user } = useUser();
 
   return (
-    <Sidebar collapsible="icon" variant="sidebar" {...props}>
+    <Sidebar collapsible="icon" className="bg-[#000000]" variant="sidebar" {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
