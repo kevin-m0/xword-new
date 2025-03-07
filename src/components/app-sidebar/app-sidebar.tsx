@@ -52,6 +52,7 @@ import HomeIcon from "~/icons/SidebarIcons/HomeIcon";
 import MediaLibraryIcon from "~/icons/SidebarIcons/MediaLibraryIcon";
 import CalendarIcon from "~/icons/SidebarIcons/CalendarIcon";
 import SocialAccountIcon from "~/icons/SidebarIcons/SocialAccountIcon";
+import { Skeleton } from "../ui/skeleton";
 
 const data = {
   navMain: [
@@ -157,7 +158,19 @@ export default function AppSidebar({
         {/* <NavSecondary items={data.navSecondary} className="mt-auto" /> */}
       </SidebarContent>
       <SidebarFooter>
-        {user ? <NavUser user={user} /> : <>insert custom loader here</>}
+        {user ? <NavUser user={user} /> : <>
+        <div className="flex items-center space-x-3 p-2 w-fit bg-gray-700 rounded-lg">
+            {/* Avatar Skeleton */}
+            <Skeleton className="h-10 w-10 rounded-full bg-blue-600" />
+
+            <div className="space-y-1">
+              {/* Name Skeleton */}
+              <Skeleton className="h-4 w-16 bg-gray-400" />
+              {/* Tier Skeleton */}
+              <Skeleton className="h-3 w-20 bg-gray-500" />
+            </div>
+          </div>
+        </>}
       </SidebarFooter>
     </Sidebar>
   );
