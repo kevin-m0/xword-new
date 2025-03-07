@@ -111,7 +111,7 @@ export const useSend = ({
       category,
       publishDate,
       includeDomains,
-      otherFiles,
+      // otherFiles,
       Urls: urls || [],
       query: chatInput,
       role: "user" as const,

@@ -9,8 +9,8 @@ import {
 import { postThread, postTweet, postTweetWithMedia } from "~/trigger/twitter";
 import {
   postFacebookImagePost,
-  postFacebookImageStory,
   postFacebookMultipleImagePost,
+  postFacebookStory,
   postFacebookTextPost,
 } from "~/trigger/facebook";
 import {
@@ -129,7 +129,7 @@ export async function postFacebookStoryPostTrigger(
   time: string,
   media: string,
 ) {
-  const handle = await postFacebookImageStory.trigger(
+  const handle = await postFacebookStory.trigger(
     { appUserId: userId, text: text, photo: media },
     { delay: time },
   );

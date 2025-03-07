@@ -147,13 +147,14 @@ const uploadVideoForStoryToFacebook = async (
   url: string,
   params: any,
   pageId: string,
-  videoUrl: string,
+  accessToken: string,
 ) => {
   const body = {
     url: `https://graph.facebook.com/${pageId}/video_stories`,
     method: "POST",
     payload: {
       upload_phase: "start",
+      access_token: accessToken,
     },
     headers: {
       "x-pinc-response-data-at": "rows.0.data",
@@ -162,11 +163,35 @@ const uploadVideoForStoryToFacebook = async (
 
   const res = await axios.post(url, body, { params });
 
-  return res.data.id;
+  console.log(res.data, "videoId & uploadurl");
+
+  return {
+    videoId: res.data.video_id,
+    uploadUrl: res.data.upload_url,
+  };
 };
 
-export const postFacebookImageStory = schemaTask({
-  id: "post-facebook-story-image",
+const checkIfPhotoIsReady = async (
+  url: string,
+  params: any,
+  accessToken: string,
+  photoId: string,
+) => {
+  const body = {
+    url: `https://graph.facebook.com/v22.0/${photoId}`,
+    method: "GET",
+    payload: {
+      access_token: accessToken,
+    },
+  };
+
+  const res = await axios.post(url, body, { params });
+
+  return res.data;
+};
+
+export const postFacebookStory = schemaTask({
+  id: "post-facebook-story",
   schema: payloadSchemaWithMedia,
   run: async (payload) => {
     try {
@@ -181,28 +206,91 @@ export const postFacebookImageStory = schemaTask({
         private_key: process.env.NEXT_PUBLIC_PATHFIX_PRIVATE_KEY,
       };
 
+      let photoRes = await fetch(photo);
+
+      const mtype = photoRes.headers.get("content-type");
+
       const { accessToken, pageId } =
         await fetchFacebookPageAccessTokenAndPageId(url, params);
 
-      const photoId = await uploadPhotoToFacebook(
-        url,
-        params,
-        pageId,
-        accessToken,
-        photo,
-      );
+      if (mtype?.includes("video")) {
+        const { videoId, uploadUrl } = await uploadVideoForStoryToFacebook(
+          url,
+          params,
+          pageId,
+          accessToken,
+        );
 
-      const body = {
-        url: `https://graph.facebook.com/v22.0/${pageId}/photo_stories`,
-        method: "POST",
-        payload: {
-          access_token: accessToken,
-          photo_id: photoId,
-        },
-      };
+        const body = {
+          url: `https://rupload.facebook.com/video-upload/v22.0/${videoId}`,
+          method: "POST",
+          payload: {
+            file_url: photo,
+            access_token: accessToken,
+          },
+        };
 
-      const res = await axios.post(url, body, { params });
-      return res.data;
+        console.log(body, "body");
+
+        const res2 = await axios.post(url, body, { params });
+
+        console.log(res2.data.rows[0].internalError, "res2");
+
+        for (let i = 0; i < 50; i++) {
+          const res = await axios.post(
+            `https://graph.facebook.com/v22.0/${videoId}/fields=status`,
+            { params },
+          );
+          console.log(res.data.rows[0].data, "res.data");
+          if (res.data.rows[0].data.video_status === "ready") {
+            break;
+          }
+          await new Promise((resolve) => setTimeout(resolve, 3000));
+        }
+
+        // const finalBody = {
+        //   url: `https://graph.facebook.com/v22.0/${pageId}/video_stories`,
+        //   method: "POST",
+        //   payload: {
+        //     access_token: accessToken,
+        //     video_id: videoId,
+        //     upload_phase: "finish",
+        //   },
+        // };
+
+        // console.log(finalBody, "finalBody");
+
+        // const finalRes = await axios.post(url, finalBody, { params });
+        // return finalRes.data;
+      } else if (mtype?.includes("image")) {
+        const photoId = await uploadPhotoToFacebook(
+          url,
+          params,
+          pageId,
+          accessToken,
+          photo,
+        );
+
+        const readyOrNot = await checkIfPhotoIsReady(
+          url,
+          params,
+          accessToken,
+          photoId.id,
+        );
+
+        const body = {
+          url: `https://graph.facebook.com/v22.0/${pageId}/photo_stories`,
+          method: "POST",
+          payload: {
+            access_token: accessToken,
+            photo_id: photoId.id,
+          },
+        };
+
+        const res = await axios.post(url, body, { params });
+        console.log(res.data);
+        return res.data;
+      }
     } catch (error: any) {
       console.log(error);
     }
