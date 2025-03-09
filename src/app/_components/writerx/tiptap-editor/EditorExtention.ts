@@ -22,6 +22,7 @@ import Color from "@tiptap/extension-color"; // Required for text color
 import TextAlign from "@tiptap/extension-text-align";
 import Placeholder from '@tiptap/extension-placeholder'
 import Link from '@tiptap/extension-link';
+import Image from '@tiptap/extension-image';
 
 export const editorExtensions = [
     Document,
@@ -54,8 +55,10 @@ export const editorExtensions = [
             'first:before:text-gray-400 first:before:float-left first:before:content-[attr(data-placeholder)] first:before:pointer-events-none',
     }),
     Link,
+    Image,
 ];
 
 
 export const defaultContent = ``;
+
 

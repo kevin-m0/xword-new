@@ -21,7 +21,7 @@ export const uploadToS3 = async (file: File) => {
       throw new Error("Failed to get upload URL");
     }
     const data = (await response.json()) as { url: string };
-    return { fileUrl: data?.url, fileKey: `/uploads/${fileName}` };
+    return { fileUrl: data?.url, fileKey: `uploads/${fileName}` };
   } catch (error) {
     console.error("Upload error:", error);
     throw new Error("Failed to upload file");

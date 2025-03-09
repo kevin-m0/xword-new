@@ -19,6 +19,7 @@ import { trpc } from "~/trpc/react";
 import AddDoc from "~/icons/AddDoc";
 import { XWSlider } from "~/components/reusable/XWSlider";
 import { useDeleteAudioModels } from "~/hooks/soundverse/useDeleteAudioRecords";
+import { getAwsUrl } from "~/lib/get-aws-url";
 
 interface AudioBoxProps {
   audioId?: string; // <-- NEW: pass the DB ID (e.g., audio.id) here
@@ -51,8 +52,8 @@ const AudioBox = ({
   const [volume, setVolume] = useState(1.0);
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const { data: audioUrl } = trpc.aws.getObjectURL.useQuery({ key: audioKey });
-
+  // const { data: audioUrl } = trpc.aws.getObjectURL.useQuery({ key: audioKey });
+  const audioUrl = getAwsUrl(audioKey)
   // Hook for deleting
   const { mutate: deleteAudio } = useDeleteAudioModels();
 

@@ -6,6 +6,7 @@ import XWDropBox from "~/components/reusable/XWDropBox";
 import { trpc } from "~/trpc/react";
 import { useXWAlert } from "~/components/reusable/xw-alert";
 import { useOrganization } from "@clerk/nextjs";
+import { uploadToS3 } from "~/lib/upload-to-s3";
 
 const DropAssetsBox = () => {
   const [localFile, setLocalFile] = useState<File | null>(null); // Single file state
@@ -58,17 +59,17 @@ const DropAssetsBox = () => {
       setLocalFile(file);
 
       try {
-        const fileKey = crypto.randomUUID();
+        // const fileKey = crypto.randomUUID();
 
         if (file.type.startsWith("audio/")) {
-          await uploadFile(file, fileKey);
+          const {fileKey, fileUrl } = await uploadToS3(file);
           addAudioAsset({
             audioKey: fileKey,
             text: file.name,
             workspaceId: defaultSpace?.id || "",
           });
         } else if (file.type.startsWith("image/")) {
-          await uploadFile(file, fileKey);
+          const {fileKey, fileUrl } = await uploadToS3(file);
           addImageAsset({
             imageKey: fileKey,
             workspaceId: defaultSpace?.id || "",

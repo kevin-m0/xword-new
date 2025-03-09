@@ -2,40 +2,55 @@
 
 import React from "react";
 import { SidebarMenuButton } from "../ui/sidebar";
-import { ArrowUpDown, Command } from "lucide-react";
+import { ArrowUpDown, ChevronDown, Command } from "lucide-react";
 import { useOrganization } from "@clerk/nextjs";
 import Image from "next/image";
 import NewSidebarWorkspacePopover from "./NewSidebarWorkspacePopover";
+import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar";
+import { Skeleton } from "../ui/skeleton";
 
 const WorkspaceSwitcher = () => {
   const { organization, isLoaded } = useOrganization();
 
   if (!isLoaded) {
-    return <>insert custom loader here</>;
+    return <>
+      <div className="flex items-center space-x-3 p-2 w-full bg-gray-700 rounded-lg">
+        {/* Avatar Skeleton */}
+        <Skeleton className="h-10 w-10 rounded-full bg-blue-600" />
+
+        <div className="space-y-1">
+          {/* Name Skeleton */}
+          <Skeleton className="h-4 w-16 bg-gray-400" />
+          {/* Tier Skeleton */}
+          <Skeleton className="h-3 w-20 bg-gray-500" />
+        </div>
+      </div>
+    </>;
   }
 
   return (
     <NewSidebarWorkspacePopover>
       <SidebarMenuButton size="lg" asChild>
-        <div className="cursor-pointer">
-          <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+        <div className="cursor-pointer bg-slate-500 p-2 h-14">
+          <div className="flex aspect-square size-9 items-center justify-center !rounded-full bg-sidebar-primary text-sidebar-primary-foreground">
             {organization?.imageUrl ? (
-              <Image
-                src={organization?.imageUrl}
-                alt={organization?.name}
-                className="h-full w-full object-cover"
-                height={5}
-                width={5}
-              />
+              <h2 className="text-white font-bold text-base">{organization?.name?.charAt(0)?.toUpperCase() || "W"}</h2>
+              // <Image
+              //   src={organization?.imageUrl}
+              //   alt={organization?.name}
+              //   className="h-full w-full object-cover !rounded-full border-2 border-blue-600"
+              //   height={5}
+              //   width={5}
+              // />
             ) : (
               <Command className="h-full w-full" />
             )}
           </div>
           <div className="grid flex-1 text-left text-sm leading-tight">
-            <span className="truncate font-semibold">{organization?.name}</span>
-            <span className="truncate text-xs">Free Tier</span>
+            <span className="truncate font-semibold text-base">{organization?.name}</span>
+            <span className="truncate text-sm">Free Tier</span>
           </div>
-          <ArrowUpDown className="ml-auto h-4 w-4" />
+          <ChevronDown className="ml-auto h-4 w-4" />
         </div>
       </SidebarMenuButton>
     </NewSidebarWorkspacePopover>

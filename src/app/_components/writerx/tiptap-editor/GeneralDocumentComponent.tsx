@@ -24,7 +24,7 @@ const GeneralDocumentComponent = ({ doc }: { doc: IDocument }) => {
         return <div className="text-red-500">Failed to load document. Please try again later.</div>
     }
     return (
-        <div className='flex flex-col gap-2'>
+        <div className='flex flex-col gap-4 px-4 py-6 overflow-scroll'>
             <TiptapHeader title={doc?.title} id={doc?.id} editor={editor as Editor} />
             <TiptapToolBar editor={editor as Editor} />
             <TiptapEditor editor={editor as Editor} docId={doc?.docId as string} />

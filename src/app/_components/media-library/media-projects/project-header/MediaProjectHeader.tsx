@@ -1,29 +1,35 @@
 import { ChevronRight, Plus } from "lucide-react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import React from "react";
 import { Button } from "~/components/ui/button";
 import { Card } from "~/components/ui/card";
 import { recentExports } from "~/lib/constant/media.constants";
 
 const MediaProjectHeader = () => {
+  const router = useRouter()
   const projectData = [
     {
       id: 1,
       name: "New Project Video",
       icon: "/icons/video-add.svg",
+      link: "/videoverse"
     },
     {
       id: 2,
       name: "New Audio Project",
       icon: "/icons/audio-lines.svg",
+      link: "/audioverse"
     },
     {
       id: 3,
       name: "New Doc Project",
       icon: "/icons/doc-add.svg",
+      link: "/writerx"
     },
   ];
   return (
+
     <div className="flex flex-col gap-5">
       <div className="grid max-w-4xl grid-cols-3 gap-5">
         {projectData.map((item) => (
@@ -33,14 +39,16 @@ const MediaProjectHeader = () => {
                 <Image src={item.icon} height={28} width={28} alt={item.name} />
               </div>
 
-              <Plus className="h-5 w-5" />
+              <Button variant={'ghost'} onClick={() => { router.push(item.link) }}>
+                <Plus className="h-5 w-5" />
+              </Button>
             </div>
             <h1>{item.name}</h1>
           </Card>
         ))}
       </div>
-
-      <div>
+      {/* recently exported items */}
+      {/* <div>
         <h2 className="mb-4 text-xl font-semibold">Recently exported</h2>
         <div className="tb:grid-cols-3 grid grid-cols-1 gap-4">
           {recentExports.map((item) => (
@@ -83,7 +91,8 @@ const MediaProjectHeader = () => {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
+
     </div>
   );
 };

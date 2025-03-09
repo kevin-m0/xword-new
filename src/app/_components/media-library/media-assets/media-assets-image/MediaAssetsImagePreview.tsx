@@ -5,29 +5,18 @@ import {
   Dialog,
   DialogContent,
   DialogHeader,
+  DialogTitle,
   DialogTrigger,
 } from "~/components/reusable/xw-dialog";
 import { Button } from "~/components/ui/button";
 import Image from "next/image";
 import { trpc } from "~/trpc/react";
+import { getAwsUrl } from "~/lib/get-aws-url";
 
 const MediaAssetImagePreview = ({ imageKey }: { imageKey: string }) => {
-  const {
-    data: fileUrl,
-    isLoading,
-    isError,
-  } = trpc.aws.getObjectURL.useQuery(
-    { key: imageKey },
-    {
-      enabled: !!imageKey,
-      refetchOnWindowFocus: false,
-      staleTime: Infinity,
-    },
-  );
-
-  console.log("Image Key:", imageKey);
-  console.log("File URL:", fileUrl);
-
+  console.log("key---", imageKey);
+  console.log("url---", getAwsUrl(imageKey));
+  
   return (
     <div>
       <Dialog>
@@ -37,35 +26,21 @@ const MediaAssetImagePreview = ({ imageKey }: { imageKey: string }) => {
           </Button>
         </DialogTrigger>
         <DialogContent>
+          <DialogTitle></DialogTitle>
           <DialogHeader>
             <p className="text-sm text-xw-muted">Image Preview</p>
           </DialogHeader>
           <div className="mt-4">
-            {isLoading && (
-              <p className="text-center text-xw-muted">Loading image...</p>
-            )}
-            {isError && (
-              <p className="text-center text-red-500">
-                Failed to load image. Please try again.
-              </p>
-            )}
-            {fileUrl ? (
+            
               <Image
-                src={fileUrl}
+                src={getAwsUrl(imageKey) as string}
                 height={400}
                 width={400}
                 sizes="100vw"
                 alt="Previewed Image"
                 className="h-auto w-full object-contain"
               />
-            ) : (
-              !isLoading &&
-              !isError && (
-                <p className="text-center text-xw-muted">
-                  No image available for preview.
-                </p>
-              )
-            )}
+            
           </div>
         </DialogContent>
       </Dialog>

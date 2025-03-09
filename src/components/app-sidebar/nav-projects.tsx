@@ -1,17 +1,20 @@
 "use client";
 
+import { useAtom } from "jotai";
 import { type LucideIcon } from "lucide-react";
 import Link from "next/link";
+import { FunctionComponent } from "react";
+import { activeTabAtom } from "~/atoms/sidebar";
 
 import {
   SidebarGroup,
   SidebarGroupLabel,
   SidebarMenu,
-  SidebarMenuAction,
   SidebarMenuButton,
   SidebarMenuItem,
-  useSidebar,
 } from "~/components/ui/sidebar";
+
+type IconType = LucideIcon | FunctionComponent<{ className?: string }>;
 
 export function NavProjects({
   projects,
@@ -19,52 +22,36 @@ export function NavProjects({
   projects: {
     name: string;
     url: string;
-    icon: LucideIcon;
+    icon: IconType;
   }[];
 }) {
-  const { isMobile } = useSidebar();
+  const [activeTab, setActiveTab] = useAtom(activeTabAtom);
 
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>Tools</SidebarGroupLabel>
-      <SidebarMenu>
-        {projects.map((item) => (
-          <SidebarMenuItem key={item.name}>
-            <SidebarMenuButton asChild tooltip={item.name}>
-              <Link href={item.url}>
-                <item.icon />
-                <span>{item.name}</span>
-              </Link>
-            </SidebarMenuButton>
-            {/* <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <SidebarMenuAction showOnHover>
-                  <MoreHorizontal />
-                  <span className="sr-only">More</span>
-                </SidebarMenuAction>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                className="w-48"
-                side={isMobile ? "bottom" : "right"}
-                align={isMobile ? "end" : "start"}
-              >
-                <DropdownMenuItem>
-                  <Folder className="text-muted-foreground" />
-                  <span>View Project</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Share className="text-muted-foreground" />
-                  <span>Share Project</span>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <Trash2 className="text-muted-foreground" />
-                  <span>Delete Project</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu> */}
-          </SidebarMenuItem>
-        ))}
+      <SidebarGroupLabel className="text-gray-400 text-sm px-4">
+        Tools
+      </SidebarGroupLabel>
+      <SidebarMenu className="mt-2">
+        {projects.map((item) => {
+          const isActive = activeTab === item.url;
+          return (
+            <SidebarMenuItem key={item.name} className="text-white">
+              <SidebarMenuButton asChild tooltip={item.name}>
+                <Link
+                  href={item.url}
+                  className={`flex items-center gap-3 p-5 border-[#006FE8] transition-all
+                    ${isActive ? "bg-gradient-to-r from-[#006FE8]/80 to-[#2670E900] !rounded-full border-l" : "hover:bg-gray-800"}
+                  `}
+                  onClick={() => setActiveTab(item.url)}
+                >
+                  <item.icon className="w-5 h-5 text-white" />
+                  <span className="text-sm font-medium">{item.name}</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          );
+        })}
       </SidebarMenu>
     </SidebarGroup>
   );

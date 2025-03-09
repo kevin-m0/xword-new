@@ -10,10 +10,10 @@ const AddImageButton = ({ editor }: { editor: Editor }) => {
     const [isOpen, setIsOpen] = React.useState(false)
 
     const handleSelectedImages = (images: string[]) => {
-        console.log(images)
         setIsOpen(false)
         editor.chain().focus().setImage({ src: images[0] as string }).run();
     }
+    
     return (
         <>
             <Button
