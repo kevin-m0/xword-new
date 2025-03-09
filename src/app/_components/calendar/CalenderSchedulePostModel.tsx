@@ -33,6 +33,7 @@ import {
   postFacebookMultipleImagePostTrigger,
   postFacebookStoryPostTrigger,
   postFacebookTextPostTrigger,
+  postFacebookVideoPostTrigger,
   postInstagramCarouselPostTrigger,
   postInstagramImageTrigger,
   postInstagramReelTrigger,
@@ -209,15 +210,22 @@ const CalendarSchedulePostModel = ({
           );
         } else if (postMedia.length === 0) {
           toast.error("Please upload a media");
+          setIsPosting(false);
+          return;
         }
       } else if (selectedOption === "Reel") {
-        //check if it is a video. for image do a post.
+        if (postMedia.length === 0) {
+          toast.error("Please upload a media");
+          setIsPosting(false);
+          return;
+        }
+        // check if the media is a video else throw an error
         const responseId = await postInstagramReelTrigger(
           user?.emailAddresses[0]?.emailAddress as string,
           "5s",
           postText,
-          "https://static.videezy.com/system/resources/previews/000/049/922/original/Passengers_and_Ship_TL.mp4",
-          // postMedia[0]?.content as string,
+          // "https://static.videezy.com/system/resources/previews/000/049/922/original/Passengers_and_Ship_TL.mp4",
+          postMedia[0]?.content as string,
         );
       } else if (selectedOption === "Story") {
         const responseId = await postInstagramStoryTrigger(
@@ -247,39 +255,40 @@ const CalendarSchedulePostModel = ({
       //   // postMedia[0]?.content as string,
       // );
 
-      // if (selectedOption === "Post" && postMedia.length > 1) {
-      //   if (mtype?.includes("video")) {
-      //     const responseId = await postFacebookMultipleImagePostTrigger(
-      //       user?.emailAddresses[0]?.emailAddress as string,
-      //       postText,
-      //       selectedDate.toISOString(),
-      //       postMedia.map((media) => media.content as string),
-      //     );
-      //   }
-      //   // } else if (postMedia.length === 0 && selectedOption === "Post") {
-      //   //   const responseId = await postFacebookTextPostTrigger(
-      //   //     user?.emailAddresses[0]?.emailAddress as string,
-      //   //     postText,
-      //   //     selectedDate.toISOString(),
-      //   //   );
-      //   // }
-      // } else if (postMedia.length === 0 && selectedOption === "Post") {
-      //   if (mtype?.includes("image")) {
-      //     // const responseId = await postFacebookImagePostTrigger(
-      //     //   user?.emailAddresses[0]?.emailAddress as string,
-      //     //   postText,
-      //     //   selectedDate.toISOString(),
-      //     //   "https://images.unsplash.com/photo-1740231614760-8037a7896030?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHw1fHx8ZW58MHx8fHx8",
-      //     //   // postMedia[0]?.content as string,
-      //     // );
-      //   } else if (mtype?.includes("video")) {
-      //     // const responseId = await postFacebookVideoPostTrigger(
-      //     //   user?.emailAddresses[0]?.emailAddress as string,
-      //     //   postText,
-      //     //   selectedDate.toISOString(),
-      //     // );
-      //   }
-      // }
+      if (selectedOption === "Post" && postMedia.length > 1) {
+        if (mtype?.includes("image")) {
+          const responseId = await postFacebookMultipleImagePostTrigger(
+            user?.emailAddresses[0]?.emailAddress as string,
+            postText,
+            selectedDate.toISOString(),
+            postMedia.map((media) => media.content as string),
+          );
+        }
+        // }
+      } else if (postMedia.length === 0 && selectedOption === "Post") {
+        if (mtype?.includes("image")) {
+          const responseId = await postFacebookImagePostTrigger(
+            user?.emailAddresses[0]?.emailAddress as string,
+            postText,
+            selectedDate.toISOString(),
+            // "https://images.unsplash.com/photo-1740231614760-8037a7896030?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHw1fHx8ZW58MHx8fHx8",
+            postMedia[0]?.content as string,
+          );
+        } else if (mtype?.includes("video")) {
+          const responseId = await postFacebookVideoPostTrigger(
+            user?.emailAddresses[0]?.emailAddress as string,
+            postText,
+            selectedDate.toISOString(),
+            postMedia[0]?.content as string,
+          );
+        } else if (postMedia.length === 0 && selectedOption === "Post") {
+          const responseId = await postFacebookTextPostTrigger(
+            user?.emailAddresses[0]?.emailAddress as string,
+            postText,
+            selectedDate.toISOString(),
+          );
+        }
+      }
 
       if (selectedOption === "Story") {
         const responseId = await postFacebookStoryPostTrigger(

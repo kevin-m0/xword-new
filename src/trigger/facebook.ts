@@ -118,6 +118,66 @@ export const postFacebookImagePost = schemaTask({
   },
 });
 
+export const postFacebookVideoPost = schemaTask({
+  id: "post-facebook-video-with-caption",
+  schema: payloadSchemaWithMedia,
+  run: async (payload) => {
+    try {
+      const { appUserId, text, photo } = payload;
+
+      const url = `https://labs.pathfix.com/oauth/method/facebook/call`;
+
+      // Prepare the request parameters
+      const params = {
+        user_id: appUserId,
+        public_key: process.env.NEXT_PUBLIC_PATHFIX_PUBLIC_KEY,
+        private_key: process.env.NEXT_PUBLIC_PATHFIX_PRIVATE_KEY,
+      };
+
+      const { accessToken } = await fetchFacebookPageAccessTokenAndPageId(
+        url,
+        params,
+      );
+
+      const uploadUrl = `https://graph.facebook.com/v22.0/${process.env.NEXT_PUBLIC_FACEBOOK_APP_ID}/uploads`;
+
+      const body = {
+        url: uploadUrl,
+        method: "POST",
+        payload: {
+          file_name: photo,
+          file_length: 1000000, // TODO: get the actual file length
+          file_type: "video",
+          access_token: accessToken,
+        },
+      };
+
+      const res = await axios.post(url, body, { params });
+
+      const uploadId = res.data.id;
+
+      // divide video into chunks and upload each chunk
+
+      const url2 = `https://graph.facebook.com/v22.0/${uploadId}`;
+
+      const body2 = {
+        url: url2,
+        headers: {
+          Authorization: `OAuth ${accessToken}`,
+          file_offset: 0,
+        },
+        "data-binary": photo,
+      };
+
+      const res2 = await axios.post(url2, body2, { params });
+
+      const uploadFileHandle = res2.data.h;
+    } catch (error: any) {
+      console.log(error);
+    }
+  },
+});
+
 const uploadPhotoToFacebook = async (
   url: string,
   params: any,

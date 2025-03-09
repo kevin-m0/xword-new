@@ -18,7 +18,7 @@ export const calendarStyles = {
     "[&_.rbc-month-row+.rbc-month-row]:border-t [&_.rbc-month-row+.rbc-month-row]:border-xw-secondary",
 
     // Today cell styling
-    "[&_.rbc-today]:bg-pink-500 [&_.rbc-today]:text-white",
+    "[&_.rbc-today]:bg-blue-500 [&_.rbc-today]:text-white",
 
     // Event styling
     "[&_.rbc-event]:rounded-md",

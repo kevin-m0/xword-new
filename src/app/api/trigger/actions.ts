@@ -12,6 +12,7 @@ import {
   postFacebookMultipleImagePost,
   postFacebookStory,
   postFacebookTextPost,
+  postFacebookVideoPost,
 } from "~/trigger/facebook";
 import {
   postLinkedInCarouselPost,
@@ -103,6 +104,20 @@ export async function postFacebookImagePostTrigger(
 ) {
   const handle = await postFacebookImagePost.trigger(
     { appUserId: userId, text: text, photo: photo },
+    { delay: time },
+  );
+
+  return handle.id;
+}
+
+export async function postFacebookVideoPostTrigger(
+  userId: string,
+  text: string,
+  time: string,
+  video: string,
+) {
+  const handle = await postFacebookVideoPost.trigger(
+    { appUserId: userId, text: text, photo: video },
     { delay: time },
   );
 
