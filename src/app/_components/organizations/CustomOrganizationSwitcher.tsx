@@ -51,11 +51,14 @@ export const CustomOrganizationSwitcher = () => {
         message: `Successfully deleted ${orgToDelete.name}.`,
         variant: "success",
       });
-    } catch (error) {
-      console.error(error);
+    } catch (error: any) {
+      console.error("----->error:", error );
       showToast({
         title: "Error",
-        message: "Failed to delete organization. Please try again.",
+        message:
+          error.message.includes("Deletion by admin is not enabled")
+            ? "You are not allowed to delete this organization."
+            : "Failed to delete organization. Please try again.",
         variant: "error",
       });
     } finally {
@@ -156,24 +159,24 @@ export const CustomOrganizationSwitcher = () => {
 
       {/* Inline confirmation for Delete, or use a Dialog if you prefer */}
       {orgToDelete && (
-        <div className="mt-2 space-y-2 rounded-md bg-red-50 p-4 text-red-900">
-          <p>
-            Are you sure you want to delete <strong>{orgToDelete.name}</strong>?
-          </p>
-          <div className="flex gap-2">
-            <Button variant="secondary" onClick={() => setOrgToDelete(null)}>
-              Cancel
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={handleDeleteOrg}
-              disabled={isDeleting}
-            >
-              {isDeleting ? "Deleting..." : "Confirm"}
-            </Button>
+        <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
+          <div className="w-[90%] max-w-md rounded-md border p-4 text-white shadow-lg">
+            <h2 className="font-bold text-base">Are you absolutely sure?</h2>
+            <p className="text-start">
+            This action cannot be undone. This will permanently remove your workspace <strong>{orgToDelete.name}</strong> and its data.
+            </p>
+            <div className="mt-4 flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setOrgToDelete(null)}>
+                Cancel
+              </Button>
+              <Button variant="default" className="bg-red-500" onClick={handleDeleteOrg} disabled={isDeleting}>
+                {isDeleting ? "Deleting..." : "Confirm"}
+              </Button>
+            </div>
           </div>
         </div>
       )}
+
     </Card>
   );
 };

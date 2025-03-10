@@ -44,15 +44,15 @@ const UserBox = () => {
         <Popover>
             <PopoverTrigger asChild>
                 <Avatar className='h-8 w-8'>
-                    <AvatarImage src="/images/user2.png" />
+                    <AvatarImage src={user.imageUrl}  />
                     <AvatarFallback>{user?.firstName}</AvatarFallback>
                 </Avatar>
             </PopoverTrigger>
             <PopoverContent className=' w-80 mr-2 flex flex-col gap-2'>
                 <div className=' border border-xw-secondary p-2 rounded-lg flex items-center'>
                     <Avatar>
-                        <AvatarImage src="https://github.com/shadcn.png" />
-                        <AvatarFallback>{ }</AvatarFallback>
+                        <AvatarImage src={user.imageUrl} />
+                        <AvatarFallback>{user?.firstName?.charAt(0)?.toUpperCase() }</AvatarFallback>
                     </Avatar>
                     <div className=' ml-2 flex flex-col'>
                         <span className=' text-white'>{user?.fullName}</span>

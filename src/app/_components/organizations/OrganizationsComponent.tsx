@@ -10,7 +10,6 @@ const OrganizationsComponent = () => {
             <div className='flex items-center gap-5 justify-between'>
             </div>
 
-
             <div className='grid grid-cols-4 gap-5'>
                 <CustomOrganizationSwitcher />
 
