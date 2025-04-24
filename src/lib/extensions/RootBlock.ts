@@ -34,41 +34,36 @@ export const RootBlock = Node.create({
     return {
       setRootBlock:
         (position?: number) =>
-          ({ state, chain }) => {
-            console.log("setRootBlock", state, chain);
-            const {
-              selection: { from },
-            } = state;
+        ({ state, chain }) => {
+          const {
+            selection: { from },
+          } = state;
 
-            // Determine the insertion position
-            const pos = position ?? from;
+          // Determine the insertion position
+          const pos = position ?? from;
 
-            // Insert a new rootblock node and focus on it
-            return chain()
-              .insertContentAt(pos, {
-                type: "rootblock",
-                content: [
-                  {
-                    type: "paragraph",
-                  },
-                ],
-              })
-              .focus(pos + 3) // Focus on the new block (you might need to adjust the position based on your exact requirements)
-              .run();
-          },
+          // Insert a new rootblock node and focus on it
+          return chain()
+            .insertContentAt(pos, {
+              type: "rootblock",
+              content: [
+                {
+                  type: "paragraph",
+                },
+              ],
+            })
+            .focus(pos + 3) // Focus on the new block (you might need to adjust the position based on your exact requirements)
+            .run();
+        },
 
       enter() {
-        console.log("enter");
         return ({ commands }) => {
           // Custom logic for the enter command, here just setting the root block
           return commands.setRootBlock();
-
         };
-      }
+      },
     };
-  }
-  ,
-
+  },
   // Rules to parse the node from HTML
   parseHTML() {
     return [

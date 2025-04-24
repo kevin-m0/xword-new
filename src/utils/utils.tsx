@@ -1,12 +1,7 @@
-import { z } from "zod";
-import { toast } from "sonner";
 import { Editor } from "@tiptap/react";
 import Cookies from "universal-cookie";
 import { twMerge } from "tailwind-merge";
 import { type ClassValue, clsx } from "clsx";
-// import { isClerkAPIResponseError } from "@clerk/nextjs";
-
-// import { ErrorToast } from "@/components/ui/custom-toast";
 import axios from "axios";
 
 export function cn(...inputs: ClassValue[]) {
@@ -17,6 +12,11 @@ export function absoluteUrl(path: string) {
   if (typeof window !== "undefined") return path;
   if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}${path}`;
   return `http://localhost:${process.env.PORT ?? 3000}${path}`;
+}
+
+export function extractScriptContent(xmlString: string): string {
+  const scriptMatch = xmlString.match(/<script>([\s\S]*?)<\/script>/);
+  return scriptMatch ? (scriptMatch[1]?.trim() as string) : "";
 }
 
 // export function catchClerkError(err: unknown) {
@@ -383,7 +383,7 @@ export async function handleApiResponse<T>(response: Response): Promise<T> {
 
 export const pollRequest = async (
   url: string,
-  maxRetries: number = 1,
+  maxRetries: number = 3,
   delay: number = 60000,
 ): Promise<Response> => {
   let attempt = 0;
@@ -447,4 +447,12 @@ export async function pollForProcessingVideo(
     return false;
   }
   return true;
+}
+
+export function generateUUID(): string {
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0;
+    const v = c === "x" ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
 }

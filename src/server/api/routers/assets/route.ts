@@ -294,7 +294,6 @@ export const assetRouter = createTRPCRouter({
       folderName: z.string(),
     }),
   )
-
   .mutation(async ({ input, ctx }) => {
     const { workSpaceId, folderName } = input;
     const existingFolder = await db.assetsFolder.findFirst({
@@ -320,6 +319,7 @@ export const assetRouter = createTRPCRouter({
     });
     return folder? folder : null;
   }),
+
   getFilesInFolder: privateProcedure
   .input(
     z.object({
@@ -614,7 +614,7 @@ getProjectDocuments: privateProcedure
   .query(async ({ input, ctx }) => {
     const docs = await db.document.findMany({
       where: {
-        spaceId: input.workspaceId,
+        organizationId: input.workspaceId,
       },
       select: {
         id: true,
@@ -623,6 +623,7 @@ getProjectDocuments: privateProcedure
         access: true,
         createdAt: true,
         createdBy: true,
+        redirectType: true,
         viewCount: true,
       },
       orderBy: {
@@ -701,8 +702,6 @@ getProjectDocuments: privateProcedure
   .mutation(async ({ input, ctx }) => {
     const { assetIds, type } = input;
 
-    // console.log("Asset IDs:", assetIds);
-
     if (type === "audio") {
       const response = await db.audioModel.deleteMany({
         where: {
@@ -722,8 +721,6 @@ getProjectDocuments: privateProcedure
           userId: ctx.userId,
         },
       });
-
-      // console.log("Response:", response);
 
       return response;
     }
@@ -768,16 +765,16 @@ getProjectDocuments: privateProcedure
     }
   }),
 
-  mediaRouter: privateProcedure
-  .input(
-    z.object({
-      keys: z.array(z.string()),
-      type: z.enum(["audio", "image"]),
-    }),
-  )
-  .query(async ({ input }) => {
-    const urls = await Promise.all(input.keys.map((key) => trpc.aws.getObjectURL.useQuery({ key })));
-    return urls;
-  }),
+  // mediaRouter: privateProcedure
+  // .input(
+  //   z.object({
+  //     keys: z.array(z.string()),
+  //     type: z.enum(["audio", "image"]),
+  //   }),
+  // )
+  // .query(async ({ input }) => {
+  //   const urls = await Promise.all(input.keys.map((key) => trpc.aws.getObjectURL.useQuery({ key })));
+  //   return urls;
+  // }),
 
 });

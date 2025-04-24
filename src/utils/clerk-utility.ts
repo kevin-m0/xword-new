@@ -17,7 +17,9 @@ export async function getUser() {
       },
     });
 
-    if (dbUser) return user;
+    if (dbUser) {
+      return user;
+    }
 
     const parsedFirstName = user.firstName ?? "";
     const parsedLastName = user.lastName ?? "";
@@ -31,6 +33,8 @@ export async function getUser() {
         email: user?.emailAddresses[0]?.emailAddress,
         name: isUsernameEmpty ? "User" : `${parsedFirstName} ${parsedLastName}`,
         image: user.imageUrl,
+        firstName: user?.firstName,
+        lastName: user?.lastName,
       },
     });
 

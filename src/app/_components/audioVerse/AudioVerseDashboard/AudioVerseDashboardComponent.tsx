@@ -1,0 +1,130 @@
+"use client";
+import React from "react";
+import { Button } from "~/components/ui/button";
+import { ArrowLeft, Share, Pencil, Trash2 } from "lucide-react";
+import Image from "next/image";
+import { useState } from "react";
+import AudioVerseTranscriptTab from "./AudioVerseTranscriptTab";
+import AudioVerseMagicChatTab from "./AudioVerseMagicChatTab";
+import AudioVerseAIContentTab from "./AudioVerseAIContentTab";
+import { Separator } from "~/components/ui/separator";
+import { useParams, useRouter } from "next/navigation";
+import { useAtom } from "jotai";
+import { contentResponseAtom } from "~/atoms";
+import { trpc } from "~/trpc/react";
+import XWTabs from "~/components/reusable/XWTabs";
+import XWSecondaryButton from "~/components/reusable/XWSecondaryButton";
+import LoadingScreen from "~/components/loaders/loading-screen";
+
+const AudioVerseDashboardComponent = () => {
+  const [activeTab, setActiveTab] = useState("transcript");
+  const [contentResponse, setContentResponse] = useAtom(contentResponseAtom);
+
+  const params = useParams();
+  const router = useRouter();
+
+  const { data: audioProject, isLoading } =
+    trpc.audioProject.getAudioProjectById.useQuery(
+      {
+        id: params["audioProjectId"] as string,
+      },
+      {
+        enabled: !!params,
+      },
+    );
+
+  const tabs = [
+    {
+      id: "transcript",
+      label: "Transcript",
+      icon: "/icons/mic.svg",
+    },
+    {
+      id: "magicchat",
+      label: "MagicChat",
+      icon: "/icons/chatoval.svg",
+    },
+  ];
+
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case "transcript":
+        return <AudioVerseTranscriptTab audioProject={audioProject} />;
+      case "magicchat":
+        return <AudioVerseMagicChatTab audioProject={audioProject} />;
+      case "aicontent":
+        return <AudioVerseAIContentTab audioProject={audioProject} />;
+      default:
+        return <AudioVerseTranscriptTab />;
+    }
+  };
+
+  if (isLoading) {
+    return <LoadingScreen />;
+  }
+
+  return (
+    <div className="flex flex-col gap-10">
+      <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-10 p-5">
+        {/* Audioverse Dashboard Header */}
+        <div className="flex items-center justify-between gap-5">
+          <div className="flex items-center gap-4">
+            <div>
+              <XWSecondaryButton
+                size="sm"
+                className1="rounded-full"
+                onClick={() => {
+                  router.push("/audioverse");
+                }}
+              >
+                <ArrowLeft className="h-4 w-4" />
+              </XWSecondaryButton>
+            </div>
+            <h1 className="text-2xl font-semibold">{audioProject?.title}</h1>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" size="icon" className="bg-red-500">
+              {/* <Image
+                src="/icons/trashbin.svg"
+                alt="Delete"
+                width={16}
+                height={16}
+                className="text-black"
+              /> */}
+              <Trash2 />
+            </Button>
+          </div>
+        </div>
+
+        {/* Audioverse tabs and action */}
+        <div className="flex items-center justify-between">
+          <div>
+            <XWTabs tabs={tabs} activeTab={activeTab} onChange={setActiveTab} />
+          </div>
+
+          {/* <Button
+            variant={"default"}
+            size={"sm"}
+            className="flex items-center gap-2"
+          >
+            Advance Creation
+            <Image
+              src={"/icons/magic.svg"}
+              alt="Magic"
+              width={16}
+              height={16}
+            />
+          </Button> */}
+        </div>
+
+        <Separator />
+
+        {/* Tab Content */}
+        {audioProject && renderTabContent()}
+      </div>
+    </div>
+  );
+};
+
+export default AudioVerseDashboardComponent;

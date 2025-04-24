@@ -15,9 +15,9 @@ export const menuOneItem = [
         name: "Projects"
     },
     {
-        image: "/icons/calender.svg",
-        href: "/calender",
-        name: "Content Calender"
+        image: "/icons/calendar.svg",
+        href: "/calendar",
+        name: "Content Calendar"
     },
     {
         image: "/icons/social.svg",

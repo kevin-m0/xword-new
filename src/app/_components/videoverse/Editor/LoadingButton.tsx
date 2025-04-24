@@ -1,0 +1,24 @@
+"use client";
+
+import LoadingModal from "./LoadingModal";
+import { useState } from "react";
+import XWButton from "~/components/reusable/XWButton";
+
+export default function LoadingButton() {
+  const [open, setOpen] = useState(false);
+
+  const handleComplete = () => {
+    setOpen(false);
+    // You can add any post-completion logic here
+  };
+
+  return (
+    <div className="flex min-h-screen items-center justify-center">
+      <XWButton onClick={() => setOpen(true)}>Export Video as MP4</XWButton>
+      <LoadingModal
+        isOpen={open}
+        // onComplete={handleComplete}
+      />
+    </div>
+  );
+}

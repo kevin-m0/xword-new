@@ -47,171 +47,168 @@ export async function getFileInfo(key: string) {
 
 export const awsRouter = createTRPCRouter({
   getObjectURL: privateProcedure
-  .input(
-    z.object({
-      key: z.string(),
+    .input(
+      z.object({
+        key: z.string(),
+      }),
+    )
+    .query(async ({ input }) => {
+      const { key } = input;
+
+      try {
+        const src = `https://${Bucket}.${process.env.AWS_REGION}.digitaloceanspaces.com/${key}`;
+
+        return src;
+      } catch (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to generate download URL",
+        });
+      }
     }),
-  )
-  .query(async ({ input }) => {
-    const { key } = input;
-
-    const command = new GetObjectCommand({ Bucket, Key: key });
-    try {
-      // const src = await getSignedUrl(s3, command);
-      const src = `https://${Bucket}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`
-
-      console.log("src: ", src);
-      return src;
-    } catch (error) {
-      throw new TRPCError({
-        code: "INTERNAL_SERVER_ERROR",
-        message: "Failed to generate download URL",
-      });
-    }
-  }),
 
   getUploadUrl: privateProcedure
-  .input(
-    z.object({
-      key: z.string(),
-      contentType: z.string(),
+    .input(
+      z.object({
+        key: z.string(),
+        contentType: z.string(),
+      }),
+    )
+    .mutation(async ({ input }) => {
+      const { key, contentType } = input;
+
+      const command = new PutObjectCommand({
+        Bucket,
+        Key: key,
+        ContentType: contentType,
+        ACL: "public-read",
+      });
+
+      try {
+        const uploadUrl = await getSignedUrl(s3, command, {
+          expiresIn: 3600,
+        });
+
+        return { uploadUrl };
+      } catch (error) {
+        console.error("S3 upload URL error:", error);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to generate upload URL",
+        });
+      }
     }),
-  )
-  .mutation(async ({ input }) => {
-    const { key, contentType } = input;
-
-    const command = new PutObjectCommand({
-      Bucket,
-      Key: key,
-      ContentType: contentType,
-    });
-
-    try {
-      const uploadUrl = await getSignedUrl(s3, command, {
-        expiresIn: 3600,
-      });
-
-      return { uploadUrl };
-    } catch (error) {
-      console.error("S3 upload URL error:", error);
-      throw new TRPCError({
-        code: "INTERNAL_SERVER_ERROR",
-        message: "Failed to generate upload URL",
-      });
-    }
-  }),
 
   deleteObject: privateProcedure
-  .input(
-    z.object({
-      key: z.string(),
+    .input(
+      z.object({
+        key: z.string(),
+      }),
+    )
+    .mutation(async ({ input }) => {
+      const { key } = input;
+      const command = new DeleteObjectCommand({ Bucket, Key: key });
+      try {
+        await s3.send(command);
+        return { success: true };
+      } catch (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to delete file",
+        });
+      }
     }),
-  )
-  .mutation(async ({ input }) => {
-    const { key } = input;
-    const command = new DeleteObjectCommand({ Bucket, Key: key });
-    try {
-      await s3.send(command);
-      return { success: true };
-    } catch (error) {
-      throw new TRPCError({
-        code: "INTERNAL_SERVER_ERROR",
-        message: "Failed to delete file",
-      });
-    }
-  }),
 
   getFileInfoProcedure: privateProcedure
-  .input(z.object({ fileId: z.string() }))
-  .query(async ({ input }) => {
-    const fileInfo = await getFileInfo(input.fileId);
-    if (!fileInfo) {
-      throw new TRPCError({
-        code: "NOT_FOUND",
-        message: "File information not found",
-      });
-    }
-    return fileInfo;
-  }),
+    .input(z.object({ fileId: z.string() }))
+    .query(async ({ input }) => {
+      const fileInfo = await getFileInfo(input.fileId);
+      if (!fileInfo) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "File information not found",
+        });
+      }
+      return fileInfo;
+    }),
 
   uploadBase64Image: privateProcedure
-  .input(
-    z.object({
-      fileName: z.string(),
-      base64Data: z.string(),
-      contentType: z.string().default("image/png"),
-    }),
-  )
-  .mutation(async ({ input }) => {
-    const { fileName, base64Data, contentType } = input;
-    try {
-      const cleanBase64 = base64Data.replace(/^data:image\/\w+;base64,/, "");
+    .input(
+      z.object({
+        fileName: z.string(),
+        base64Data: z.string(),
+        contentType: z.string().default("image/png"),
+      }),
+    )
+    .mutation(async ({ input }) => {
+      const { fileName, base64Data, contentType } = input;
+      try {
+        const cleanBase64 = base64Data.replace(/^data:image\/\w+;base64,/, "");
 
-      const buffer = Buffer.from(cleanBase64, "base64");
-      const command = new PutObjectCommand({
-        Bucket: process.env.S3_BUCKET_NAME,
-        Key: `${fileName}`,
-        Body: buffer,
-        ContentType: contentType,
-      });
-      await s3.send(command);
-      return `${fileName}`;
-    } catch (error) {
-      console.error("Error uploading image to S3:", error);
-    }
-  }),
+        const buffer = Buffer.from(cleanBase64, "base64");
+        const command = new PutObjectCommand({
+          Bucket: process.env.S3_BUCKET_NAME,
+          Key: `${fileName}`,
+          Body: buffer,
+          ContentType: contentType,
+        });
+        await s3.send(command);
+        return `${fileName}`;
+      } catch (error) {
+        console.error("Error uploading image to S3:", error);
+      }
+    }),
 
   uploadBase64ImagePublic: privateProcedure
-  .input(
-    z.object({
-      fileName: z.string(),
-      base64Data: z.string(),
-      contentType: z.string().default("image/png"),
-    }),
-  )
-  .mutation(async ({ input }) => {
-    const { fileName, base64Data, contentType } = input;
-    try {
-      const cleanBase64 = base64Data.replace(/^data:image\/\w+;base64,/, "");
+    .input(
+      z.object({
+        fileName: z.string(),
+        base64Data: z.string(),
+        contentType: z.string().default("image/png"),
+      }),
+    )
+    .mutation(async ({ input }) => {
+      const { fileName, base64Data, contentType } = input;
+      try {
+        const cleanBase64 = base64Data.replace(/^data:image\/\w+;base64,/, "");
 
-      const buffer = Buffer.from(cleanBase64, "base64");
-      const command = new PutObjectCommand({
-        Bucket: process.env.S3_BUCKET_NAME,
-        Key: `${fileName}`,
-        Body: buffer,
-        ContentType: contentType,
-        ACL: "public-read"
-      });
-      await s3.send(command);
-      return `${fileName}`;
-    } catch (error) {
-      console.error("Error uploading image to S3:", error);
-    }
-  }),
+        const buffer = Buffer.from(cleanBase64, "base64");
+        const command = new PutObjectCommand({
+          Bucket: process.env.S3_BUCKET_NAME,
+          Key: `${fileName}`,
+          Body: buffer,
+          ContentType: contentType,
+          ACL: "public-read",
+        });
+        await s3.send(command);
+        return `${fileName}`;
+      } catch (error) {
+        console.error("Error uploading image to S3:", error);
+      }
+    }),
 
   getBatchObjectURLs: privateProcedure
-  .input(
-    z.object({
-      keys: z.array(z.string()),
+    .input(
+      z.object({
+        keys: z.array(z.string()),
+      }),
+    )
+    .query(async ({ input }) => {
+      const { keys } = input;
+
+      try {
+        const urlPromises = keys.map(async (key) => {
+          const command = new GetObjectCommand({ Bucket, Key: key });
+          return getSignedUrl(s3, command);
+        });
+
+        const urls = await Promise.all(urlPromises);
+        return urls;
+      } catch (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to generate batch download URLs",
+        });
+      }
     }),
-  )
-  .query(async ({ input }) => {
-    const { keys } = input;
-
-    try {
-      const urlPromises = keys.map(async (key) => {
-        const command = new GetObjectCommand({ Bucket, Key: key });
-        return getSignedUrl(s3, command);
-      });
-
-      const urls = await Promise.all(urlPromises);
-      return urls;
-    } catch (error) {
-      throw new TRPCError({
-        code: "INTERNAL_SERVER_ERROR",
-        message: "Failed to generate batch download URLs",
-      });
-    }
-  }),
-
-})
+});

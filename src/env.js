@@ -1,6 +1,7 @@
 import { createEnv } from "@t3-oss/env-nextjs";
 import { z } from "zod";
 
+
 export const env = createEnv({
   /**
    * Server-side environment variables
@@ -27,13 +28,22 @@ export const env = createEnv({
     TIPTAP_BASE_URL: z.string().optional(),
     TIPTAP_JWT_SECRET: z.string().optional(),
 
-    CLOUDINARY_API_SECRET: z.string().optional(),
+    DIGITALOCEAN_SPACES_ENDPOINT: z.string(),
+    DIGITALOCEAN_SPACES_REGION: z.string(),
+    DIGITALOCEAN_SPACES_BUCKET_NAME: z.string(),
+    DIGITALOCEAN_SPACES_ACCESS_KEY_ID: z.string(),
+    DIGITALOCEAN_SPACES_SECRET_ACCESS_KEY: z.string(),
+
+    CLOUDINARY_API_KEY: z.string(),
+    CLOUDINARY_API_SECRET: z.string(),
   },
 
   /**
    * Client-side environment variables (must start with `NEXT_PUBLIC_`)
    */
   client: {
+    NEXT_PUBLIC_APP_URL: z.string(),
+    
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string(),
     NEXT_PUBLIC_CLERK_SIGN_IN_URL: z.string().default("/sign-in"),
     NEXT_PUBLIC_CLERK_SIGN_UP_URL: z.string().default("/sign-up"),
@@ -89,17 +99,26 @@ export const env = createEnv({
     NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: z.string().optional(),
     NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET: z.string().optional(),
     NEXT_PUBLIC_CLOUDINARY_API_KEY: z.string().optional(),
+    NEXT_PUBLIC_CLOUDINARY_URL: z.string().optional(),
 
     NEXT_PUBLIC_TRIGGER_SECRET_KEY: z.string().optional(),
+    NEXT_PUBLIC_CLERK_SIGN_IN_FORCE_REDIRECT_URL: z.string().optional(),
+    NEXT_PUBLIC_CLERK_SIGN_UP_FORCE_REDIRECT_URL: z.string().optional(),
+
   },
 
   /**
    * Runtime environment variables
    */
   runtimeEnv: {
+    NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
+
     DATABASE_URL: process.env.DATABASE_URL,
     DIRECT_URL: process.env.DIRECT_URL,
     NODE_ENV: process.env.NODE_ENV,
+
+    NEXT_PUBLIC_CLERK_SIGN_IN_FORCE_REDIRECT_URL: process.env.CLERK_SIGN_IN_FORCE_REDIRECT_URL,
+    NEXT_PUBLIC_CLERK_SIGN_UP_FORCE_REDIRECT_URL: process.env.CLERK_SIGN_UP_FORCE_REDIRECT_URL,
 
     CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY,
     OPENAI_API_KEY: process.env.OPENAI_API_KEY,
@@ -119,6 +138,7 @@ export const env = createEnv({
     TIPTAP_JWT_SECRET: process.env.TIPTAP_JWT_SECRET,
 
     CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET,
+    CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,
 
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
     NEXT_PUBLIC_CLERK_SIGN_IN_URL: process.env.NEXT_PUBLIC_CLERK_SIGN_IN_URL,
@@ -175,8 +195,15 @@ export const env = createEnv({
     NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
     NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET: process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET,
     NEXT_PUBLIC_CLOUDINARY_API_KEY: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY,
+    NEXT_PUBLIC_CLOUDINARY_URL: process.env.NEXT_PUBLIC_CLOUDINARY_URL,
 
     NEXT_PUBLIC_TRIGGER_SECRET_KEY: process.env.NEXT_PUBLIC_TRIGGER_SECRET_KEY,
+
+    DIGITALOCEAN_SPACES_ENDPOINT: process.env.DIGITALOCEAN_SPACES_ENDPOINT,
+    DIGITALOCEAN_SPACES_REGION: process.env.DIGITALOCEAN_SPACES_REGION,
+    DIGITALOCEAN_SPACES_BUCKET_NAME: process.env.DIGITALOCEAN_SPACES_BUCKET_NAME,
+    DIGITALOCEAN_SPACES_ACCESS_KEY_ID: process.env.DIGITALOCEAN_SPACES_ACCESS_KEY_ID,
+    DIGITALOCEAN_SPACES_SECRET_ACCESS_KEY: process.env.DIGITALOCEAN_SPACES_SECRET_ACCESS_KEY,
   },
 
   skipValidation: !!process.env.SKIP_ENV_VALIDATION,

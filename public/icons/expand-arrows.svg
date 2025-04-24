@@ -1,0 +1,17 @@
+<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Expand Arrows" clip-path="url(#clip0_2846_54844)">
+<path id="Vector" d="M14.6665 1.33594L10.6665 5.33594" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="Vector_2" d="M14.6668 4.66927V1.33594H11.3335" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="Vector_3" d="M1.3335 14.6641L5.3335 10.6641" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="Vector_4" d="M1.3335 11.3359V14.6693H4.66683" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="Vector_5" d="M1.3335 1.33594L5.3335 5.33594" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="Vector_6" d="M4.66683 1.33594H1.3335V4.66927" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="Vector_7" d="M14.6665 14.6641L10.6665 10.6641" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="Vector_8" d="M11.3335 14.6693H14.6668V11.3359" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+<defs>
+<clipPath id="clip0_2846_54844">
+<rect width="16" height="16" fill="white"/>
+</clipPath>
+</defs>
+</svg>

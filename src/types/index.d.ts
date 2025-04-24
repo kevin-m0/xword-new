@@ -1,4 +1,4 @@
-import { MODEL_TYPE } from "@/atoms";
+import { MODEL_TYPE } from "~atoms";
 import { Document, Folder, Workspace, User } from "@prisma/client";
 
 export type ExtendedFolder = Folder & {
@@ -150,3 +150,17 @@ export type PromptLibraryProps = {
 };
 
 export type DocumentSidebarTabs = "search" | "documents";
+
+export type ProjectDoc = {
+  id: string;
+  title: string;
+  type: 'video' | 'document';
+  created: string;
+  lastEdited: string;
+  image: string;
+  link: string;
+  creator: {
+      name: string;
+      image: string;
+  };
+};
